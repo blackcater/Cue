@@ -1,0 +1,47 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "ignorePatterns": [],
+  "insertFinalNewline": true,
+  "jsxSingleQuote": false,
+  "printWidth": 80,
+  "semi": false,
+  "singleQuote": true,
+  "sortImports": {
+    "customGroups": [
+      {
+        "elementNamePattern": ["@cue/*"],
+        "groupName": "cue"
+      }
+    ],
+    "groups": [
+      "type-import",
+      ["type-builtin", "value-builtin"],
+      ["type-external", "value-external"],
+      ["cue", "type-internal", "value-internal"],
+      [
+        "type-parent",
+        "value-parent",
+        "type-sibling",
+        "value-sibling",
+        "type-index",
+        "value-index"
+      ],
+      "unknown"
+    ],
+    "ignoreCase": false,
+    "internalPattern": ["~/", "@/", "@renderer/"],
+    "newlinesBetween": true,
+    "order": "asc",
+    "partitionByComment": true,
+    "sortSideEffects": false
+  },
+  "sortPackageJson": true,
+  "sortTailwindcss": {
+    // "stylesheet": "",
+    "attributes": ["class", "className"],
+    "functions": ["clsx", "cn"],
+    "preserveDuplicates": false,
+    "preserveWhitespace": false
+  },
+  "trailingComma": "es5"
+}

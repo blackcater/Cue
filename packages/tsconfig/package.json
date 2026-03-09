@@ -1,0 +1,11 @@
+{
+  "name": "@acme/tsconfig",
+  "version": "0.1.0",
+  "private": true,
+  "files": [
+    "*.json"
+  ],
+  "dependencies": {
+    "@tsconfig/strictest": "^2.0.8"
+  }
+}

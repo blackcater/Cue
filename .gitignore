@@ -1,0 +1,20 @@
+# os
+.DS_Store
+
+# editor
+.idea/
+!.idea/favicon.svg
+
+# code agents
+.claude/sessions
+.claude/plans
+
+# node_modules
+node_modules/
+dist/
+out/
+*.log*
+.turbo/
+
+# others
+/temp
