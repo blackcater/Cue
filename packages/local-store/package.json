@@ -1,5 +1,5 @@
 {
-  "name": "@acme/shared",
+  "name": "@acme/local-store",
   "version": "0.1.0",
   "private": true,
   "exports": {
@@ -10,7 +10,6 @@
     "test:watch": "bun test --watch"
   },
   "dependencies": {
-    "@agentclientprotocol/sdk": "^0.15.0",
     "zod": "^4.3.6"
   },
   "devDependencies": {

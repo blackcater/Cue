@@ -1,6 +1,5 @@
 {
   "recommendations": [
-    "expo.vscode-expo-tools",
     "streetsidesoftware.code-spell-checker",
     "oven.bun-vscode",
     "oxc.oxc-vscode"
