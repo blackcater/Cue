@@ -6,9 +6,11 @@
     ".": "./src/index.ts",
     "./globals.css": "./src/globals.css",
     "./foundation": "./src/foundation/index.ts",
-    "./foundation/*": "./src/foundation/*.tsx"
+    "./foundation/*": "./src/foundation/*.tsx",
+    "./icons/*": "./src/icons/*/index.ts"
   },
   "dependencies": {
+    "@lobehub/icons": "^5.0.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^0.577.0",

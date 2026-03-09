@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev:desktop": "pnpm run --filter=desktop dev"
+    "dev:desktop": "pnpm run --filter=desktop dev",
+    "dev:ios": "pnpm run --filter=mobile ios"
   },
   "devDependencies": {
     "@types/node": "^25",

@@ -13,6 +13,10 @@
         "groupName": "react"
       },
       {
+        "elementNamePattern": ["expo", "expo-*"],
+        "groupName": "expo"
+      },
+      {
         "elementNamePattern": ["@acme/*"],
         "groupName": "acme"
       }
@@ -20,7 +24,7 @@
     "groups": [
       "type-import",
       ["type-builtin", "value-builtin"],
-      ["react", "acme"],
+      ["react", "expo", "acme"],
       ["type-external", "value-external"],
       ["type-internal", "value-internal"],
       [
