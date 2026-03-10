@@ -1,11 +1,40 @@
 # Acme
 
 - apps
-  - Cli：mcp、server
-  - Desktop：桌面应用，支持 ACP 和 Agent，也支持启动
-  - Server：管理远程运行的 Agent，以及其他企业级能力
-  - Console：Server 对应的后端
+  - @acme-app/api-server: API 服务器，提供 RESTful API 接口
+    - 为应用提供第三方 OAuth 登录
+    - 企业级功能：
+      - 远端沙箱运行 Agent
+      - 模型远程管理与下发
+      - Token 流量监控
+      - Skill 远程管理下发
+      - Tool 远程管理下发
+  - @acme-app/cli: 命令行工具
+    - 支持 `acme mcp` 启动一个 mcp 服务，可以连接到一个 runtime server，进而查询各种信息
+    - 支持 `acme server` 启动一个 runtime server，对外提供服务
+    - 支持 `acme web` 启动一个 Web 界面，访问 runtime server
+    - 可以直接通过 `acme` 命令管理和查看本地 runtime 数据
+  - @acme-app/console: 控制台应用，为 API Server 提供 Web 界面
+  - @acme-app/desktop: 桌面应用
+    - 基于 Agent Client Protocol 兼容几乎所有 Code Agents
+    - 自定义模型，使用 Acme 的 Code Agent
+    - 支持 Provider 管理
+    - 支持 Vault 管理
+    - 支持 Thread 管理
+    - 支持 MCP 管理
+    - 支持 Skill 管理
+  - @acme-app/mobile: 移动应用
+    - 连接 runtime server 进行各种处理
+  - @acme-app/viewer: 用户分享 Thread 后可在 Viewer 中查看
+  - @acme-app/web: 官方网站，提供在线文档
 - packages
-  - core：整个系统都可能会用到的类型、函数、常量等
-  - ui：基础 UI 组件
-  - tsconfig：TypeScript 共享配置
+  - @acme/acp: Agent Client Protocol 支持包
+  - @acme/agent: 实现 Agent 的核心包
+  - @acme/ai: 实现 AI 功能的核心包
+  - @acme/contracts: Runtime Server 通信协议
+  - @acme/core: 核心代码和类型包
+  - @acme/code-agent: Code Agent 实现包
+  - @acme/runtime: Runtime Server 实现包
+  - @acme/shared: 共享代码包，包含公共代码和工具函数
+  - @acme/tsconfig: TypeScript 通用配置
+  - @acme/ui: 前端界面基础 UI 组件

@@ -1,5 +1,5 @@
 {
-  "name": "@acme-app/web",
+  "name": "@acme-app/viewer",
   "version": "0.1.0",
   "private": true,
   "scripts": {

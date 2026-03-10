@@ -1,5 +1,5 @@
 {
-  "name": "@acme/local-store",
+  "name": "@acme/ai",
   "version": "0.1.0",
   "private": true,
   "exports": {
@@ -9,9 +9,7 @@
     "test": "bun test",
     "test:watch": "bun test --watch"
   },
-  "dependencies": {
-    "zod": "^4.3.6"
-  },
+  "dependencies": {},
   "devDependencies": {
     "@acme/tsconfig": "workspace:*",
     "typescript": "^5.9.3"

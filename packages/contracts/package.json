@@ -1,0 +1,17 @@
+{
+  "name": "@acme/contracts",
+  "version": "0.1.0",
+  "private": true,
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "test": "bun test",
+    "test:watch": "bun test --watch"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@acme/tsconfig": "workspace:*",
+    "typescript": "^5.9.3"
+  }
+}

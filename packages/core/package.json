@@ -1,0 +1,26 @@
+{
+  "name": "@acme/core",
+  "version": "0.1.0",
+  "private": true,
+  "exports": {
+    ".": "./src/index.ts",
+    "./agent": "./src/agent/index.ts",
+    "./channel": "./src/channel/index.ts",
+    "./llm": "./src/llm/index.ts",
+    "./mcp": "./src/mcp/index.ts",
+    "./provider": "./src/provider/index.ts",
+    "./skill": "./src/skill/index.ts",
+    "./thread": "./src/thread/index.ts",
+    "./tool": "./src/tool/index.ts",
+    "./vault": "./src/vault/index.ts"
+  },
+  "scripts": {
+    "test": "bun test",
+    "test:watch": "bun test --watch"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@acme/tsconfig": "workspace:*",
+    "typescript": "^5.9.3"
+  }
+}
