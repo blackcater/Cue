@@ -1,10 +1,11 @@
-export type SerializedError = {
-	name: string
-	message: string
-	stack?: string
-	cause?: unknown
-} & Record<string, any>
+export function getMessageFromError(error?: unknown) {
+	if (error instanceof Error) {
+		return error.message
+	}
 
-export type SerializableError = Error & {
-	toJSON: () => SerializedError
+	if (typeof error === 'string') {
+		return error
+	}
+
+	return undefined
 }

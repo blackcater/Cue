@@ -9,7 +9,9 @@
     "test": "bun test",
     "test:watch": "bun test --watch"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@orpc/contract": "^1.13.6"
+  },
   "devDependencies": {
     "@acme/tsconfig": "workspace:*",
     "typescript": "^5.9.3"
