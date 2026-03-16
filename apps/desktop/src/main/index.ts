@@ -5,7 +5,7 @@ import { electronApp, is, platform } from '@electron-toolkit/utils'
 import icon from '~/resources/icon.png?asset'
 
 import { log, mainLog } from './lib/logger'
-import { WindowManager } from './lib/window-manager'
+import { WindowManager } from './services/WindowManager'
 
 log.initialize()
 

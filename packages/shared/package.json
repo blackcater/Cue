@@ -4,7 +4,17 @@
   "private": true,
   "exports": {
     ".": "./src/index.ts",
-    "./di": "./src/di/index.ts"
+    "./acp": "./src/acp/index.ts",
+    "./agents": "./src/agents/index.ts",
+    "./automation": "./src/automation/index.ts",
+    "./config": "./src/config/index.ts",
+    "./mcp": "./src/mcp/index.ts",
+    "./prompts": "./src/prompts/index.ts",
+    "./skills": "./src/skills/index.ts",
+    "./sources": "./src/sources/index.ts",
+    "./threads": "./src/threads/index.ts",
+    "./tools": "./src/tools/index.ts",
+    "./vaults": "./src/vaults/index.ts"
   },
   "scripts": {
     "test": "bun test",

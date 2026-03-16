@@ -10,6 +10,7 @@
     "./mcp": "./src/mcp/index.ts",
     "./provider": "./src/provider/index.ts",
     "./skill": "./src/skill/index.ts",
+    "./source": "./src/source/index.ts",
     "./thread": "./src/thread/index.ts",
     "./tool": "./src/tool/index.ts",
     "./vault": "./src/vault/index.ts"
