@@ -2,7 +2,7 @@
 
 Acme Desktop (ADA) is an Electron-based desktop application for Code Agents,
 providing a multi-vault, multi-agent workspace with local-first data storage.
-It supports multiple Code Agents including Acme Agent, Claude Code, CodeX, and
+It supports multiple Code Agents including Acmex, Claude Code, Codex, and
 any ACP-compatible agent through the Agent Client Protocol.
 
 **Key Features:**

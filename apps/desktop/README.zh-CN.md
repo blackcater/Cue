@@ -1,8 +1,8 @@
 # Acme Desktop
 
 Acme Desktop (ADA) 是一款基于 Electron 的桌面应用程序，为 Code Agent 提供多 Vault、
-多 Agent 的工作空间，采用本地优先的 SQLite 存储。支持多种 Code Agent，包括 Acme Agent、
-Claude Code、CodeX 以及任何兼容 ACP 协议的 Agent。
+多 Agent 的工作空间，采用本地优先的 SQLite 存储。支持多种 Code Agent，包括 Acmex、
+Claude Code、Codex 以及任何兼容 ACP 协议的 Agent。
 
 **核心功能：**
 - 多 Vault 项目管理，本地优先存储

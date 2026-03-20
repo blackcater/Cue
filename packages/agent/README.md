@@ -11,4 +11,4 @@ and managing code agents like Claude Code, Codex, and custom agents.
 - Message streaming and response handling
 - Built-in tools registry
 
-**Supported Agents:** Claude Code, Codex, CodeX, and ACP-compatible agents
+**Supported Agents:** Claude Code, Codex, and ACP-compatible agents

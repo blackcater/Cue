@@ -10,4 +10,4 @@
 - 消息流式传输和响应处理
 - 内置工具注册表
 
-**支持的 Agent：** Claude Code, Codex, CodeX 和 ACP 兼容 Agent
+**支持的 Agent：** Claude Code, Codex 和 ACP 兼容 Agent
