@@ -7,8 +7,8 @@
     "packages/*"
   ],
   "scripts": {
-    "dev:desktop": "bun run --filter='@acme-app/desktop' dev",
-    "dev:ios": "bun run --filter='@acme-app/mobile' ios"
+    "dev:desktop": "bun run --filter='@acme-ai-app/desktop' dev",
+    "dev:ios": "bun run --filter='@acme-ai-app/mobile' ios"
   },
   "devDependencies": {
     "@types/node": "22",

@@ -1,0 +1,82 @@
+现在想要开发一个基于 Electron 的本地优先、多智能体协作应用，叫做 Acme。
+
+## 多种智能体
+
+1. 通过 Agent Client Protocol 兼容主流智能体
+2. 通过 Agent SDK 支持 Claude Code 和 Codex 独有能提
+3. 支持自研的 Acmex（类似 OpenCode、Codex，但不与具体模型强绑定）
+
+## 本地优先
+
+Acme 提供类似的 Obsidian 的 Vault/Workspace 来管理内容。
+
+一个 Vault 可以添加多个项目，每个项目可以开多个 Thread。
+
+通过 Acme 应用可以管理配置：
+1. Provider 配置
+2. MCP 配置
+3. Skill 配置
+4. Thread/Session 配置和数据存储
+
+全局配置默认存储在 `~/.acme` 目录下。而某个 Vault 的配置默认存储在 `~/.acme/vault/<vaultId>` 目录下。
+
+## Thread
+
+一个 Thread 代表一个项目的会话实例，会话有三种：
+- Local 会话：直接在本地修改
+- Worktree 会话：使用 Git Worktree 创建一个 Worktree 之后在其中修改
+- Remote 会话：在远程服务器中克隆项目，然后修改
+
+## 多窗口
+
+Acme 支持开启多个窗口（BrowserWindow），同时管理多个 Vault。
+
+## 通信规范
+
+Electron 的 Main 进程和 Renderer 进程之间通信实现：
+- Renderer 调用 Main 使用 IPC
+- Main 流式向 Renderer 发送信息使用 MessageChannel
+
+因为整个 Agent Runtime 也可以完全运行在远端，通过 Websocket 方式对 Renderer 提供服务。所以通信规范需要兼容这种情况（薄客户端）
+
+## Agent Runtime
+
+Acme 支持多种智能体。因此与智能体交互的整个过程被封装为 Agent Runtime。
+
+这样，后续可以开发一个命令行工具，直接调用 Agent Runtime 来工作。
+
+---
+
+请根据上面的要求，在 docs/rfc 生成一系列的 RFC 文档。如果需要，也可以在 docs/adr 目录下生成一系列 ADR 文档。要保证开发者可以根据 RFC 文档序号从小到大一步步实现该系统，且每个 RFC 包含测试和验收要求。
+
+请先分析竞品和需求，确定相关主题。然后根据主题详细阅读相关文档和源码。最后书写文档内容。
+
+文档/源码介绍：
+- opencode 是一个 Code Agent CLI
+  - 文档目录：docs/anomalyco_opencode 和 docs/anomalyco_opencode_docs
+  - 源码目录：temp/opencode
+- pi-mono 是一个用于实现自定义 Agent 库
+  - 文档目录：docs/badlogic_pi-mono
+  - 源码目录：temp/pi-mono
+- mastra 是一个用于实现自定义 Agent 库
+  - 文档目录：docs/mastra-ai_mastra
+  - 源码目录：temp/mastra
+- vercel ai 是一个与主流 ai 交互的 sdk
+  - 文档目录：docs/vercel_ai
+  - 源码目录：temp/vercel_ai
+- AionUi 是一款基于 Electron 开发的多智能体应用，竞品
+  - 文档目录：docs/iOfficeAI_AionUi
+  - 源码目录：temp/AionUi
+- Craft Agents OSS 是一款基于 Electron 开发的多智能体应用，竞品
+  - 文档目录：docs/lukilabs_craft-agents-oss 和 docs/lukilabs_craft-agents-oss-cn
+  - 源码目录：temp/craft-agents-oss
+- Superset 是一款基于 Electron 开发的多智能体应用，竞品：
+  - 文档目录：docs/superset-sh_superset
+  - 源码目录：temp/superset
+
+代码要求：
+- 使用设计模式等，保证可扩展性
+- 保证代码简洁
+- 使用类、私有变量和方法遵循 `_a` 这样名称
+- 类型非常多，可以使用 namespace 组织
+- 文件和文件夹遵循 `name-x` 这样的命名规范

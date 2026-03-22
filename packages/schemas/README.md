@@ -1,6 +1,6 @@
-# @acme/schemas
+# @acme-ai/schemas
 
-`@acme/schemas` provides JSON Schema definitions for Acme configuration files
+`@acme-ai/schemas` provides JSON Schema definitions for Acme configuration files
 and data structures. Generated from TypeScript types, these schemas enable
 validation and IDE auto-completion.
 

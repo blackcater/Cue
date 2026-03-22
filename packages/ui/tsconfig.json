@@ -1,5 +1,5 @@
 {
-  "extends": "@acme/tsconfig/react-lib.json",
+  "extends": "@acme-ai/tsconfig/react-lib.json",
   "compilerOptions": {
     "baseUrl": "."
   },

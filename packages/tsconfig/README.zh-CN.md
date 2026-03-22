@@ -1,6 +1,6 @@
-# @acme/tsconfig
+# @acme-ai/tsconfig
 
-`@acme/tsconfig` 为 Acme monorepo 提供共享的 TypeScript 配置。它包含启用严格类型检查的
+`@acme-ai/tsconfig` 为 Acme monorepo 提供共享的 TypeScript 配置。它包含启用严格类型检查的
 基础配置、Node.js 目标设置和 React 特定预设。
 
 **配置：**

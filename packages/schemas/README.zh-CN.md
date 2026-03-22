@@ -1,6 +1,6 @@
-# @acme/schemas
+# @acme-ai/schemas
 
-`@acme/schemas` 提供 Acme 配置文件和数据结构的 JSON Schema 定义。从 TypeScript
+`@acme-ai/schemas` 提供 Acme 配置文件和数据结构的 JSON Schema 定义。从 TypeScript
 类型生成，支持验证和 IDE 自动补全。
 
 **Schema 类型：**

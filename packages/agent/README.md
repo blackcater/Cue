@@ -1,6 +1,6 @@
-# @acme/agent
+# @acme-ai/agent
 
-`@acme/agent` is the Agent Runtime core package that manages code agent
+`@acme-ai/agent` is the Agent Runtime core package that manages code agent
 lifecycles. It provides a unified interface for spawning, communicating with,
 and managing code agents like Claude Code, Codex, and custom agents.
 

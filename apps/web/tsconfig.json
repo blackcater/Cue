@@ -1,5 +1,5 @@
 {
-  "extends": "@acme/tsconfig/next.json",
+  "extends": "@acme-ai/tsconfig/next.json",
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {

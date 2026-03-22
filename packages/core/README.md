@@ -1,6 +1,6 @@
-# @acme/core
+# @acme-ai/core
 
-`@acme/core` provides the foundational types, interfaces, and utilities used
+`@acme-ai/core` provides the foundational types, interfaces, and utilities used
 across all Acme packages and applications. It defines core concepts like Vault,
 Project, Thread, Agent, and Message data structures.
 

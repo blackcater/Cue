@@ -29,7 +29,7 @@
         "groupName": "expo"
       },
       {
-        "elementNamePattern": ["@acme/*"],
+        "elementNamePattern": ["@acme-ai/*"],
         "groupName": "acme"
       }
     ],

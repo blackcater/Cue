@@ -1,1 +1,1 @@
-# @acme/shared
+# @acme-ai/shared

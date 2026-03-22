@@ -1,5 +1,5 @@
 {
-  "name": "@acme-app/api-server",
+  "name": "@acme-ai-app/api-server",
   "version": "0.1.0",
   "private": true,
   "scripts": {},
@@ -7,7 +7,7 @@
     "elysia": "^1.4.28"
   },
   "devDependencies": {
-    "@acme/tsconfig": "workspace:*",
+    "@acme-ai/tsconfig": "workspace:*",
     "@types/bun": "^1.3.11",
     "typescript": "^5.9.3"
   }

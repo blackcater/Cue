@@ -1,6 +1,6 @@
-# @acme/acp
+# @acme-ai/acp
 
-`@acme/acp` implements the Agent Client Protocol (ACP), a JSON-RPC-based
+`@acme-ai/acp` implements the Agent Client Protocol (ACP), a JSON-RPC-based
 protocol for communicating with external code agents. It provides transport
 layers (STDIO, WebSocket) and a bridge for connecting ACP-compatible agents.
 

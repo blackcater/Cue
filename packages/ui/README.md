@@ -1,6 +1,6 @@
-# @acme/ui
+# @acme-ai/ui
 
-`@acme/ui` is a cross-platform React component library that provides
+`@acme-ai/ui` is a cross-platform React component library that provides
 consistent UI primitives for all Acme applications. Built on Radix UI with
 custom theming.
 

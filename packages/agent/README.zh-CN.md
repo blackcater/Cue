@@ -1,6 +1,6 @@
-# @acme/agent
+# @acme-ai/agent
 
-`@acme/agent` 是 Agent Runtime 核心包，管理代码 Agent 的生命周期。它提供统一接口用于
+`@acme-ai/agent` 是 Agent Runtime 核心包，管理代码 Agent 的生命周期。它提供统一接口用于
 启动、通信和管理代码 Agent，如 Claude Code、Codex 和自定义 Agent。
 
 **核心功能：**

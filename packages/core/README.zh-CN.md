@@ -1,6 +1,6 @@
-# @acme/core
+# @acme-ai/core
 
-`@acme/core` 提供所有 Acme 包和应用程序使用的基础类型、接口和工具函数。它定义了核心概念的
+`@acme-ai/core` 提供所有 Acme 包和应用程序使用的基础类型、接口和工具函数。它定义了核心概念的
 数据结构，包括 Vault、Project、Thread、Agent 和 Message。
 
 **核心导出：**

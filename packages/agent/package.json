@@ -1,5 +1,5 @@
 {
-  "name": "@acme/agent",
+  "name": "@acme-ai/agent",
   "version": "0.1.0",
   "private": true,
   "exports": {
@@ -15,7 +15,7 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
-    "@acme/tsconfig": "workspace:*",
+    "@acme-ai/tsconfig": "workspace:*",
     "@types/bun": "^1.3.11",
     "@types/node": "22",
     "typescript": "^5.9.3"

@@ -1,5 +1,5 @@
 {
-  "extends": "@acme/tsconfig/electron.json",
+  "extends": "@acme-ai/tsconfig/electron.json",
   "compilerOptions": {
     "baseUrl": ".",
     "types": ["electron-vite/node"],

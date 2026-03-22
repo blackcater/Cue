@@ -1,11 +1,11 @@
 {
-  "name": "@acme-app/cli",
+  "name": "@acme-ai-app/cli",
   "version": "0.1.0",
   "private": true,
   "scripts": {},
   "dependencies": {},
   "devDependencies": {
-    "@acme/tsconfig": "workspace:*",
+    "@acme-ai/tsconfig": "workspace:*",
     "@types/bun": "^1.3.11",
     "typescript": "^5.9.3"
   }

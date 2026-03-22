@@ -1,6 +1,6 @@
-# @acme/ui
+# @acme-ai/ui
 
-`@acme/ui` 是一个跨平台的 React 组件库，为所有 Acme 应用程序提供一致的 UI 组件。基于
+`@acme-ai/ui` 是一个跨平台的 React 组件库，为所有 Acme 应用程序提供一致的 UI 组件。基于
 Radix UI 构建，带有自定义主题系统。
 
 **核心功能：**

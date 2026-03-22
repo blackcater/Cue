@@ -11,11 +11,10 @@
 - **v1.8**: 支持 Terminal。
 - **v1.9**: 支持 Browser。
 - **v1.10**: 支持 Preview。
+- **v1.11**：支持 Plugin SDK，可以扩展应用功能。
 - **v2.0**: 第一方支持 Claude Code 和 Codex。
 - **v3.0**：支持自己开发的 Code Agent：Acmex。
-- **v4.0**：支持 plugin sdk，用户可实现自定义 agent。
-- **v4.1**：看板？
-- **v4.2**：Wiki？
+- **v4.0**：支持看板？Wiki？
 - **v5.0**：cli 功能、远程 Agent。
 - **v6.0**：支持集成 OpenClaw。以及提供集成各种 Channel。
 - **v7.0**：支持 Integration 能力，包括：Github、Slack、Linear、Stripe、Vercel、Supabase、Upstash 等等。
@@ -32,7 +31,7 @@
   - tray
   - 弹出窗口（可置顶）
   - 菜单栏
-  - IPC、MessageChannel 通信封装
+  - IPC、MessageChannel（本地）/Websocket（远端）通信封装
   - pty 子进程管理
   - 更新
   - 通知

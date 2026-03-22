@@ -1,6 +1,6 @@
-# @acme/acp
+# @acme-ai/acp
 
-`@acme/acp` 实现了 Agent Client Protocol (ACP)，一种基于 JSON-RPC 的外部代码 Agent
+`@acme-ai/acp` 实现了 Agent Client Protocol (ACP)，一种基于 JSON-RPC 的外部代码 Agent
 通信协议。它提供传输层 (STDIO, WebSocket) 和用于连接 ACP 兼容 Agent 的桥接。
 
 **核心功能：**
