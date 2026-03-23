@@ -11,7 +11,7 @@ export class SkillRunner {
 	}
 
 	/**
-	 * 加载 Skills
+	 * Load Skills
 	 */
 	async loadSkills(skillsPath: string): Promise<Skill[]> {
 		const skills = await this._loader.loadSkills(skillsPath)

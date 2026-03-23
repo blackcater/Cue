@@ -10,7 +10,7 @@ export class PluginRunner {
 	}
 
 	/**
-	 * 加载 Plugins
+	 * Load Plugins
 	 */
 	async loadPlugins(pluginsPath: string): Promise<Plugin[]> {
 		const plugins = await this._loader.loadPlugins(pluginsPath)
@@ -21,7 +21,7 @@ export class PluginRunner {
 	}
 
 	/**
-	 * 启用 Plugin
+	 * Enable Plugin
 	 */
 	async enablePlugin(id: string): Promise<void> {
 		const plugin = this._plugins.get(id)
@@ -32,7 +32,7 @@ export class PluginRunner {
 	}
 
 	/**
-	 * 禁用 Plugin
+	 * Disable Plugin
 	 */
 	async disablePlugin(id: string): Promise<void> {
 		const plugin = this._plugins.get(id)
@@ -43,14 +43,14 @@ export class PluginRunner {
 	}
 
 	/**
-	 * 获取 Plugin
+	 * Get Plugin
 	 */
 	getPlugin(id: string): Plugin | undefined {
 		return this._plugins.get(id)
 	}
 
 	/**
-	 * 列出所有 Plugins
+	 * List all Plugins
 	 */
 	listPlugins(): Plugin[] {
 		return Array.from(this._plugins.values())

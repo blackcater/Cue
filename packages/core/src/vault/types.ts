@@ -18,7 +18,7 @@ export interface VaultSettings {
 }
 
 /**
- * Vault 类型定义
+ * Vault type definition
  */
 export interface VaultType {
 	id: string
@@ -33,6 +33,6 @@ export interface VaultConfig {
 	agents?: string[]
 	plugins?: string[]
 	commands?: string[]
-	// 覆盖全局配置
+	// Override global configuration
 	[key: string]: unknown
 }

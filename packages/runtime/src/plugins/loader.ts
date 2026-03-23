@@ -7,7 +7,7 @@ export class PluginLoader {
 	constructor() {}
 
 	/**
-	 * 加载目录下的所有 Plugins
+	 * Load all Plugins in the directory
 	 */
 	async loadPlugins(pluginsPath: string): Promise<Plugin[]> {
 		const plugins: Plugin[] = []
@@ -30,7 +30,7 @@ export class PluginLoader {
 				plugins.push(plugin)
 			}
 		} catch {
-			// 目录不存在
+			// Directory does not exist
 		}
 
 		return plugins

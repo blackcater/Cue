@@ -4,8 +4,8 @@ import type { AgentMessage } from '@acme-ai/core'
 import { AgentBase } from '../base/agent-base'
 
 /**
- * Acmex Agent 配置
- * 基于 vercel/ai + 仿 pi-mono 实现
+ * Acmex Agent Configuration
+ * Based on vercel/ai and pi-mono implementation
  */
 export interface AcmexAgentConfig {
 	id?: string
@@ -18,7 +18,7 @@ export interface AcmexAgentConfig {
 
 /**
  * Acmex Agent
- * 自研 Agent，模型访问使用 vercel/ai
+ * Self-developed Agent, uses vercel/ai for model access
  */
 export class AcmexAgent extends AgentBase {
 	private _config: AcmexAgentConfig
@@ -47,8 +47,8 @@ export class AcmexAgent extends AgentBase {
 			message: userMessage,
 		})
 
-		// TODO: 集成 vercel/ai 实现
-		// 参考 pi-mono 的 agent-loop.ts 实现
-		// 使用 streamSimple 或类似 API
+		// TODO: Integrate vercel/ai implementation
+		// Reference pi-mono's agent-loop.ts implementation
+		// Use streamSimple or similar API
 	}
 }

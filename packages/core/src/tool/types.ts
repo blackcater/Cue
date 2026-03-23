@@ -26,7 +26,7 @@ export interface ToolResult {
 }
 
 /**
- * Tool 类型定义
+ * Tool type definition
  */
 export interface ToolType {
 	name: string

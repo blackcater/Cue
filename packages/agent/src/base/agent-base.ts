@@ -1,14 +1,12 @@
-// packages/agent/src/base/agent-base.ts
-
 import type { IAgent, AgentEvent, AgentType } from '@acme-ai/core'
 
 /**
- * Agent 事件处理器类型
+ * Agent event handler type
  */
 type AgentEventHandler = (event: AgentEvent) => void
 
 /**
- * Agent 基类，实现通用逻辑
+ * Agent base class, implements common logic
  */
 export abstract class AgentBase implements IAgent {
 	readonly id: string
@@ -29,7 +27,7 @@ export abstract class AgentBase implements IAgent {
 	}
 
 	/**
-	 * 启动 Agent
+	 * Start the Agent
 	 */
 	async start(): Promise<void> {
 		if (this._started) return
@@ -38,7 +36,7 @@ export abstract class AgentBase implements IAgent {
 	}
 
 	/**
-	 * 停止 Agent
+	 * Stop the Agent
 	 */
 	async stop(): Promise<void> {
 		if (!this._started) return
@@ -47,13 +45,13 @@ export abstract class AgentBase implements IAgent {
 	}
 
 	/**
-	 * 发送消息 - 子类实现
+	 * Send a message - implemented by subclass
 	 */
 	abstract sendMessage(content: string): Promise<void>
 
 	/**
-	 * 订阅事件
-	 * @returns 取消订阅函数
+	 * Subscribe to events
+	 * @returns Unsubscribe function
 	 */
 	onEvent(handler: AgentEventHandler): () => void {
 		this._handlers.add(handler)
@@ -63,7 +61,7 @@ export abstract class AgentBase implements IAgent {
 	}
 
 	/**
-	 * 发送事件给所有订阅者
+	 * Send event to all subscribers
 	 */
 	protected _emit(event: AgentEvent): void {
 		for (const handler of this._handlers) {

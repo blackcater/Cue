@@ -1,16 +1,16 @@
 export type AgentEvent =
-	// Agent 生命周期
+	// Agent lifecycle
 	| { type: 'agent_start' }
 	| { type: 'agent_end' }
 	| { type: 'agent_error'; error: string }
-	// Turn 生命周期
+	// Turn lifecycle
 	| { type: 'turn_start' }
 	| { type: 'turn_end' }
-	// 消息生命周期
+	// Message lifecycle
 	| { type: 'message_start'; message: AgentMessage }
 	| { type: 'message_update'; message: AgentMessage; delta: string }
 	| { type: 'message_end'; message: AgentMessage }
-	// Tool 执行生命周期
+	// Tool execution lifecycle
 	| {
 			type: 'tool_execution_start'
 			toolCallId: string

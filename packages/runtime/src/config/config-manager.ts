@@ -17,7 +17,7 @@ export class ConfigManager {
 	}
 
 	/**
-	 * 获取全局配置
+	 * Get global settings
 	 */
 	async getGlobalSettings(): Promise<GlobalSettings> {
 		if (this._globalSettings) {
@@ -40,7 +40,7 @@ export class ConfigManager {
 	}
 
 	/**
-	 * 保存全局配置
+	 * Save global settings
 	 */
 	async saveGlobalSettings(settings: GlobalSettings): Promise<void> {
 		const settingsPath = join(this._homeDir, 'settings.json')
@@ -54,7 +54,7 @@ export class ConfigManager {
 	}
 
 	/**
-	 * 获取 Vault 配置
+	 * Get Vault settings
 	 */
 	async getVaultSettings(vaultId: string): Promise<VaultSettings> {
 		if (this._vaultSettings.has(vaultId)) {
@@ -75,7 +75,7 @@ export class ConfigManager {
 	}
 
 	/**
-	 * 保存 Vault 配置
+	 * Save Vault settings
 	 */
 	async saveVaultSettings(
 		vaultId: string,
@@ -93,7 +93,7 @@ export class ConfigManager {
 	}
 
 	/**
-	 * 获取合并后的配置（Vault 配置覆盖全局配置）
+	 * Get merged settings (Vault settings override global settings)
 	 */
 	async getMergedSettings(
 		vaultId: string

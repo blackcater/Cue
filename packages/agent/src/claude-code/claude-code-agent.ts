@@ -1,12 +1,9 @@
-// packages/agent/src/claude-code/claude-code-agent.ts
-
 import { AgentType } from '@acme-ai/core'
-import type { AgentMessage } from '@acme-ai/core'
 
 import { AgentBase } from '../base/agent-base'
 
 /**
- * Claude Code Agent 配置
+ * Claude Code Agent Configuration
  */
 export interface ClaudeCodeAgentConfig {
 	id?: string
@@ -16,7 +13,7 @@ export interface ClaudeCodeAgentConfig {
 
 /**
  * Claude Code Agent
- * 基于 Claude Code Agent SDK 实现
+ * Based on Claude Code Agent SDK implementation
  */
 export class ClaudeCodeAgent extends AgentBase {
 	private _config: ClaudeCodeAgentConfig
@@ -43,9 +40,9 @@ export class ClaudeCodeAgent extends AgentBase {
 			},
 		})
 
-		// TODO: 集成 Claude Code Agent SDK
-		// 这里需要根据 SDK 的实际 API 实现
-		// 示例伪代码：
+		// TODO: Integrate Claude Code Agent SDK
+		// This needs to be implemented based on the actual SDK API
+		// Example pseudocode:
 		// const session = await claudeCode.createSession({
 		//   workingDirectory: this._config.workingDirectory,
 		// })

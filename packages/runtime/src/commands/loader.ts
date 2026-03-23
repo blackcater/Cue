@@ -7,7 +7,7 @@ export class CommandLoader {
 	constructor() {}
 
 	/**
-	 * 加载目录下的所有 Commands
+	 * Load all Commands in the directory
 	 */
 	async loadCommands(commandsPath: string): Promise<Command[]> {
 		const commands: Command[] = []
@@ -30,7 +30,7 @@ export class CommandLoader {
 				commands.push(command)
 			}
 		} catch {
-			// 目录不存在
+			// Directory does not exist
 		}
 
 		return commands

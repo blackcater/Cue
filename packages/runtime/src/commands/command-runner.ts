@@ -10,7 +10,7 @@ export class CommandRunner {
 	}
 
 	/**
-	 * 加载 Commands
+	 * Load Commands
 	 */
 	async loadCommands(commandsPath: string): Promise<Command[]> {
 		const commands = await this._loader.loadCommands(commandsPath)
@@ -21,7 +21,7 @@ export class CommandRunner {
 	}
 
 	/**
-	 * 执行 Command
+	 * Execute Command
 	 */
 	async execute(name: string, args: string[] = []): Promise<string> {
 		const command = this._commands.get(name)
@@ -32,14 +32,14 @@ export class CommandRunner {
 	}
 
 	/**
-	 * 获取 Command
+	 * Get Command
 	 */
 	getCommand(name: string): Command | undefined {
 		return this._commands.get(name)
 	}
 
 	/**
-	 * 列出所有 Commands
+	 * List all Commands
 	 */
 	listCommands(): Command[] {
 		return Array.from(this._commands.values())

@@ -7,7 +7,7 @@ export class SkillLoader {
 	constructor() {}
 
 	/**
-	 * 加载目录下的所有 Skills
+	 * Load all Skills in the directory
 	 */
 	async loadSkills(skillsPath: string): Promise<Skill[]> {
 		const skills: Skill[] = []
@@ -22,7 +22,7 @@ export class SkillLoader {
 				const manifestPath = join(skillPath, 'SKILL.md')
 
 				try {
-					// 验证 SKILL.md 是否存在
+					// Check if SKILL.md exists
 					await readFile(manifestPath, 'utf-8')
 
 					const skill: Skill = {
@@ -35,18 +35,18 @@ export class SkillLoader {
 
 					skills.push(skill)
 				} catch {
-					// 跳过无效的 Skill
+					// Skip invalid Skill
 				}
 			}
 		} catch {
-			// 目录不存在，返回空数组
+			// Directory does not exist, return empty array
 		}
 
 		return skills
 	}
 
 	/**
-	 * 加载单个 Skill 的 Manifest
+	 * Load a single Skill's Manifest
 	 */
 	async loadManifest(skillPath: string): Promise<SkillManifest | null> {
 		const manifestPath = join(skillPath, 'SKILL.md')

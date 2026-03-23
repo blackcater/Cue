@@ -9,14 +9,14 @@ export class McpRunner {
 	constructor() {}
 
 	/**
-	 * 添加 MCP Server
+	 * Add MCP Server
 	 */
 	addServer(server: McpServer): void {
 		this._servers.set(server.id, server)
 	}
 
 	/**
-	 * 启动 MCP Server
+	 * Start MCP Server
 	 */
 	async startServer(id: string): Promise<void> {
 		const server = this._servers.get(id)
@@ -36,7 +36,7 @@ export class McpRunner {
 	}
 
 	/**
-	 * 停止 MCP Server
+	 * Stop MCP Server
 	 */
 	async stopServer(id: string): Promise<void> {
 		const server = this._servers.get(id)
@@ -53,21 +53,21 @@ export class McpRunner {
 	}
 
 	/**
-	 * 获取 Server
+	 * Get Server
 	 */
 	getServer(id: string): McpServer | undefined {
 		return this._servers.get(id)
 	}
 
 	/**
-	 * 列出所有 Servers
+	 * List all Servers
 	 */
 	listServers(): McpServer[] {
 		return Array.from(this._servers.values())
 	}
 
 	/**
-	 * 列出所有运行中的 Servers
+	 * List all running Servers
 	 */
 	listRunningServers(): McpServer[] {
 		return this.listServers().filter((s) => s.running)

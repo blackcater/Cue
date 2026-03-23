@@ -1,12 +1,9 @@
-// packages/agent/src/codex/codex-agent.ts
-
 import { AgentType } from '@acme-ai/core'
-import type { AgentMessage } from '@acme-ai/core'
 
 import { AgentBase } from '../base/agent-base'
 
 /**
- * Codex Agent 配置
+ * Codex Agent Configuration
  */
 export interface CodexAgentConfig {
 	id?: string
@@ -17,7 +14,7 @@ export interface CodexAgentConfig {
 
 /**
  * Codex Agent
- * 基于 OpenAI Agent SDK 实现
+ * Based on OpenAI Agent SDK implementation
  */
 export class CodexAgent extends AgentBase {
 	private _config: CodexAgentConfig
@@ -44,7 +41,7 @@ export class CodexAgent extends AgentBase {
 			},
 		})
 
-		// TODO: 集成 OpenAI Agent SDK
-		// 这里需要根据 SDK 的实际 API 实现
+		// TODO: Integrate OpenAI Agent SDK
+		// This needs to be implemented based on the actual SDK API
 	}
 }

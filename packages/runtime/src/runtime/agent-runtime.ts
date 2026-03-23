@@ -1,5 +1,3 @@
-// packages/runtime/src/runtime/agent-runtime.ts
-
 import type { IAgent } from '@acme-ai/core'
 
 import { CommandRunner } from '../commands/command-runner'
@@ -16,7 +14,7 @@ export class AgentRuntime {
 	private _threads: Map<string, ThreadRuntime> = new Map()
 	private _started = false
 
-	// 扩展运行时
+	// Runtime extensions
 	readonly skills: SkillRunner
 	readonly commands: CommandRunner
 	readonly plugins: PluginRunner
@@ -40,28 +38,28 @@ export class AgentRuntime {
 	}
 
 	/**
-	 * 启动 Runtime
+	 * Start Runtime
 	 */
 	async start(): Promise<void> {
 		if (this._started) return
 		this._started = true
 
-		// 加载全局扩展
+		// Load global extensions
 		const settings = await this._configManager.getGlobalSettings()
 
-		// 加载 Skills
+		// Load Skills
 		const globalSkillsPath = `${this._config.homeDir}/skills`
 		await this.skills.loadSkills(globalSkillsPath)
 
-		// 加载 Commands
+		// Load Commands
 		const globalCommandsPath = `${this._config.homeDir}/commands`
 		await this.commands.loadCommands(globalCommandsPath)
 
-		// 加载 Plugins
+		// Load Plugins
 		const globalPluginsPath = `${this._config.homeDir}/plugins`
 		await this.plugins.loadPlugins(globalPluginsPath)
 
-		// 加载 MCP Servers
+		// Load MCP Servers
 		if (settings.mcpServers) {
 			for (const server of settings.mcpServers) {
 				this.mcp.addServer({
@@ -77,23 +75,23 @@ export class AgentRuntime {
 	}
 
 	/**
-	 * 停止 Runtime
+	 * Stop Runtime
 	 */
 	async stop(): Promise<void> {
 		if (!this._started) return
 
-		// 停止所有 MCP Servers
+		// Stop all MCP Servers
 		for (const server of this.mcp.listRunningServers()) {
 			await this.mcp.stopServer(server.id)
 		}
 
-		// 停止所有线程
+		// Stop all threads
 		for (const thread of this._threads.values()) {
 			await thread.agent.stop()
 		}
 		this._threads.clear()
 
-		// 停止所有 Agent
+		// Stop all Agents
 		for (const agent of this._agents.values()) {
 			await agent.stop()
 		}
@@ -103,35 +101,35 @@ export class AgentRuntime {
 	}
 
 	/**
-	 * 注册 Agent
+	 * Register Agent
 	 */
 	registerAgent(agent: IAgent): void {
 		this._agents.set(agent.id, agent)
 	}
 
 	/**
-	 * 注销 Agent
+	 * Unregister Agent
 	 */
 	unregisterAgent(agentId: string): void {
 		this._agents.delete(agentId)
 	}
 
 	/**
-	 * 获取 Agent
+	 * Get Agent
 	 */
 	getAgent(agentId: string): IAgent | undefined {
 		return this._agents.get(agentId)
 	}
 
 	/**
-	 * 列出所有 Agent
+	 * List all Agents
 	 */
 	listAgents(): IAgent[] {
 		return Array.from(this._agents.values())
 	}
 
 	/**
-	 * 创建 Thread
+	 * Create Thread
 	 */
 	createThread(vaultId: string, agentId: string): string {
 		const agent = this._agents.get(agentId)
@@ -151,14 +149,14 @@ export class AgentRuntime {
 	}
 
 	/**
-	 * 获取 Thread
+	 * Get Thread
 	 */
 	getThread(threadId: string): ThreadRuntime | undefined {
 		return this._threads.get(threadId)
 	}
 
 	/**
-	 * 发送消息到 Thread
+	 * Send message to Thread
 	 */
 	async sendMessage(threadId: string, content: string): Promise<void> {
 		const thread = this._threads.get(threadId)
@@ -170,7 +168,7 @@ export class AgentRuntime {
 	}
 
 	/**
-	 * 销毁 Thread
+	 * Destroy Thread
 	 */
 	async destroyThread(threadId: string): Promise<void> {
 		const thread = this._threads.get(threadId)

@@ -1,7 +1,7 @@
 import type { AgentEvent } from './events'
 
 /**
- * Agent 类型枚举
+ * Agent type enumeration
  */
 export enum AgentType {
 	ClaudeCode = 'claude-code',
@@ -10,7 +10,7 @@ export enum AgentType {
 }
 
 /**
- * Agent 模式
+ * Agent mode
  */
 export interface AgentMode {
 	value: string
@@ -19,29 +19,29 @@ export interface AgentMode {
 }
 
 /**
- * 统一的 Agent 接口
- * 所有 Agent 实现必须实现此接口
+ * Unified Agent interface
+ * All Agent implementations must implement this interface
  */
 export interface IAgent {
 	readonly id: string
 	readonly name: string
 	readonly type: AgentType
 
-	/** 启动 Agent */
+	/** Start the Agent */
 	start(): Promise<void>
 
-	/** 停止 Agent */
+	/** Stop the Agent */
 	stop(): Promise<void>
 
-	/** 发送消息 */
+	/** Send a message */
 	sendMessage(content: string): Promise<void>
 
-	/** 订阅事件 */
+	/** Subscribe to events */
 	onEvent(handler: (event: AgentEvent) => void): () => void
 }
 
 /**
- * Agent 配置
+ * Agent configuration
  */
 export interface AgentConfig {
 	id?: string
@@ -52,7 +52,7 @@ export interface AgentConfig {
 }
 
 /**
- * 扩展现有 Agent 接口
+ * Extended Agent interface
  */
 export interface Agent {
 	id: string

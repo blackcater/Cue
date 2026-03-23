@@ -12,7 +12,7 @@ export interface Skill {
 }
 
 /**
- * Skill Manifest 类型定义
+ * Skill Manifest type definition
  */
 export interface SkillType {
 	id: string
