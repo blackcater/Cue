@@ -1,5 +1,11 @@
+// packages/runtime/src/runtime/agent-runtime.ts
+
 import type { IAgent, AgentEvent, AgentType, AgentConfig } from '@acme-ai/core'
 import { ConfigManager } from '../config/config-manager'
+import { SkillRunner } from '../skills/skill-runner'
+import { CommandRunner } from '../commands/command-runner'
+import { PluginRunner } from '../plugins/plugin-runner'
+import { McpRunner } from '../mcp/mcp-runner'
 import type { RuntimeConfig, ThreadRuntime } from './types'
 
 export class AgentRuntime {
@@ -9,9 +15,19 @@ export class AgentRuntime {
   private _threads: Map<string, ThreadRuntime> = new Map()
   private _started = false
 
+  // 扩展运行时
+  readonly skills: SkillRunner
+  readonly commands: CommandRunner
+  readonly plugins: PluginRunner
+  readonly mcp: McpRunner
+
   constructor(config: RuntimeConfig) {
     this._config = config
     this._configManager = new ConfigManager(config.homeDir)
+    this.skills = new SkillRunner()
+    this.commands = new CommandRunner()
+    this.plugins = new PluginRunner()
+    this.mcp = new McpRunner()
   }
 
   get configManager(): ConfigManager {
@@ -28,6 +44,35 @@ export class AgentRuntime {
   async start(): Promise<void> {
     if (this._started) return
     this._started = true
+
+    // 加载全局扩展
+    const settings = await this._configManager.getGlobalSettings()
+
+    // 加载 Skills
+    const globalSkillsPath = `${this._config.homeDir}/skills`
+    await this.skills.loadSkills(globalSkillsPath)
+
+    // 加载 Commands
+    const globalCommandsPath = `${this._config.homeDir}/commands`
+    await this.commands.loadCommands(globalCommandsPath)
+
+    // 加载 Plugins
+    const globalPluginsPath = `${this._config.homeDir}/plugins`
+    await this.plugins.loadPlugins(globalPluginsPath)
+
+    // 加载 MCP Servers
+    if (settings.mcpServers) {
+      for (const server of settings.mcpServers) {
+        this.mcp.addServer({
+          id: server.name,
+          name: server.name,
+          command: server.command,
+          args: server.args,
+          env: server.env,
+          running: false,
+        })
+      }
+    }
   }
 
   /**
@@ -35,6 +80,11 @@ export class AgentRuntime {
    */
   async stop(): Promise<void> {
     if (!this._started) return
+
+    // 停止所有 MCP Servers
+    for (const server of this.mcp.listRunningServers()) {
+      await this.mcp.stopServer(server.id)
+    }
 
     // 停止所有线程
     for (const thread of this._threads.values()) {
