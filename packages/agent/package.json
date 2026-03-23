@@ -3,7 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./acmex": "./src/acmex/index.ts",
+    "./claude-code": "./src/claude-code/index.ts",
+    "./codex": "./src/codex/index.ts"
   },
   "scripts": {
     "test": "bun test",
@@ -12,8 +15,8 @@
   "dependencies": {
     "@acme-ai/core": "workspace:*",
     "@anthropic-ai/claude-agent-sdk": "^0.2.81",
-    "@openai/agents": "^0.7.2",
-    "ai": "^4.3.6",
+    "@openai/agents": "^0.8.0",
+    "ai": "^6.0.134",
     "zod": "^4.3.6"
   },
   "devDependencies": {
