@@ -48,13 +48,20 @@ app.whenReady().then(() => {
 	// Create the main window
 	windowManager.createWindow()
 	mainLog.info('Main window created')
+}).catch((error) => {
+	mainLog.error('Failed to initialize app:', error)
+	app.quit()
 })
 
 app.on('window-all-closed', () => {
 	// Stop all agents before quitting
 	if (runtime) {
-		runtime.stopAllAgents()
-		mainLog.info('All agents stopped')
+		try {
+			runtime.stopAllAgents()
+			mainLog.info('All agents stopped')
+		} catch (error) {
+			mainLog.error('Error stopping agents:', error)
+		}
 	}
 	app.quit()
 })
