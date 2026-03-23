@@ -96,8 +96,8 @@ export function ChatMessages({ threadId }: Readonly<ChatMessagesProps>): React.J
 							<div
 								className={`max-w-[80%] rounded-2xl px-4 py-2 ${
 									isUser
-										? 'rounded-tl-sm bg-blue-500 text-white'
-										: 'rounded-tr-sm bg-green-100 text-gray-900'
+										? 'rounded-none rounded-tr-2xl rounded-br-2xl bg-blue-500 text-white'
+										: 'rounded-tl-2xl rounded-bl-2xl rounded-tr-none bg-green-100 text-gray-900'
 								}`}
 							>
 								<p className="whitespace-pre-wrap break-words">{message.content}</p>

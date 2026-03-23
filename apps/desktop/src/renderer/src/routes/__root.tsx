@@ -14,7 +14,7 @@ export function RootComponent(): React.JSX.Element {
 	return (
 		<div className="flex h-screen">
 			{/* Left Sidebar */}
-			<aside className="flex h-full w-64 flex-col border-r border-border bg-sidebar">
+			<aside className="flex h-full w-[260px] flex-col border-r border-border bg-sidebar">
 				{/* Vault Selector */}
 				<div className="border-b border-border p-3">
 					<VaultSelector selectedVaultId={vaultId} onVaultSelect={setVaultId} />
