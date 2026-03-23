@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 
 import type { Project, Thread } from '@/shared/ipc/types'
+
 import { ThreadItem } from './ThreadItem'
 
 interface ProjectTreeProps {
@@ -19,8 +20,12 @@ export function ProjectTree({
 	onThreadSelect,
 }: Readonly<ProjectTreeProps>): React.JSX.Element {
 	const [projects, setProjects] = useState<Project[]>([])
-	const [threadsByProject, setThreadsByProject] = useState<Record<string, Thread[]>>({})
-	const [expandedProjects, setExpandedProjects] = useState<Set<string>>(new Set())
+	const [threadsByProject, setThreadsByProject] = useState<
+		Record<string, Thread[]>
+	>({})
+	const [expandedProjects, setExpandedProjects] = useState<Set<string>>(
+		new Set()
+	)
 	const [isLoading, setIsLoading] = useState(true)
 
 	useEffect(() => {
@@ -32,14 +37,25 @@ export function ProjectTree({
 	async function loadProjects(): Promise<void> {
 		setIsLoading(true)
 		try {
-			const result = await window.api.invoke<Project[]>('project:list', { vaultId })
+			const result = await window.api.invoke<Project[]>('project:list', {
+				vaultId,
+			})
 			setProjects(result)
 
-			// Load threads for each project
+			// Load threads for each project in parallel
 			const threadsMap: Record<string, Thread[]> = {}
-			for (const project of result) {
-				const threads = await window.api.invoke<Thread[]>('thread:list', { projectId: project.id })
-				threadsMap[project.id] = threads
+			const threadPromises = result.map(
+				async (project): Promise<[string, Thread[]]> => {
+					const threads = await window.api.invoke<Thread[]>(
+						'thread:list',
+						{ projectId: project.id }
+					)
+					return [project.id, threads]
+				}
+			)
+			const threadResults = await Promise.all(threadPromises)
+			for (const [projectId, threads] of threadResults) {
+				threadsMap[projectId] = threads
 			}
 			setThreadsByProject(threadsMap)
 		} catch (error) {
@@ -75,7 +91,7 @@ export function ProjectTree({
 
 	if (!vaultId) {
 		return (
-			<div className="px-3 py-2 text-sm text-muted-foreground">
+			<div className="text-muted-foreground px-3 py-2 text-sm">
 				Select a vault to view projects
 			</div>
 		)
@@ -83,13 +99,17 @@ export function ProjectTree({
 
 	if (isLoading) {
 		return (
-			<div className="px-3 py-2 text-sm text-muted-foreground">Loading...</div>
+			<div className="text-muted-foreground px-3 py-2 text-sm">
+				Loading...
+			</div>
 		)
 	}
 
 	if (projects.length === 0) {
 		return (
-			<div className="px-3 py-2 text-sm text-muted-foreground">No projects found</div>
+			<div className="text-muted-foreground px-3 py-2 text-sm">
+				No projects found
+			</div>
 		)
 	}
 
@@ -105,7 +125,7 @@ export function ProjectTree({
 						<button
 							type="button"
 							onClick={() => toggleProject(project.id)}
-							className="flex h-8 w-full items-center gap-2 px-3 text-sm hover:bg-accent"
+							className="hover:bg-accent flex h-8 w-full items-center gap-2 px-3 text-sm"
 						>
 							<svg
 								className={`h-4 w-4 transition-transform ${isExpanded ? 'rotate-90' : ''}`}
@@ -120,28 +140,42 @@ export function ProjectTree({
 									d="M9 5l7 7-7 7"
 								/>
 							</svg>
-							<span className="truncate font-medium">{project.name}</span>
+							<span className="truncate font-medium">
+								{project.name}
+							</span>
 						</button>
 
 						{isExpanded && (
 							<div className="ml-4">
-								{Object.entries(groupedThreads).map(([folderId, folderThreads]) => (
-									<div key={folderId} className="space-y-0.5">
-										{folderId !== 'undefined' && (
-											<div className="px-3 py-1 text-xs font-semibold text-muted-foreground uppercase">
-												{folderId}
-											</div>
-										)}
-										{folderThreads.map((thread) => (
-											<ThreadItem
-												key={thread.id}
-												thread={thread}
-												isSelected={thread.id === selectedThreadId}
-												onClick={() => onThreadSelect(thread.id)}
-											/>
-										))}
-									</div>
-								))}
+								{Object.entries(groupedThreads).map(
+									([folderId, folderThreads]) => (
+										<div
+											key={folderId}
+											className="space-y-0.5"
+										>
+											{folderId !== 'undefined' && (
+												<div className="text-muted-foreground px-3 py-1 text-xs font-semibold uppercase">
+													{folderId}
+												</div>
+											)}
+											{folderThreads.map((thread) => (
+												<ThreadItem
+													key={thread.id}
+													thread={thread}
+													isSelected={
+														thread.id ===
+														selectedThreadId
+													}
+													onClick={() =>
+														onThreadSelect(
+															thread.id
+														)
+													}
+												/>
+											))}
+										</div>
+									)
+								)}
 							</div>
 						)}
 					</div>
