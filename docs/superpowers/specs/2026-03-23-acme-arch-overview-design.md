@@ -27,24 +27,24 @@ packages/
 
 ### 1.1 调整说明
 
-| 决策 | 说明 |
-|------|------|
-| agent + runtime 保持独立 | agent 专注第一方 Agent 支持，runtime 专注运行时依赖 |
-| 不新增 electron/desktop 包 | 相关代码直接写入 apps/desktop |
-| apps/desktop 内部结构 | 按 main/preload/renderer 组织，不拆分 |
+| 决策                       | 说明                                                |
+| -------------------------- | --------------------------------------------------- |
+| agent + runtime 保持独立   | agent 专注第一方 Agent 支持，runtime 专注运行时依赖 |
+| 不新增 electron/desktop 包 | 相关代码直接写入 apps/desktop                       |
+| apps/desktop 内部结构      | 按 main/preload/renderer 组织，不拆分               |
 
 ---
 
 ## 2. 核心模块边界
 
-| 模块 | 职责 | 外部依赖 |
-|------|------|---------|
-| `@acme-ai/core` | 核心类型定义、接口、枚举、Event 类型 | 无 |
-| `@acme-ai/agent` | Agent 实现（ClaudeCodeAgent、CodexAgent、AcmexAgent） | core |
-| `@acme-ai/runtime` | AgentRuntime 核心：配置管理、Skill/MCP/Plugin/Command 运行时 | core, agent |
-| `@acme-ai/acp` | ACP 协议编解码、消息处理 | core |
-| `@acme-ai/ui` | React UI 组件（基于 shadcn/ui） | core |
-| `@acme-ai-app/desktop` | Electron 应用：IPC、窗口管理、Tray、文件系统 | runtime, ui, core |
+| 模块                   | 职责                                                         | 外部依赖          |
+| ---------------------- | ------------------------------------------------------------ | ----------------- |
+| `@acme-ai/core`        | 核心类型定义、接口、枚举、Event 类型                         | 无                |
+| `@acme-ai/agent`       | Agent 实现（ClaudeCodeAgent、CodexAgent、AcmexAgent）        | core              |
+| `@acme-ai/runtime`     | AgentRuntime 核心：配置管理、Skill/MCP/Plugin/Command 运行时 | core, agent       |
+| `@acme-ai/acp`         | ACP 协议编解码、消息处理                                     | core              |
+| `@acme-ai/ui`          | React UI 组件（基于 shadcn/ui）                              | core              |
+| `@acme-ai-app/desktop` | Electron 应用：IPC、窗口管理、Tray、文件系统                 | runtime, ui, core |
 
 ---
 
@@ -96,11 +96,11 @@ interface Agent {
 
 ### 4.2 Agent 实现
 
-| Agent 类型 | 实现方式 | 说明 |
-|-----------|---------|------|
-| ClaudeCodeAgent | Claude Code Agent SDK | 官方支持 |
-| CodexAgent | OpenAI Agent SDK | 官方支持 |
-| AcmexAgent | 自研（vercel/ai + 仿 pi-mono） | 类似 opencode 的 Code Agent |
+| Agent 类型      | 实现方式                       | 说明                        |
+| --------------- | ------------------------------ | --------------------------- |
+| ClaudeCodeAgent | Claude Code Agent SDK          | 官方支持                    |
+| CodexAgent      | OpenAI Agent SDK               | 官方支持                    |
+| AcmexAgent      | 自研（vercel/ai + 仿 pi-mono） | 类似 opencode 的 Code Agent |
 
 - 核心接口统一，但各自可扩展
 - 因 ACP Agent 能力可能有限，采用混合架构
@@ -111,9 +111,9 @@ interface Agent {
 
 ### 5.1 Thread 类型
 
-| 类型 | 说明 |
-|------|------|
-| Local | 直接修改本地文件 |
+| 类型     | 说明                            |
+| -------- | ------------------------------- |
+| Local    | 直接修改本地文件                |
 | Worktree | 自动创建 git worktree，修改文件 |
 
 ### 5.2 Thread 数据结构
@@ -212,11 +212,11 @@ interface AcmeAPI {
 
 ### 7.1 窗口类型
 
-| 窗口类型 | 状态持久化 | 说明 |
-|----------|-----------|------|
-| Vault 窗口 | 恢复位置/大小 | 主窗口，启动后打开上次 Vault |
-| Thread 窗口 | 不持久化 | 独立窗口，关闭即退出 |
-| 设置窗口 | 不持久化 | 需时打开 |
+| 窗口类型    | 状态持久化    | 说明                         |
+| ----------- | ------------- | ---------------------------- |
+| Vault 窗口  | 恢复位置/大小 | 主窗口，启动后打开上次 Vault |
+| Thread 窗口 | 不持久化      | 独立窗口，关闭即退出         |
+| 设置窗口    | 不持久化      | 需时打开                     |
 
 ### 7.2 启动流程
 
@@ -243,9 +243,9 @@ interface AcmeAPI {
 
 ### 8.2 Skill 存储
 
-| 范围 | 路径 |
-|------|------|
-| 全局 Skills | `~/.acme/skills/` |
+| 范围              | 路径                               |
+| ----------------- | ---------------------------------- |
+| 全局 Skills       | `~/.acme/skills/`                  |
 | Vault 本地 Skills | `~/.acme/vaults/<vaultId>/skills/` |
 
 ### 8.3 Skill 能力
@@ -266,9 +266,9 @@ Plugin 提供底层能力扩展，类似 VSCode 扩展机制：
 
 ### 9.2 Plugin 存储
 
-| 范围 | 路径 |
-|------|------|
-| 全局 Plugins | `~/.acme/plugins/` |
+| 范围               | 路径                                |
+| ------------------ | ----------------------------------- |
+| 全局 Plugins       | `~/.acme/plugins/`                  |
 | Vault 本地 Plugins | `~/.acme/vaults/<vaultId>/plugins/` |
 
 ---
@@ -281,9 +281,9 @@ Command 是 slash command，用户输入 `/command` 触发。
 
 ### 10.2 Command 存储
 
-| 范围 | 路径 |
-|------|------|
-| 全局 Commands | `~/.acme/commands/` |
+| 范围                | 路径                                 |
+| ------------------- | ------------------------------------ |
+| 全局 Commands       | `~/.acme/commands/`                  |
 | Vault 本地 Commands | `~/.acme/vaults/<vaultId>/commands/` |
 
 ---
@@ -301,10 +301,10 @@ Command 是 slash command，用户输入 `/command` 触发。
 
 ### 12.1 日志级别
 
-| 环境 | 输出 |
-|------|------|
+| 环境 | 输出          |
+| ---- | ------------- |
 | 开发 | 控制台 + 文件 |
-| 生产 | 仅文件 |
+| 生产 | 仅文件        |
 
 ### 12.2 日志位置
 
@@ -316,30 +316,30 @@ Command 是 slash command，用户输入 `/command` 触发。
 
 ### P0（必须）
 
-| 功能 | 说明 |
-|------|------|
-| AgentRuntime 核心 | 多 Agent 运行管理 |
-| Vault/Thread 模型 | 本地文件存储 |
-| Main-Renderer IPC | 进程间通信 |
-| Thread 窗口 UI | 纯聊天布局 + 可折叠侧边栏 |
+| 功能              | 说明                      |
+| ----------------- | ------------------------- |
+| AgentRuntime 核心 | 多 Agent 运行管理         |
+| Vault/Thread 模型 | 本地文件存储              |
+| Main-Renderer IPC | 进程间通信                |
+| Thread 窗口 UI    | 纯聊天布局 + 可折叠侧边栏 |
 
 ### P1（重要）
 
-| 功能 | 说明 |
-|------|------|
-| 多窗口管理 | Vault/Thread 窗口独立 |
+| 功能            | 说明                      |
+| --------------- | ------------------------- |
+| 多窗口管理      | Vault/Thread 窗口独立     |
 | 三种 Agent 支持 | Claude Code、Codex、Acmex |
-| Skill 系统 | Claude Code Skill 规范 |
-| Keybindings | 全局快捷键 |
+| Skill 系统      | Claude Code Skill 规范    |
+| Keybindings     | 全局快捷键                |
 
 ### P2（后续）
 
-| 功能 | 说明 |
-|------|------|
-| Worktree 模式 | git worktree 支持 |
-| Tray 完整功能 | 菜单 + 最小化到 Tray |
-| Provider 动态配置 | 环境变量、远程配置 |
-| MCP Server 支持 | 本地/远程 MCP Servers |
+| 功能              | 说明                  |
+| ----------------- | --------------------- |
+| Worktree 模式     | git worktree 支持     |
+| Tray 完整功能     | 菜单 + 最小化到 Tray  |
+| Provider 动态配置 | 环境变量、远程配置    |
+| MCP Server 支持   | 本地/远程 MCP Servers |
 
 ---
 

@@ -2,7 +2,7 @@
 
 import { AgentBase } from '../base/agent-base'
 import { AgentType } from '@acme-ai/core'
-import type { AgentEvent, Message } from '@acme-ai/core'
+import type { AgentEvent, AgentMessage } from '@acme-ai/core'
 
 /**
  * Claude Code Agent 配置

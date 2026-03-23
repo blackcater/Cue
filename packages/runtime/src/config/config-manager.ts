@@ -32,7 +32,7 @@ export class ConfigManager {
       this._globalSettings = { ...DEFAULT_SETTINGS }
     }
 
-    return this._globalSettings
+    return this._globalSettings!
   }
 
   /**

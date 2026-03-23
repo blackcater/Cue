@@ -1,6 +1,6 @@
 import { AgentBase } from '../base/agent-base'
 import { AgentType } from '@acme-ai/core'
-import type { AgentEvent, Message } from '@acme-ai/core'
+import type { AgentEvent, AgentMessage } from '@acme-ai/core'
 
 /**
  * Acmex Agent 配置
@@ -34,7 +34,7 @@ export class AcmexAgent extends AgentBase {
       throw new Error('Agent not started')
     }
 
-    const userMessage: Message = {
+    const userMessage: AgentMessage = {
       id: `msg-${Date.now()}`,
       role: 'user',
       content,
