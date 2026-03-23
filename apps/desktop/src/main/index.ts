@@ -1,4 +1,5 @@
 import { app } from 'electron'
+import { join } from 'node:path'
 
 import { electronApp, is, platform } from '@electron-toolkit/utils'
 
@@ -6,10 +7,14 @@ import icon from '~/resources/icon.png?asset'
 
 import { log, mainLog } from './lib/logger'
 import { WindowManager } from './services/WindowManager'
+import { AgentRuntime } from '@acme-ai/runtime'
+import { initAllHandlers } from '@main/ipc/handlers'
+import { getRouter } from '@main/ipc/router'
 
 log.initialize()
 
 let windowManager: WindowManager | null = null
+let runtime: AgentRuntime | null = null
 
 app.on('open-url', (event, url) => {
 	event.preventDefault()
@@ -23,9 +28,33 @@ app.whenReady().then(() => {
 		app.dock.setIcon(icon)
 	}
 
-	windowManager = new WindowManager()
+	// Initialize MessageChannelRouter
+	const router = getRouter()
+	mainLog.info('MessageChannelRouter initialized')
+
+	// Initialize AgentRuntime with base path for data storage
+	const basePath = join(app.getPath('userData'), 'acme-data')
+	runtime = new AgentRuntime({ basePath })
+	mainLog.info('AgentRuntime initialized', { basePath })
+
+	// Register all IPC handlers
+	initAllHandlers(runtime)
+	mainLog.info('IPC handlers registered')
+
+	// Initialize WindowManager with the router
+	windowManager = new WindowManager(router)
+	mainLog.info('WindowManager initialized')
+
+	// Create the main window
+	windowManager.createWindow()
+	mainLog.info('Main window created')
 })
 
 app.on('window-all-closed', () => {
+	// Stop all agents before quitting
+	if (runtime) {
+		runtime.stopAllAgents()
+		mainLog.info('All agents stopped')
+	}
 	app.quit()
 })
