@@ -34,6 +34,9 @@ export default defineConfig({
 					index: resolve('./src/main/index.ts'),
 				},
 			},
+			externalizeDeps: {
+				exclude: ['@acme-ai/runtime'],
+			},
 		},
 	},
 
