@@ -12,15 +12,13 @@ A unified RPC framework for desktop applications with two transport implementati
 desktop/src/shared/rpc/
 ├── types.ts           # Core type definitions
 ├── RpcError.ts        # Unified error structure
-├── RpcServer.ts       # Server interface
-├── RpcClient.ts       # Client interface
+├── RpcServer.ts       # Server class
+├── RpcClient.ts       # Client class
 ├── transports/        # Transport implementations
-│   ├── electron/      # Electron IPC implementation
-│   │   ├── ElectronRpcServer.ts
-│   │   └── ElectronRpcClient.ts
-│   └── http/          # HTTP + SSE implementation
-│       ├── HttpRpcServer.ts
-│       ├── HttpRpcClient.ts
+│   ├── electron/      # Electron IPC transport
+│   │   └── ElectronIpcTransport.ts
+│   └── http/          # HTTP + SSE transport
+│       ├── HttpRpcTransport.ts
 │       └── sse.ts
 └── index.ts          # Unified exports
 ```
@@ -81,7 +79,7 @@ interface RpcError {
 
 ### 1. Unified Error Structure
 
-Electron IPC does not automatically propagate errors across process boundaries. Therefore, the framework defines a unified `RpcError` structure that all transports must use to serialize and传递 errors back to the client.
+Electron IPC does not automatically propagate errors across process boundaries. Therefore, the framework defines a unified `RpcError` structure that all transports must use to serialize and transmit errors back to the client.
 
 ### 2. Transport-Agnostic API
 
@@ -203,7 +201,7 @@ client.onEvent((event, ...args) => {
 ### Cross-Machine HTTP Client
 
 ```typescript
-const httpTransport = new HttpRpcTransport('http://192.168.1.100:4096/rpc')
+const httpTransport = new HttpRpcTransport('http://192.168.1.100:4096')
 const client = new RpcClient(httpTransport, { groupId: 'remote-agent' })
 
 const result = await client.call('someMethod', { arg: 'value' })
