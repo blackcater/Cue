@@ -30,6 +30,10 @@ export class RpcError extends Error {
 
 		return new RpcError(RpcError.UNKNOWN_ERROR, extractRpcErrorMsg(error))
 	}
+
+	static fromJSON(json: IRpcErrorDefinition): RpcError {
+		return new RpcError(json.code, json.message, json.data)
+	}
 }
 
 export namespace RpcError {
