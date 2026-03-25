@@ -297,9 +297,12 @@ export class ElectronRpcServer implements RpcServer {
 }
 ```
 
+**注意**：使用 `ipcMain.on` 而非 `ipcMain.handle`，因为我们需要通过 `rpc:response:invokeId` 自定义响应通道。`ipcMain.handle` 会自动处理响应，不适合我们的协议。
+
 **注意**：IPC 通道协议：
 - 客户端调用：`rpc:invoke:event/path` 发送 `{ invokeId, args }`
 - 服务端响应：`rpc:response:invokeId` 发送 `{ result }` 或 `{ error }`
+- 服务端流式：`rpc:stream:event/path:invokeId` 发送 `{ chunk, done }`
 - 服务端推送事件：`rpc:event:event/path`
 
 - [ ] **Step 4: 运行测试**
