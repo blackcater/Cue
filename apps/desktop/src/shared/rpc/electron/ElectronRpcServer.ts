@@ -3,7 +3,7 @@ import type { IpcMain, WebContents, IpcMainEvent } from 'electron'
 import { RpcError } from '../RpcError'
 import type { RpcServer, RpcRouter, Rpc, HandleOptions } from '../types'
 
-// 用于应用层注入 webContents 管理器
+// Injected by app layer to manage webContents
 export interface WebContentsManager {
 	send(clientId: string, channel: string, ...args: unknown[]): void
 	getWebContents(clientId: string): WebContents | null
@@ -46,7 +46,7 @@ export class ElectronRpcServer implements RpcServer {
 		this.ipcMain = ipcMain
 	}
 
-	// 设置 WebContents 管理器，用于 push 和事件发送
+	// Set WebContents manager for push and event delivery
 	setWebContentsManager(manager: WebContentsManager): void {
 		this.webContentsManager = manager
 	}
@@ -64,7 +64,7 @@ export class ElectronRpcServer implements RpcServer {
 				? optionsOrHandler
 				: maybeHandler!
 
-		// 监听 invoke:xxx 通道，接收客户端调用
+		// Listen on invoke:xxx channel for client calls
 		this.ipcMain.on(
 			`rpc:invoke:${eventPath}`,
 			async (

@@ -19,3 +19,4 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - One file should not contain multiple domains
 - One method should not have multiple responsibilities
 - Before commit code, you MUST use `bunx tsc --noEmit`, `bunx oxlint` and `bunx oxfmt` to lint and format code
+- Use ENGLISH for code comments
