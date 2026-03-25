@@ -183,13 +183,24 @@ interface RegisteredHandler {
     options?: HandleOptions
 }
 
+// 用于应用层注入 webContents 管理器
+export interface WebContentsManager {
+    send(clientId: string, channel: string, ...args: unknown[]): void
+    getWebContents(clientId: string): WebContents | null
+}
+
 export class ElectronRpcServer implements RpcServer {
     private handlers = new Map<string, RegisteredHandler>()
     private ipcMain: IpcMain
-    private clientContexts = new Map<number, Rpc.RequestContext>()
+    private webContentsManager: WebContentsManager | null = null
 
     constructor(ipcMain: IpcMain) {
         this.ipcMain = ipcMain
+    }
+
+    // 设置 WebContents 管理器，用于 push 和事件发送
+    setWebContentsManager(manager: WebContentsManager): void {
+        this.webContentsManager = manager
     }
 
     handle(event: string, handler: Rpc.HandlerFn): void
@@ -207,18 +218,17 @@ export class ElectronRpcServer implements RpcServer {
 
         this.handlers.set(eventPath, { handler, options })
 
-        this.ipcMain.handle(`rpc:${eventPath}`, async (e, args: unknown[]) => {
-            const clientId = this.getClientId(e)
-            const ctx: Rpc.RequestContext = { clientId }
-            this.clientContexts.set(e.sender.id, ctx)
+        // 监听 invoke:xxx 通道，接收客户端调用
+        this.ipcMain.on(`rpc:invoke:${eventPath}`, async (e, payload: { invokeId: string; args: unknown[] }) => {
+            const { invokeId, args } = payload
+            const clientId = `client-${e.sender.id}`
 
             try {
-                const result = await handler(ctx, ...args)
+                const result = await handler({ clientId }, ...args)
 
                 // Handle async iterator (streaming)
                 if (result && typeof result === 'object' && Symbol.asyncIterator in result) {
                     const iterator = result[Symbol.asyncIterator]()
-                    const chunks: unknown[] = []
                     let cancel = false
 
                     // Store cancel function on the event for abort
@@ -226,19 +236,18 @@ export class ElectronRpcServer implements RpcServer {
 
                     for await (const chunk of iterator) {
                         if (cancel) break
-                        chunks.push(chunk)
                         // Send streaming chunk back
-                        e.sender.send(`rpc:stream:${eventPath}`, { chunk, done: false })
+                        e.sender.send(`rpc:stream:${eventPath}:${invokeId}`, { chunk, done: false })
                     }
 
-                    e.sender.send(`rpc:stream:${eventPath}`, { chunk: null, done: true })
-                    return { chunks }
+                    e.sender.send(`rpc:stream:${eventPath}:${invokeId}`, { chunk: null, done: true })
+                    e.sender.send(`rpc:response:${invokeId}`, { result: { chunks: [] } })
+                } else {
+                    e.sender.send(`rpc:response:${invokeId}`, { result })
                 }
-
-                return { result }
             } catch (err) {
                 const rpcError = RpcError.from(err)
-                return { error: rpcError.toJSON() }
+                e.sender.send(`rpc:response:${invokeId}`, { error: rpcError.toJSON() })
             }
         })
     }
@@ -263,47 +272,35 @@ export class ElectronRpcServer implements RpcServer {
     }
 
     push(event: string, target: Rpc.Target, ...args: unknown[]): void {
+        if (!this.webContentsManager) {
+            console.warn('ElectronRpcServer: WebContentsManager not set, push() will not work')
+            return
+        }
+
         const eventPath = this.normalizeEvent(event)
 
         if (target.type === 'broadcast') {
-            // Send to all webContents
-            for (const [webContentsId, ctx] of this.clientContexts) {
-                const wc = this.getWebContents(webContentsId)
-                if (wc) {
-                    wc.send(`rpc:event:${eventPath}`, ...args)
-                }
-            }
+            // Send to all clients - app layer handles this via WebContentsManager
+            // App would iterate all known clientIds
+            this.webContentsManager.send('*', `rpc:event:${eventPath}`, ...args)
         } else if (target.type === 'client' && target.clientId) {
-            // Find webContents by clientId and send
-            for (const [webContentsId, ctx] of this.clientContexts) {
-                if (ctx.clientId === target.clientId) {
-                    const wc = this.getWebContents(webContentsId)
-                    if (wc) {
-                        wc.send(`rpc:event:${eventPath}`, ...args)
-                    }
-                    break
-                }
-            }
+            this.webContentsManager.send(target.clientId, `rpc:event:${eventPath}`, ...args)
+        } else if (target.type === 'group' && target.groupId) {
+            // Groups handled by app layer
+            this.webContentsManager.send(`group:${target.groupId}`, `rpc:event:${eventPath}`, ...args)
         }
-        // group targeting deferred to implementation
     }
 
     private normalizeEvent(event: string): string {
-        // Remove leading/trailing slashes, collapse multiple slashes
         return event.replace(/\/+/g, '/').replace(/^\/|\/$/g, '')
-    }
-
-    private getClientId(e: IpcMainInvokeEvent): string {
-        return `client-${e.sender.id}`
-    }
-
-    private getWebContents(webContentsId: number): WebContents | null {
-        // In real implementation, would need to track WebContents by ID
-        // This is framework-level, app-level manages the mapping
-        return null
     }
 }
 ```
+
+**注意**：IPC 通道协议：
+- 客户端调用：`rpc:invoke:event/path` 发送 `{ invokeId, args }`
+- 服务端响应：`rpc:response:invokeId` 发送 `{ result }` 或 `{ error }`
+- 服务端推送事件：`rpc:event:event/path`
 
 - [ ] **Step 4: 运行测试**
 
@@ -398,7 +395,7 @@ export class ElectronRpcClient implements RpcClient {
     private webContents: WebContents
     private pendingCalls = new Map<string, { resolve: Function; reject: Function }>()
     private eventListeners = new Map<string, Set<(...args: unknown[]) => void>>()
-    private streamCancelFns = new Map<string, () => void>()
+    private streamHandlers = new Map<string, { onChunk: Function; onDone: Function }>()
     private invokeCounter = 0
 
     constructor(webContents: WebContents, groupId?: string) {
@@ -407,14 +404,14 @@ export class ElectronRpcClient implements RpcClient {
         this.groupId = groupId
 
         // Listen for RPC responses
-        webContents.on('ipc-message', (channel, ...args) => {
+        webContents.on('ipc-message', (channel: string, ...args: unknown[]) => {
             if (channel.startsWith('rpc:response:')) {
                 const invokeId = channel.replace('rpc:response:', '')
                 const pending = this.pendingCalls.get(invokeId)
                 if (pending) {
-                    const [payload] = args
+                    const payload = args[0] as { result?: unknown; error?: IRpcErrorDefinition }
                     if (payload.error) {
-                        pending.reject(RpcError.fromJSON(payload.error as IRpcErrorDefinition))
+                        pending.reject(RpcError.fromJSON(payload.error))
                     } else {
                         pending.resolve(payload.result)
                     }
@@ -429,33 +426,82 @@ export class ElectronRpcClient implements RpcClient {
                     }
                 }
             } else if (channel.startsWith('rpc:stream:')) {
-                const eventName = channel.replace('rpc:stream:', '')
-                const [payload] = args
-                // Handle streaming - deferred implementation
+                // Format: rpc:stream:eventPath:invokeId
+                const parts = channel.split(':')
+                const invokeId = parts[parts.length - 1]
+                const payload = args[0] as { chunk: unknown; done: boolean }
+                const handler = this.streamHandlers.get(invokeId)
+                if (handler) {
+                    if (payload.done) {
+                        handler.onDone()
+                    } else {
+                        handler.onChunk(payload.chunk)
+                    }
+                }
             }
         })
     }
 
     async call<T>(event: string, ...args: unknown[]): Promise<T> {
         const invokeId = `invoke-${++this.invokeCounter}`
+        const eventPath = event.replace(/^\/|\/$/g, '')
 
         return new Promise((resolve, reject) => {
             this.pendingCalls.set(invokeId, { resolve, reject })
 
-            this.webContents.send(`rpc:invoke:${event}`, { invokeId, args })
+            // Send invoke message: rpc:invoke:eventPath with { invokeId, args }
+            this.webContents.send(`rpc:invoke:${eventPath}`, { invokeId, args })
 
-            // Timeout handling deferred
+            // Timeout: 30 seconds default
+            setTimeout(() => {
+                if (this.pendingCalls.has(invokeId)) {
+                    this.pendingCalls.delete(invokeId)
+                    reject(new RpcError(RpcError.TIMEOUT, `RPC call ${event} timed out`))
+                }
+            }, 30000)
         })
     }
 
     stream<T>(event: string, ...args: unknown[]): Rpc.StreamResult<T> {
+        const invokeId = `invoke-${++this.invokeCounter}`
+        const eventPath = event.replace(/^\/|\/$/g, '')
         const chunks: T[] = []
         let cancelFn: (() => void) | null = null
 
+        // Set up stream handlers before sending
+        this.streamHandlers.set(invokeId, {
+            onChunk: (chunk: unknown) => {
+                chunks.push(chunk as T)
+            },
+            onDone: () => {
+                this.streamHandlers.delete(invokeId)
+            },
+        })
+
+        // Send invoke message
+        this.webContents.send(`rpc:invoke:${eventPath}`, { invokeId, args })
+
         const iterator: AsyncIterator<T> = {
             next: async () => {
-                // This is a simplified sync iterator
-                // Full implementation needs proper async streaming
+                if (chunks.length > 0) {
+                    return { done: false, value: chunks.shift()! }
+                }
+                // Wait for more chunks
+                await new Promise<void>((resolve) => {
+                    const check = () => {
+                        if (chunks.length > 0) {
+                            resolve()
+                        } else if (!this.streamHandlers.has(invokeId)) {
+                            resolve() // Stream ended
+                        } else {
+                            setTimeout(check, 10)
+                        }
+                    }
+                    check()
+                })
+                if (chunks.length > 0) {
+                    return { done: false, value: chunks.shift()! }
+                }
                 return { done: true, value: undefined }
             },
         }
@@ -464,6 +510,8 @@ export class ElectronRpcClient implements RpcClient {
             [Symbol.asyncIterator]: () => iterator,
             cancel: () => {
                 if (cancelFn) cancelFn()
+                this.streamHandlers.delete(invokeId)
+                // TODO: Send cancel message to server
             },
         }
     }
@@ -473,11 +521,11 @@ export class ElectronRpcClient implements RpcClient {
 
         if (!this.eventListeners.has(event)) {
             this.eventListeners.set(event, new Set())
-            this.webContents.on(channel, (...args: unknown[]) => {
+            this.webContents.on(channel, (...listenerArgs: unknown[]) => {
                 const listeners = this.eventListeners.get(event)
                 if (listeners) {
                     for (const l of listeners) {
-                        l(...args)
+                        l(...listenerArgs)
                     }
                 }
             })
@@ -496,18 +544,21 @@ export class ElectronRpcClient implements RpcClient {
     abort(): void {
         // Cancel all pending calls
         for (const [id, pending] of this.pendingCalls) {
-            pending.reject(RpcError.from({ code: RpcError.ABORTED, message: 'Aborted' }))
+            pending.reject(new RpcError(RpcError.ABORTED, 'Aborted'))
         }
         this.pendingCalls.clear()
 
-        // Cancel all streams
-        for (const cancel of this.streamCancelFns.values()) {
-            cancel()
-        }
-        this.streamCancelFns.clear()
+        // Clear all stream handlers
+        this.streamHandlers.clear()
     }
 }
 ```
+
+**注意**：IPC 通道协议：
+- 客户端调用：`rpc:invoke:event/path` 发送 `{ invokeId, args }`
+- 服务端响应：`rpc:response:invokeId` 发送 `{ result }` 或 `{ error }`
+- 服务端流式：`rpc:stream:event/path:invokeId` 发送 `{ chunk, done }`
+- 服务端推送事件：`rpc:event:event/path`
 
 - [ ] **Step 3: 运行测试**
 
