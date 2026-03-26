@@ -20,12 +20,13 @@
 ### 2.2 接口定义
 
 ```typescript
-import type { WebContents } from 'electron'
+import type { BrowserWindow, WebContents } from 'electron'
 
 export interface WindowRegistry {
-  // 窗口注册
-  registerWindow(clientId: string, window: BrowserWindow): void
-  unregisterWindow(clientId: string): void
+  // 窗口注册（自动生成 clientId，返回值即 clientId）
+  registerWindow(window: BrowserWindow, group?: string): string
+  // 注销窗口（通过 window 查找 clientId，自动离组）
+  unregisterWindow(window: BrowserWindow): void
 
   // 群组管理
   joinGroup(clientId: string, groupId: string): void
@@ -43,8 +44,8 @@ export interface WindowRegistry {
 ```
 
 **职责划分**：
-- `registerWindow`：注册窗口，建立 clientId 与 BrowserWindow 的映射
-- `unregisterWindow`：注销窗口，清理映射关系
+- `registerWindow`：注册窗口，自动生成 clientId 并返回，传入 `group` 时自动加入该组
+- `unregisterWindow`：注销窗口，通过 window 查找 clientId，自动从所有群组移除
 - `joinGroup`/`leaveGroup`：客户端加群/退群
 - `sendToClient`/`sendToGroup`/`sendToAll`：消息发送
 - `getWebContentsByClientId`：通过 clientId 查询 WebContents
@@ -477,21 +478,30 @@ class AppWindowRegistry implements WindowRegistry {
   private groups = new Map<string, Set<string>>() // groupId -> Set<clientId>
   private webContentsToClientId = new Map<WebContents, string>() // reverse index
 
-  registerWindow(clientId: string, window: BrowserWindow): void {
+  registerWindow(window: BrowserWindow, group?: string): string {
+    const clientId = `client-${window.id}`
     this.windows.set(clientId, window)
     this.webContentsToClientId.set(window.webContents, clientId)
+
+    // 自动入组
+    if (group) {
+      this.joinGroup(clientId, group)
+    }
+
+    return clientId
   }
 
-  unregisterWindow(clientId: string): void {
-    const window = this.windows.get(clientId)
-    if (window) {
-      this.webContentsToClientId.delete(window.webContents)
-      this.windows.delete(clientId)
-    }
-    // 从所有群组中移除
+  unregisterWindow(window: BrowserWindow): void {
+    const clientId = this.webContentsToClientId.get(window.webContents)
+    if (!clientId) return
+
+    // 从所有群组移除
     for (const [_, clientIds] of this.groups) {
       clientIds.delete(clientId)
     }
+
+    this.windows.delete(clientId)
+    this.webContentsToClientId.delete(window.webContents)
   }
 
   joinGroup(clientId: string, groupId: string): void {
@@ -544,16 +554,14 @@ class AppWindowRegistry implements WindowRegistry {
 const registry = new AppWindowRegistry()
 const server = new ElectronRpcServer(registry, ipcMain)
 
-// 注册窗口
+// 注册窗口（自动入组 "workspace-1"）
 appWindow.on('ready-to-show', () => {
-  const clientId = `client-${appWindow.id}`
-  registry.registerWindow(clientId, appWindow)
+  const clientId = registry.registerWindow(appWindow, 'workspace-1')
 })
 
 // 关闭窗口时注销
 appWindow.on('closed', () => {
-  const clientId = `client-${appWindow.id}`
-  registry.unregisterWindow(clientId)
+  registry.unregisterWindow(appWindow)
 })
 ```
 
