@@ -39,7 +39,10 @@ export class WindowManager {
 		return mainWindow
 	}
 
-	createDebugWindow(groupId?: string): { window: BrowserWindow; clientId: string } {
+	createDebugWindow(): {
+		window: BrowserWindow
+		clientId: string
+	} {
 		const window = new BrowserWindow({
 			width: 900,
 			height: 670,
@@ -63,7 +66,9 @@ export class WindowManager {
 		if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
 			window.loadURL(`${process.env['ELECTRON_RENDERER_URL']}#/rpc-debug`)
 		} else {
-			window.loadFile(join(__dirname, '../renderer/index.html'), { hash: '/rpc-debug' })
+			window.loadFile(join(__dirname, '../renderer/index.html'), {
+				hash: '/rpc-debug',
+			})
 		}
 
 		return { window, clientId }

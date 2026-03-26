@@ -57,9 +57,7 @@ export class RpcDebugService {
 
 		// window/create - create a new BrowserWindow
 		router.handle('window/create', ((_ctx, groupId: string | null) => {
-			const { window, clientId } = this.windowManager.createDebugWindow(
-				groupId ?? undefined
-			)
+			const { window, clientId } = this.windowManager.createDebugWindow()
 			this.registry.registerWindow(window, groupId ?? undefined)
 			return { clientId, windowId: window.id }
 		}) as Rpc.HandlerFn)

@@ -42,8 +42,8 @@ app.whenReady()
 
 		// Add window:create IPC handler for BrowserWindow creation
 		ipcMain.handle('window:create', async (_, groupId: string | null) => {
-			const { window, clientId } = windowManager.createDebugWindow(groupId ?? undefined)
-			windowRegistry.registerWindow(window, groupId ?? undefined)
+			const { window, clientId } = windowManager!.createDebugWindow()
+			windowRegistry!.registerWindow(window, groupId ?? undefined)
 			return { clientId, windowId: window.id }
 		})
 
