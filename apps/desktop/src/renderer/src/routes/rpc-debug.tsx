@@ -463,6 +463,274 @@ function SlowEchoCard({
 	)
 }
 
+// Card for window info
+function WindowInfoCard({
+	styles,
+}: {
+	styles: ReturnType<typeof useThemeColors>
+}) {
+	const [info, setInfo] = useState<{
+		clientId: string
+		groupId: string | null
+	} | null>(null)
+	const [loading, setLoading] = useState(false)
+	const [error, setError] = useState<string | null>(null)
+
+	const handleFetch = async () => {
+		setLoading(true)
+		setError(null)
+		try {
+			const client = getRpcClient()
+			const result = await client.call<{
+				clientId: string
+				groupId: string | null
+			}>('/debug/window/info')
+			setInfo(result)
+		} catch (err) {
+			setError((err as Error).message)
+		} finally {
+			setLoading(false)
+		}
+	}
+
+	return (
+		<div style={styles['card']}>
+			<h3 style={styles['cardTitle']}>Window Info</h3>
+			<button
+				style={styles['button']}
+				onClick={handleFetch}
+				disabled={loading}
+			>
+				{loading ? 'Fetching...' : 'Refresh'}
+			</button>
+			{info && (
+				<div style={styles['result']}>
+					<strong>clientId:</strong> {info.clientId}
+					<br />
+					<strong>groupId:</strong> {info.groupId ?? '(none)'}
+				</div>
+			)}
+			{error && <div style={styles['error']}>Error: {error}</div>}
+		</div>
+	)
+}
+
+// Card for window manager
+function WindowManagerCard({
+	styles,
+}: {
+	styles: ReturnType<typeof useThemeColors>
+}) {
+	const [groupId, setGroupId] = useState<string>('none')
+	const [loading, setLoading] = useState(false)
+	const [result, setResult] = useState<{
+		clientId: string
+		windowId: number
+	} | null>(null)
+	const [error, setError] = useState<string | null>(null)
+
+	const handleCreate = async () => {
+		setLoading(true)
+		setError(null)
+		setResult(null)
+		try {
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			const group = groupId === 'none' ? null : groupId
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			const res = await (window as any).api.createWindow(group)
+			setResult(res)
+		} catch (err) {
+			setError((err as Error).message)
+		} finally {
+			setLoading(false)
+		}
+	}
+
+	return (
+		<div style={styles['card']}>
+			<h3 style={styles['cardTitle']}>Window Manager</h3>
+			<div style={styles['inputGroup']}>
+				<label style={styles['label']}>Group</label>
+				<select
+					style={styles['input']}
+					value={groupId}
+					onChange={(e) => setGroupId(e.target.value)}
+				>
+					<option value="none">No Group</option>
+					<option value="group-a">Group A</option>
+					<option value="group-b">Group B</option>
+				</select>
+			</div>
+			<button
+				style={styles['button']}
+				onClick={handleCreate}
+				disabled={loading}
+			>
+				{loading ? 'Creating...' : 'Spawn Window'}
+			</button>
+			{result && (
+				<div style={styles['result']}>
+					<strong>clientId:</strong> {result.clientId}
+					<br />
+					<strong>windowId:</strong> {result.windowId}
+				</div>
+			)}
+			{error && <div style={styles['error']}>Error: {error}</div>}
+		</div>
+	)
+}
+
+// Card for broadcast
+function BroadcastCard({
+	styles,
+}: {
+	styles: ReturnType<typeof useThemeColors>
+}) {
+	const [eventName, setEventName] = useState('broadcast-event')
+	const [targetGroup, setTargetGroup] = useState('group-a')
+	const [targetClientId, setTargetClientId] = useState('')
+	const [message, setMessage] = useState('Hello from broadcast!')
+	const [loading, setLoading] = useState(false)
+	const [result, setResult] = useState<unknown>(null)
+	const [error, setError] = useState<string | null>(null)
+
+	const client = getRpcClient()
+
+	const handleSendToAll = async () => {
+		setLoading(true)
+		setError(null)
+		try {
+			const res = await client.call(
+				'/debug/push/send-to-all',
+				eventName,
+				message
+			)
+			setResult(res)
+		} catch (err) {
+			setError((err as Error).message)
+		} finally {
+			setLoading(false)
+		}
+	}
+
+	const handleSendToGroup = async () => {
+		setLoading(true)
+		setError(null)
+		try {
+			const res = await client.call(
+				'/debug/push/send-to-group',
+				targetGroup,
+				eventName,
+				message
+			)
+			setResult(res)
+		} catch (err) {
+			setError((err as Error).message)
+		} finally {
+			setLoading(false)
+		}
+	}
+
+	const handleSendToClient = async () => {
+		if (!targetClientId.trim()) {
+			setError('clientId is required')
+			return
+		}
+		setLoading(true)
+		setError(null)
+		try {
+			const res = await client.call(
+				'/debug/push/send-to-client',
+				targetClientId,
+				eventName,
+				message
+			)
+			setResult(res)
+		} catch (err) {
+			setError((err as Error).message)
+		} finally {
+			setLoading(false)
+		}
+	}
+
+	return (
+		<div style={styles['card']}>
+			<h3 style={styles['cardTitle']}>Broadcast</h3>
+			<div style={styles['inputGroup']}>
+				<label style={styles['label']}>Event Name</label>
+				<input
+					type="text"
+					style={styles['input']}
+					value={eventName}
+					onChange={(e) => setEventName(e.target.value)}
+				/>
+			</div>
+			<div style={styles['inputGroup']}>
+				<label style={styles['label']}>Message</label>
+				<input
+					type="text"
+					style={styles['input']}
+					value={message}
+					onChange={(e) => setMessage(e.target.value)}
+				/>
+			</div>
+
+			<div style={styles['buttonRow']}>
+				<button
+					style={styles['button']}
+					onClick={handleSendToAll}
+					disabled={loading}
+				>
+					Send to All
+				</button>
+				<button
+					style={styles['button']}
+					onClick={handleSendToGroup}
+					disabled={loading}
+				>
+					Send to Group
+				</button>
+				<button
+					style={styles['button']}
+					onClick={handleSendToClient}
+					disabled={loading}
+				>
+					Send to Client
+				</button>
+			</div>
+
+			<div style={styles['inputRow']}>
+				<div style={styles['inputGroup']}>
+					<label style={styles['label']}>Target Group</label>
+					<select
+						style={styles['input']}
+						value={targetGroup}
+						onChange={(e) => setTargetGroup(e.target.value)}
+					>
+						<option value="group-a">Group A</option>
+						<option value="group-b">Group B</option>
+					</select>
+				</div>
+				<div style={styles['inputGroup']}>
+					<label style={styles['label']}>Target ClientId</label>
+					<input
+						type="text"
+						style={styles['input']}
+						value={targetClientId}
+						onChange={(e) => setTargetClientId(e.target.value)}
+						placeholder="client-123"
+					/>
+				</div>
+			</div>
+
+			{result !== null && (
+				<div style={styles['result']}>{JSON.stringify(result)}</div>
+			)}
+			{error && <div style={styles['error']}>Error: {error}</div>}
+		</div>
+	)
+}
+
 // Card for event listener
 function EventListenerCard({
 	styles,
@@ -536,7 +804,10 @@ function EventListenerCard({
 					<strong>Events:</strong>
 					{events.map((e, i) => (
 						<div key={i}>
-							- &quot;{e.name}&quot;: {JSON.stringify(e.data)}
+							- &quot;{e.name}&quot;: sender=
+							{String((e.data as unknown[])[0])}, eventName=
+							{String((e.data as unknown[])[1])}, payload=
+							{JSON.stringify((e.data as unknown[])[2])}
 						</div>
 					))}
 				</div>
@@ -555,6 +826,9 @@ export function RpcDebugPage() {
 			<p style={styles['subtitle']}>Test custom RPC capabilities</p>
 
 			<div style={styles['grid']}>
+				<WindowInfoCard styles={styles} />
+				<WindowManagerCard styles={styles} />
+				<BroadcastCard styles={styles} />
 				<InputCallCard
 					title="/debug/echo"
 					inputFields={[{ label: 'text', defaultValue: 'hello' }]}
