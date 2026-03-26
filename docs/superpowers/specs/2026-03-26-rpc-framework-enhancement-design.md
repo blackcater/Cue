@@ -20,10 +20,14 @@
 ### 2.2 接口定义
 
 ```typescript
+import type { WebContents } from 'electron'
+
 export interface WindowRegistry {
   sendToClient(clientId: string, channel: string, ...args: unknown[]): void
   sendToGroup(groupId: string, channel: string, ...args: unknown[]): void
   sendToAll(channel: string, ...args: unknown[]): void
+  getWebContentsByClientId(clientId: string): WebContents | null
+  getClientIdByWebContents(webContents: WebContents): string | null
 }
 ```
 
@@ -31,6 +35,8 @@ export interface WindowRegistry {
 - `sendToClient`：向指定 clientId 的窗口发送消息
 - `sendToGroup`：向指定群组的所有窗口发送消息
 - `sendToAll`：向所有窗口广播消息
+- `getWebContentsByClientId`：通过 clientId 查询 WebContents
+- `getClientIdByWebContents`：通过 WebContents 查询 clientId（用于 IPC 事件中反查发送者身份）
 
 ### 2.3 ElectronRpcServer 改造
 
@@ -53,6 +59,30 @@ export class ElectronRpcServer implements RpcServer {
     }
   }
 }
+```
+
+**clientId 获取逻辑**：
+
+在 `handle()` 注册的 IPC 回调中，通过 `e.sender`（WebContents）反查 clientId：
+
+```typescript
+this._ipcMain.on(
+  `rpc:invoke:${eventPath}`,
+  async (e, payload: { invokeId: string; args: unknown[] }) => {
+    const { invokeId, args } = payload
+    // 通过 WebContents 反查 clientId
+    const clientId = this._registry.getClientIdByWebContents(e.sender)
+    if (!clientId) {
+      e.sender.send(`rpc:response:${invokeId}`, {
+        error: new RpcError('UNAUTHORIZED', 'Unknown client').toJSON(),
+      })
+      return
+    }
+
+    const result = await handler.handler({ clientId }, ...args)
+    // ...
+  }
+)
 ```
 
 ## 3. HTTP SSE 支持
@@ -431,16 +461,19 @@ client.call('conversation/create', { title: 'Test' })
 ```typescript
 // 应用层实现示例
 class AppWindowRegistry implements WindowRegistry {
-  private windows = new Map<string, BrowserWindow>()
+  private windows = new Map<string, BrowserWindow>() // clientId -> window
   private groups = new Map<string, Set<string>>() // groupId -> Set<clientId>
+  private webContentsToClientId = new Map<WebContents, string>() // reverse index
 
   registerWindow(clientId: string, window: BrowserWindow) {
     this.windows.set(clientId, window)
+    this.webContentsToClientId.set(window.webContents, clientId)
   }
 
   unregisterWindow(clientId: string) {
     const window = this.windows.get(clientId)
     if (window) {
+      this.webContentsToClientId.delete(window.webContents)
       window.close()
       this.windows.delete(clientId)
     }
@@ -477,6 +510,15 @@ class AppWindowRegistry implements WindowRegistry {
     for (const [clientId] of this.windows) {
       this.sendToClient(clientId, channel, ...args)
     }
+  }
+
+  getWebContentsByClientId(clientId: string): WebContents | null {
+    const window = this.windows.get(clientId)
+    return window && !window.isDestroyed() ? window.webContents : null
+  }
+
+  getClientIdByWebContents(webContents: WebContents): string | null {
+    return this.webContentsToClientId.get(webContents) ?? null
   }
 }
 ```
