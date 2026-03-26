@@ -42,7 +42,16 @@ export class ElectronRpcServer implements RpcServer {
 					e.sender
 				)
 				if (!clientId) {
+					// Original response (for ElectronRpcClient via webContents)
 					e.sender.send(`rpc:response:${invokeId}`, {
+						error: new RpcError(
+							RpcError.UNAUTHORIZED,
+							'Unknown client'
+						).toJSON(),
+					})
+					// Generic channel response (for IpcRendererRpcClient via ipcRenderer)
+					e.sender.send('rpc:response', {
+						channel: `rpc:response:${invokeId}`,
 						error: new RpcError(
 							RpcError.UNAUTHORIZED,
 							'Unknown client'
@@ -61,28 +70,52 @@ export class ElectronRpcServer implements RpcServer {
 						]
 						if (typeof asyncIterator === 'function') {
 							const iterator = asyncIterator.call(result)
+							const streamChannel = `rpc:stream:${eventPath}:${invokeId}`
 
 							for await (const chunk of iterator) {
 								// Send streaming chunk back
-								e.sender.send(
-									`rpc:stream:${eventPath}:${invokeId}`,
-									{ chunk, done: false }
-								)
+								e.sender.send(streamChannel, {
+									chunk,
+									done: false,
+								})
+								// Also send via generic channel for IpcRendererRpcClient
+								e.sender.send('rpc:stream', {
+									channel: streamChannel,
+									chunk,
+									done: false,
+								})
 							}
 
-							// Streaming completion - no separate rpc:response needed
-							e.sender.send(
-								`rpc:stream:${eventPath}:${invokeId}`,
-								{ chunk: null, done: true }
-							)
+							// Streaming completion
+							e.sender.send(streamChannel, {
+								chunk: null,
+								done: true,
+							})
+							e.sender.send('rpc:stream', {
+								channel: streamChannel,
+								chunk: null,
+								done: true,
+							})
 							return
 						}
 					}
 
+					// Original response (for ElectronRpcClient via webContents)
 					e.sender.send(`rpc:response:${invokeId}`, { result })
+					// Generic channel response (for IpcRendererRpcClient via ipcRenderer)
+					e.sender.send('rpc:response', {
+						channel: `rpc:response:${invokeId}`,
+						result,
+					})
 				} catch (err) {
 					const rpcError = RpcError.from(err)
+					// Original error response
 					e.sender.send(`rpc:response:${invokeId}`, {
+						error: rpcError.toJSON(),
+					})
+					// Generic channel error (for IpcRendererRpcClient)
+					e.sender.send('rpc:response', {
+						channel: `rpc:response:${invokeId}`,
 						error: rpcError.toJSON(),
 					})
 				}
