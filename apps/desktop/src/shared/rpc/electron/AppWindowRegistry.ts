@@ -46,7 +46,17 @@ export class AppWindowRegistry implements WindowRegistry {
 	sendToClient(clientId: string, channel: string, ...args: unknown[]): void {
 		const window = this._windows.get(clientId)
 		if (window && !window.isDestroyed()) {
+			// Original channel (for ElectronRpcClient via webContents)
 			window.webContents.send(channel, ...args)
+			// Generic channel (for IpcRendererRpcClient via ipcRenderer)
+			// Extract eventName from channel like "rpc:event:eventName"
+			if (channel.startsWith('rpc:event:')) {
+				const eventName = channel.replace('rpc:event:', '')
+				window.webContents.send('rpc:event', {
+					channel,
+					data: args,
+				})
+			}
 		}
 	}
 
