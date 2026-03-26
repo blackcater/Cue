@@ -23,7 +23,8 @@ Extend the rpc-debug page to support multi-window broadcast testing. Create mult
 | `sendToAll` | Broadcast event to ALL registered windows |
 | `sendToGroup` | Send event to all windows in group-a or group-b |
 | `sendToClient` | Send event to specific clientId |
-| `trigger-event` | Trigger a named event, simulating push message |
+
+Note: `trigger-event` is an internal helper used by the above sendToX actions — no separate user-facing trigger needed.
 
 ### 4. Event Listener
 
@@ -47,12 +48,13 @@ Extend the rpc-debug page to support multi-window broadcast testing. Create mult
 
 | Handler | Description |
 |---------|-------------|
-| `POST /debug/window/create` | Create new BrowserWindow with optional group |
+| `POST /debug/window/create` | Create new BrowserWindow with optional group, returns clientId and windowId |
 | `POST /debug/window/info` | Return current window's clientId and groupId |
 | `POST /debug/push/send-to-all` | Push event to all windows |
 | `POST /debug/push/send-to-group` | Push event to specific group |
 | `POST /debug/push/send-to-client` | Push event to specific clientId |
-| `POST /debug/push/trigger-event` | Trigger a named event, simulating push message (used by sendToX to test event delivery) |
+
+**clientId assignment:** The main process (via `AppWindowRegistry`) assigns a unique `clientId` on window creation (`client-${window.id}`). This is already implemented in the existing codebase.
 
 ### UI Components
 
@@ -63,8 +65,10 @@ Extend the rpc-debug page to support multi-window broadcast testing. Create mult
 
 ### API Shape
 
+All handlers use `client.call()` via the RPC system (the `POST /path` notation in the handlers table denotes the RPC event path).
+
 ```typescript
-// createWindow
+// createWindow — exposed via preload as api.createWindow
 // groupId: string | null (null = no group)
 api.createWindow(groupId: string | null): Promise<{ clientId: string; windowId: number }>
 
