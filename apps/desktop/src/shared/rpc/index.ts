@@ -2,7 +2,11 @@
 export * from './types'
 export { RpcError } from './RpcError'
 export type { IRpcErrorDefinition } from './RpcError'
-export { extractRpcErrorMsg } from './utils'
+export {
+	extractRpcErrorMsg,
+	createTimeoutSignal,
+	createAbortSignalWithTimeout,
+} from './utils'
 
 // Electron transport
 export { ElectronRpcServer } from './electron/ElectronRpcServer'
