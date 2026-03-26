@@ -33,7 +33,7 @@ export class HttpRpcServer implements RpcServer {
 			}
 
 			// result.value is the standardized output, use it directly as args
-			return handler.handler(ctx, result.value as unknown[])
+			return handler.handler(ctx, ...(Array.isArray(result.value) ? result.value : [result.value]))
 		}
 
 		return handler.handler(ctx, ...args)
