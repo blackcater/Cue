@@ -19,7 +19,8 @@ apps/desktop/src/main/
 
 apps/desktop/src/renderer/src/
 ├── routes/
-│   └── rpc-debug.tsx          # NEW: RPC debug UI page
+│   ├── rpc-debug.tsx          # NEW: RPC debug UI page
+│   └── routeTree.gen.ts       # Add rpc-debug route here
 └── main.tsx
 
 apps/desktop/src/preload/
@@ -35,24 +36,24 @@ The design requires wiring up the RPC infrastructure in `main/index.ts`:
 import { app } from 'electron'
 import { ipcMain } from 'electron'
 import { electronApp, is, platform } from '@electron-toolkit/utils'
-import { ElectronRpcServer, WindowRegistryImpl } from '../shared/rpc/electron'
+import { ElectronRpcServer, AppWindowRegistry } from '../shared/rpc/electron'
 import { RpcDebugService } from './services/RpcDebugService'
 
 // Global instances
-let windowRegistry: WindowRegistryImpl
+let windowRegistry: AppWindowRegistry
 let rpcServer: ElectronRpcServer
 let rpcDebugService: RpcDebugService
 
 app.whenReady()
   .then(() => {
     // 1. Create WindowRegistry for managing window clients
-    windowRegistry = new WindowRegistryImpl()
+    windowRegistry = new AppWindowRegistry()
 
     // 2. Create ElectronRpcServer
     rpcServer = new ElectronRpcServer(windowRegistry, ipcMain)
 
     // 3. Register debug handlers
-    rpcDebugService = new RpcDebugService(rpcServer, ipcMain)
+    rpcDebugService = new RpcDebugService(rpcServer)
 
     // 4. Create window and register it
     const mainWindow = windowManager.createWindow()
@@ -78,15 +79,12 @@ Registers the following RPC handlers under `/debug` namespace:
 ### Implementation
 
 ```typescript
-import type { IpcMain } from 'electron'
 import { ElectronRpcServer } from '../../shared/rpc/electron'
 import { RpcError } from '../../shared/rpc/RpcError'
+import type { Rpc } from '../../shared/rpc/types'
 
 export class RpcDebugService {
-  constructor(
-    private readonly server: ElectronRpcServer,
-    _ipcMain: IpcMain
-  ) {
+  constructor(private readonly server: ElectronRpcServer) {
     this.registerHandlers()
   }
 
@@ -120,7 +118,7 @@ export class RpcDebugService {
     })
 
     // AbortSignal test - slow response that respects timeout
-    router.handle('slow-echo', async (ctx, text: string, options: Rpc.CallOptions) => {
+    router.handle('slow-echo', async (_, text: string, options: Rpc.CallOptions) => {
       const { signal } = options
 
       if (signal?.aborted) {
@@ -179,7 +177,14 @@ if (process.contextIsolated) {
 **File**: `apps/desktop/src/preload/preload.d.ts`
 
 ```typescript
-import { ElectronRpcClient } from '../shared/rpc/electron'
+// Forward declaration - ElectronRpcClient is implemented in index.ts
+declare class ElectronRpcClient {
+  readonly clientId: string
+  readonly groupId?: string
+  call<T>(event: string, options?: object, ...args: unknown[]): Promise<T>
+  stream<T>(event: string, options?: object, ...args: unknown[]): object
+  onEvent(event: string, listener: (...args: unknown[]) => void): () => void
+}
 
 interface API {
   getRpcClient(webContents: Electron.WebContents): ElectronRpcClient
@@ -250,23 +255,62 @@ Card-based layout, each RPC call is a card:
 
 ```typescript
 import { useState } from 'react'
+import { RpcError } from '../../../../shared/rpc/RpcError'
 
 // Get RPC client using preload API
 // Note: window.api.getRpcClient requires a WebContents reference
 // In renderer, use: window.api.getRpcClient(window.electron.webContents)
+
+async function handleCall() {
+  const client = window.api.getRpcClient(window.electron.webContents)
+  try {
+    const result = await client.call('/debug/echo', {}, 'hello')
+    console.log('Result:', result)
+  } catch (error) {
+    if (error instanceof RpcError) {
+      console.log(`Error ${error.code}: ${error.message}`)
+    }
+  }
+}
 ```
 
 ## Route Registration
 
-This codebase uses TanStack Router with code generation. After creating `rpc-debug.tsx`, you must run the router generator:
+This codebase uses TanStack Router with manual route registration. Add the new route to `routeTree.gen.ts`:
 
-```bash
-bun run router:gen
-# or
-bunx tanstack-router-generator
+**File**: `apps/desktop/src/renderer/src/routeTree.gen.ts`
+
+```typescript
+import { createRootRoute, createRoute } from '@tanstack/react-router'
+
+import { RootComponent } from './routes/__root'
+import { ChatPage } from './routes/chat'
+import { HomePage } from './routes/index'
+import { RpcDebugPage } from './routes/rpc-debug'  // NEW
+import { SettingsPage } from './routes/settings'
+
+// Root route
+export const rootRoute = createRootRoute({
+  component: RootComponent,
+})
+
+// ... existing routes ...
+
+// RPC Debug route - NEW
+export const rpcDebugRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/rpc-debug',
+  component: RpcDebugPage,
+})
+
+// Create route tree
+export const routeTree = rootRoute.addChildren([
+  homeRoute,
+  settingsRoute,
+  chatRoute,
+  rpcDebugRoute,  // ADD THIS
+])
 ```
-
-Alternatively, add to `routeTree.gen.ts` manually if the generator is not configured.
 
 ## Files to Create/Modify
 
@@ -278,10 +322,11 @@ Alternatively, add to `routeTree.gen.ts` manually if the generator is not config
 | Modify | `apps/desktop/src/preload/index.ts` |
 | Modify | `apps/desktop/src/preload/preload.d.ts` |
 | Create | `apps/desktop/src/renderer/src/routes/rpc-debug.tsx` |
+| Modify | `apps/desktop/src/renderer/src/routeTree.gen.ts` |
 
 ## Initialization Flow
 
-1. `main/index.ts` creates `WindowRegistryImpl` and `ElectronRpcServer`
+1. `main/index.ts` creates `AppWindowRegistry` and `ElectronRpcServer`
 2. `RpcDebugService` is instantiated, registering `/debug/*` handlers
 3. `WindowManager.createWindow()` returns a `BrowserWindow`
 4. `windowRegistry.registerWindow(mainWindow)` makes the window a RPC client
