@@ -76,4 +76,5 @@ export interface WindowRegistry {
 
 	getWebContentsByClientId(clientId: string): WebContents | null
 	getClientIdByWebContents(webContents: WebContents): string | null
+	getGroupsByClientId(clientId: string): string[]
 }

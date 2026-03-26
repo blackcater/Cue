@@ -5,6 +5,7 @@ import type { WindowRegistry } from '../types'
 export class AppWindowRegistry implements WindowRegistry {
 	private readonly _windows = new Map<string, BrowserWindow>()
 	private readonly _groups = new Map<string, Set<string>>()
+	private readonly _clientIdToGroups = new Map<string, Set<string>>()
 	private readonly _webContentsToClientId = new Map<WebContents, string>()
 
 	registerWindow(window: BrowserWindow, group?: string): string {
@@ -15,6 +16,11 @@ export class AppWindowRegistry implements WindowRegistry {
 
 		if (group) {
 			this.joinGroup(clientId, group)
+			// Also track directly on _clientIdToGroups
+			if (!this._clientIdToGroups.has(clientId)) {
+				this._clientIdToGroups.set(clientId, new Set())
+			}
+			this._clientIdToGroups.get(clientId)!.add(group)
 		}
 
 		return clientId
@@ -28,6 +34,8 @@ export class AppWindowRegistry implements WindowRegistry {
 			clientIds.delete(clientId)
 		}
 
+		this._clientIdToGroups.delete(clientId)
+
 		this._windows.delete(clientId)
 		this._webContentsToClientId.delete(window.webContents)
 	}
@@ -37,6 +45,12 @@ export class AppWindowRegistry implements WindowRegistry {
 			this._groups.set(groupId, new Set())
 		}
 		this._groups.get(groupId)!.add(clientId)
+
+		// Track per-client group membership
+		if (!this._clientIdToGroups.has(clientId)) {
+			this._clientIdToGroups.set(clientId, new Set())
+		}
+		this._clientIdToGroups.get(clientId)!.add(groupId)
 	}
 
 	leaveGroup(clientId: string, groupId: string): void {
@@ -81,5 +95,9 @@ export class AppWindowRegistry implements WindowRegistry {
 
 	getClientIdByWebContents(webContents: WebContents): string | null {
 		return this._webContentsToClientId.get(webContents) ?? null
+	}
+
+	getGroupsByClientId(clientId: string): string[] {
+		return Array.from(this._clientIdToGroups.get(clientId) ?? [])
 	}
 }

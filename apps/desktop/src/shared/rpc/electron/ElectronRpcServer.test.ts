@@ -15,6 +15,7 @@ const createMockRegistry = (): WindowRegistry => ({
 	sendToAll: vi.fn(),
 	getWebContentsByClientId: vi.fn(),
 	getClientIdByWebContents: vi.fn(),
+	getGroupsByClientId: vi.fn(),
 })
 
 const createMockIpcMain = (): IpcMain =>
