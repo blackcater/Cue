@@ -5,10 +5,9 @@ import { RpcError } from '@/shared/rpc/RpcError'
 interface RpcClient {
 	readonly clientId: string
 	readonly groupId?: string
-	call<T>(event: string, options?: object, ...args: unknown[]): Promise<T>
+	call<T>(event: string, ...args: unknown[]): Promise<T>
 	stream<T>(
 		event: string,
-		options?: object,
 		...args: unknown[]
 	): {
 		[Symbol.asyncIterator](): AsyncIterator<T>
@@ -323,10 +322,7 @@ function StreamCard({
 			setCurrentStream(streamCtrl)
 
 			const client = getRpcClient()
-			const streamResult = client.stream<number>(
-				'/debug/stream-numbers',
-				{}
-			)
+			const streamResult = client.stream<number>('/debug/stream-numbers')
 
 			streamCtrl.cancel = () => {
 				streamResult.cancel()
@@ -406,8 +402,8 @@ function StreamCard({
 	)
 }
 
-// Card for AbortSignal test
-function AbortSignalCard({
+// Card for slow echo test
+function SlowEchoCard({
 	styles,
 }: {
 	styles: ReturnType<typeof useThemeColors>
@@ -428,15 +424,10 @@ function AbortSignalCard({
 			const client = getRpcClient()
 			const start = Date.now()
 
-			// Use 1 second timeout to abort a 3 second handler
 			const result_ = await client.call<{
 				text: string
 				completed: boolean
-			}>(
-				'/debug/slow-echo',
-				{ signal: AbortSignal.timeout(1000) },
-				'hello'
-			)
+			}>('/debug/slow-echo', 'hello')
 
 			setResult({
 				result: result_,
@@ -444,14 +435,7 @@ function AbortSignalCard({
 			})
 		} catch (err) {
 			const rpcErr = err as RpcError
-			if (
-				rpcErr.code === RpcError.ABORTED ||
-				rpcErr.code === RpcError.TIMEOUT
-			) {
-				setError(`Timeout correctly caught: ${rpcErr.message}`)
-			} else {
-				setError(rpcErr.message || String(err))
-			}
+			setError(rpcErr.message || String(err))
 		} finally {
 			setLoading(false)
 		}
@@ -459,15 +443,13 @@ function AbortSignalCard({
 
 	return (
 		<div style={styles['card']}>
-			<h3 style={styles['cardTitle']}>
-				/debug/slow-echo + AbortSignal (1s timeout)
-			</h3>
+			<h3 style={styles['cardTitle']}>/debug/slow-echo</h3>
 			<button
 				style={styles['button']}
 				onClick={handleCall}
 				disabled={loading}
 			>
-				{loading ? 'Waiting...' : 'Call with Timeout'}
+				{loading ? 'Waiting...' : 'Call'}
 			</button>
 			{result && (
 				<div style={styles['result']}>
@@ -581,7 +563,6 @@ export function RpcDebugPage() {
 						const start = Date.now()
 						const result = await client.call<string>(
 							'/debug/echo',
-							{},
 							text
 						)
 						return { result, time: `${Date.now() - start}ms` }
@@ -600,7 +581,6 @@ export function RpcDebugPage() {
 						const start = Date.now()
 						const result = await client.call<number>(
 							'/debug/add',
-							{},
 							Number(a),
 							Number(b)
 						)
@@ -619,13 +599,13 @@ export function RpcDebugPage() {
 						const result = await client.call<{
 							clientId: string
 							time: string
-						}>('/debug/server-time', {})
+						}>('/debug/server-time')
 						return { result, time: `${Date.now() - start}ms` }
 					}}
 					styles={styles}
 				/>
 
-				<AbortSignalCard styles={styles} />
+				<SlowEchoCard styles={styles} />
 
 				<InputCallCard
 					title="/debug/trigger-event"
@@ -637,7 +617,7 @@ export function RpcDebugPage() {
 						const start = Date.now()
 						const result = await client.call<{
 							triggered: boolean
-						}>('/debug/trigger-event', {}, name)
+						}>('/debug/trigger-event', name)
 						return { result, time: `${Date.now() - start}ms` }
 					}}
 					styles={styles}

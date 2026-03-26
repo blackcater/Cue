@@ -75,46 +75,16 @@ export class ElectronRpcClient implements RpcClient {
 		}) as any)
 	}
 
-	async call<T>(
-		event: string,
-		options: Rpc.CallOptions = {},
-		...args: unknown[]
-	): Promise<T> {
-		const { signal } = options
+	async call<T>(event: string, ...args: unknown[]): Promise<T> {
 		const invokeId = `invoke-${++this._invokeCounter}`
 		const eventPath = event.replaceAll(/^\/|\/$/g, '')
 
 		return new Promise((resolve, reject) => {
-			if (signal?.aborted) {
-				reject(new RpcError(RpcError.ABORTED, 'Request was aborted'))
-				return
-			}
-
-			const abortHandler = () => {
-				this._pendingCalls.delete(invokeId)
-				if (signal?.reason?.name === 'TimeoutError') {
-					reject(
-						new RpcError(
-							RpcError.TIMEOUT,
-							`RPC call ${event} timed out`
-						)
-					)
-				} else {
-					reject(
-						new RpcError(RpcError.ABORTED, 'Request was aborted')
-					)
-				}
-			}
-
-			signal?.addEventListener('abort', abortHandler)
-
 			this._pendingCalls.set(invokeId, {
 				resolve: (...resolveArgs: unknown[]) => {
-					signal?.removeEventListener('abort', abortHandler)
 					resolve(resolveArgs[0] as T)
 				},
 				reject: (...rejectArgs: unknown[]) => {
-					signal?.removeEventListener('abort', abortHandler)
 					reject(rejectArgs[0])
 				},
 			})
@@ -126,11 +96,7 @@ export class ElectronRpcClient implements RpcClient {
 		})
 	}
 
-	stream<T>(
-		event: string,
-		_options: Rpc.CallOptions = {},
-		...args: unknown[]
-	): Rpc.StreamResult<T> {
+	stream<T>(event: string, ...args: unknown[]): Rpc.StreamResult<T> {
 		const invokeId = `invoke-${++this._invokeCounter}`
 		const eventPath = event.replaceAll(/^\/|\/$/g, '')
 		const chunks: T[] = []

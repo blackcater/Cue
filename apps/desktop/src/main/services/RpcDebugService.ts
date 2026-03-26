@@ -1,4 +1,4 @@
-import { ElectronRpcServer, RpcError } from '../../shared/rpc'
+import { ElectronRpcServer } from '../../shared/rpc'
 import type { Rpc } from '../../shared/rpc'
 
 export class RpcDebugService {
@@ -42,31 +42,10 @@ export class RpcDebugService {
 			return { triggered: true }
 		}) as Rpc.HandlerFn)
 
-		// AbortSignal test - slow response that respects timeout
-		router.handle('slow-echo', (async (
-			_,
-			text: string,
-			options: Rpc.CallOptions
-		) => {
-			const { signal } = options
-
-			if (signal?.aborted) {
-				throw new RpcError(
-					RpcError.ABORTED,
-					'Request was aborted before starting'
-				)
-			}
-
-			// Wait 3 seconds (will be interrupted if signal aborts)
+		// Slow echo - waits 3 seconds then returns
+		router.handle('slow-echo', (async (_, text: string) => {
+			// Wait 3 seconds
 			await new Promise((resolve) => setTimeout(resolve, 3000))
-
-			// Check if aborted during wait
-			if (signal?.aborted) {
-				throw new RpcError(
-					RpcError.ABORTED,
-					'Request was aborted during wait'
-				)
-			}
 
 			return { text, completed: true }
 		}) as Rpc.HandlerFn)

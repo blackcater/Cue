@@ -21,11 +21,7 @@ export class HttpRpcClient implements RpcClient {
 		}
 	}
 
-	async call<T>(
-		event: string,
-		options: Rpc.CallOptions = {},
-		...args: unknown[]
-	): Promise<T> {
+	async call<T>(event: string, ...args: unknown[]): Promise<T> {
 		const normalizedEvent = event.replaceAll(/^\/|\/$/g, '')
 
 		const response = await fetch(
@@ -38,7 +34,6 @@ export class HttpRpcClient implements RpcClient {
 					...(this.groupId && { 'x-rpc-group-id': this.groupId }),
 				},
 				body: JSON.stringify(args),
-				signal: options.signal ?? null,
 			}
 		)
 
@@ -58,11 +53,7 @@ export class HttpRpcClient implements RpcClient {
 		return payload.result as T
 	}
 
-	stream<T>(
-		event: string,
-		options: Rpc.CallOptions = {},
-		...args: unknown[]
-	): Rpc.StreamResult<T> {
+	stream<T>(event: string, ...args: unknown[]): Rpc.StreamResult<T> {
 		const normalizedEvent = event.replaceAll(/^\/|\/$/g, '')
 
 		let reader: ReadableStreamDefaultReader<Uint8Array> | null = null
@@ -83,7 +74,6 @@ export class HttpRpcClient implements RpcClient {
 								Accept: 'text/event-stream',
 							},
 							body: JSON.stringify(args),
-							signal: options.signal ?? null,
 						}
 					)
 

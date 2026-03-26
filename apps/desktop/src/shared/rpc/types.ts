@@ -12,10 +12,6 @@ export namespace Rpc {
 		schema?: StandardSchemaV1
 	}
 
-	export interface CallOptions {
-		signal?: AbortSignal
-	}
-
 	export type CancelFn = () => void
 
 	export type Target =
@@ -62,16 +58,8 @@ export interface RpcClient {
 	readonly clientId: string
 	readonly groupId?: string
 
-	call<T>(
-		event: string,
-		options?: Rpc.CallOptions,
-		...args: unknown[]
-	): Promise<T>
-	stream<T>(
-		event: string,
-		options?: Rpc.CallOptions,
-		...args: unknown[]
-	): Rpc.StreamResult<T>
+	call<T>(event: string, ...args: unknown[]): Promise<T>
+	stream<T>(event: string, ...args: unknown[]): Rpc.StreamResult<T>
 	onEvent(event: string, listener: (...args: unknown[]) => void): Rpc.CancelFn
 }
 

@@ -4,18 +4,18 @@ import { electronAPI } from '@electron-toolkit/preload'
 
 import { IpcRendererRpcClient } from '../shared/rpc/electron'
 
-// Lazy-initialized RPC client
-let rpcClient: IpcRendererRpcClient | null = null
+// Create singleton RPC client instance
+const rpcClient = new IpcRendererRpcClient(ipcRenderer)
 
+// Expose API - contextBridge only copies enumerable own properties
 const api = {
-	// Factory function to create/retrieve RPC client
-	// Uses IpcRendererRpcClient which works in renderer context
-	getRpcClient: () => {
-		if (!rpcClient) {
-			rpcClient = new IpcRendererRpcClient(ipcRenderer)
-		}
-		return rpcClient
-	},
+	getRpcClient: () => ({
+		clientId: rpcClient.clientId,
+		groupId: rpcClient.groupId,
+		call: rpcClient.call.bind(rpcClient),
+		stream: rpcClient.stream.bind(rpcClient),
+		onEvent: rpcClient.onEvent.bind(rpcClient),
+	}),
 }
 
 if (process.contextIsolated) {
