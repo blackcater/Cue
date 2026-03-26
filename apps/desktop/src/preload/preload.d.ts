@@ -1,10 +1,9 @@
 import type { ElectronAPI } from '@electron-toolkit/preload'
 
-import type { Rpc, RpcClient } from '../shared/rpc'
+import type { IpcRendererRpcClient } from '../shared/rpc/electron'
 
 interface API {
-	getCurrentWebContents(): Electron.WebContents
-	getRpcClient(): RpcClient
+	getRpcClient(): IpcRendererRpcClient
 }
 
 declare global {

@@ -1,19 +1,18 @@
-import { contextBridge } from 'electron'
+import { contextBridge, ipcRenderer } from 'electron'
 
 import { electronAPI } from '@electron-toolkit/preload'
 
-import { ElectronRpcClient } from '../shared/rpc'
+import { IpcRendererRpcClient } from '../shared/rpc/electron'
 
 // Lazy-initialized RPC client
-let rpcClient: ElectronRpcClient | null = null
+let rpcClient: IpcRendererRpcClient | null = null
 
 const api = {
 	// Factory function to create/retrieve RPC client
-	// window.webContents is available in preload context (main world)
+	// Uses IpcRendererRpcClient which works in renderer context
 	getRpcClient: () => {
 		if (!rpcClient) {
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			rpcClient = new ElectronRpcClient(window.webContents as any)
+			rpcClient = new IpcRendererRpcClient(ipcRenderer)
 		}
 		return rpcClient
 	},
