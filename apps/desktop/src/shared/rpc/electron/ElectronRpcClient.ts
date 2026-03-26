@@ -1,7 +1,7 @@
 import type { WebContents } from 'electron'
 
 import { RpcError, type IRpcErrorDefinition } from '../RpcError'
-import type { RpcClient, Rpc } from '../types'
+import type { RpcClient, Rpc, RpcCallOptions } from '../types'
 
 export class ElectronRpcClient implements RpcClient {
 	readonly clientId: string
@@ -75,40 +75,61 @@ export class ElectronRpcClient implements RpcClient {
 		}) as any)
 	}
 
-	async call<T>(event: string, ...args: unknown[]): Promise<T> {
+	async call<T>(
+		event: string,
+		options: RpcCallOptions = {},
+		...args: unknown[]
+	): Promise<T> {
+		const { signal } = options
 		const invokeId = `invoke-${++this._invokeCounter}`
-		const eventPath = event.replaceAll(/^\/|\/$/g, '')
+		const eventPath = event.replace(/^\/|\/$/g, '')
 
 		return new Promise((resolve, reject) => {
-			this._pendingCalls.set(invokeId, { resolve, reject })
+			if (signal?.aborted) {
+				reject(new RpcError('ABORTED', 'Request was aborted'))
+				return
+			}
 
-			// Send invoke message: rpc:invoke:eventPath with { invokeId, args }
+			const abortHandler = () => {
+				this._pendingCalls.delete(invokeId)
+				if (signal?.reason?.name === 'TimeoutError') {
+					reject(
+						new RpcError('TIMEOUT', `RPC call ${event} timed out`)
+					)
+				} else {
+					reject(new RpcError('ABORTED', 'Request was aborted'))
+				}
+			}
+
+			signal?.addEventListener('abort', abortHandler)
+
+			this._pendingCalls.set(invokeId, {
+				resolve: (...resolveArgs: unknown[]) => {
+					signal?.removeEventListener('abort', abortHandler)
+					resolve(resolveArgs[0] as T)
+				},
+				reject: (...rejectArgs: unknown[]) => {
+					signal?.removeEventListener('abort', abortHandler)
+					reject(rejectArgs[0])
+				},
+			})
+
 			this._webContents.send(`rpc:invoke:${eventPath}`, {
 				invokeId,
 				args,
 			})
-
-			// Timeout: 30 seconds default
-			setTimeout(() => {
-				if (this._pendingCalls.has(invokeId)) {
-					this._pendingCalls.delete(invokeId)
-					reject(
-						new RpcError(
-							RpcError.TIMEOUT,
-							`RPC call ${event} timed out`
-						)
-					)
-				}
-			}, 30000)
 		})
 	}
 
-	stream<T>(event: string, ...args: unknown[]): Rpc.StreamResult<T> {
+	stream<T>(
+		event: string,
+		_options: RpcCallOptions = {},
+		...args: unknown[]
+	): Rpc.StreamResult<T> {
 		const invokeId = `invoke-${++this._invokeCounter}`
-		const eventPath = event.replaceAll(/^\/|\/$/g, '')
+		const eventPath = event.replace(/^\/|\/$/g, '')
 		const chunks: T[] = []
 
-		// Send cancel message to server
 		const cancelStream = () => {
 			this._webContents.send(`rpc:cancel:${eventPath}:${invokeId}`)
 		}

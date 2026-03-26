@@ -93,6 +93,7 @@ describe('ElectronRpcClient', () => {
 
 			const callPromise = client2.call<{ message: string }>(
 				'/test',
+				{},
 				'arg1'
 			)
 
@@ -126,7 +127,7 @@ describe('ElectronRpcClient', () => {
 			)
 
 			// Start the call but don't await
-			client.call('/my/event', 'arg1', 'arg2')
+			client.call('/my/event', {}, 'arg1', 'arg2')
 
 			// Check the send was called with correct arguments
 			expect(mockSend).toHaveBeenCalledWith('rpc:invoke:my/event', {
@@ -149,7 +150,11 @@ describe('ElectronRpcClient', () => {
 				mockWebContents as unknown as WebContents
 			)
 
-			const streamResult = client.stream<number>('/stream/event', 'arg1')
+			const streamResult = client.stream<number>(
+				'/stream/event',
+				{},
+				'arg1'
+			)
 
 			expect(mockSend).toHaveBeenCalledWith('rpc:invoke:stream/event', {
 				invokeId: expect.stringContaining('invoke-'),
@@ -172,7 +177,11 @@ describe('ElectronRpcClient', () => {
 				mockWebContents as unknown as WebContents
 			)
 
-			const streamResult = client.stream<number>('/stream/event', 'arg1')
+			const streamResult = client.stream<number>(
+				'/stream/event',
+				{},
+				'arg1'
+			)
 
 			// Get the invokeId that was used
 			const invokeIdArg = mockSend.mock.calls.find(
