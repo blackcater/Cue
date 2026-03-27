@@ -7,23 +7,23 @@ export class ElectronRpcClient implements RpcClient {
 	readonly clientId: string
 	readonly groupId?: string
 
-	private readonly _webContents: WebContents
-	private readonly _pendingCalls = new Map<
+	readonly #webContents: WebContents
+	readonly #pendingCalls = new Map<
 		string,
 		{ resolve: Function; reject: Function }
 	>()
-	private readonly _eventListeners = new Map<
+	readonly #eventListeners = new Map<
 		string,
 		Set<(...args: unknown[]) => void>
 	>()
-	private readonly _streamHandlers = new Map<
+	readonly #streamHandlers = new Map<
 		string,
 		{ onChunk: Function; onDone: Function; cancel: Function }
 	>()
-	private _invokeCounter = 0
+	#invokeCounter = 0
 
 	constructor(webContents: WebContents, groupId?: string) {
-		this._webContents = webContents
+		this.#webContents = webContents
 		this.clientId = `client-${webContents.id}`
 
 		if (groupId !== undefined) {
@@ -37,7 +37,7 @@ export class ElectronRpcClient implements RpcClient {
 		) => {
 			if (channel.startsWith('rpc:response:')) {
 				const invokeId = channel.replace('rpc:response:', '')
-				const pending = this._pendingCalls.get(invokeId)
+				const pending = this.#pendingCalls.get(invokeId)
 				if (pending) {
 					const payload = args[0] as {
 						result?: unknown
@@ -48,11 +48,11 @@ export class ElectronRpcClient implements RpcClient {
 					} else {
 						pending.resolve(payload.result)
 					}
-					this._pendingCalls.delete(invokeId)
+					this.#pendingCalls.delete(invokeId)
 				}
 			} else if (channel.startsWith('rpc:event:')) {
 				const eventName = channel.replace('rpc:event:', '')
-				const listeners = this._eventListeners.get(eventName)
+				const listeners = this.#eventListeners.get(eventName)
 				if (listeners) {
 					for (const listener of listeners) {
 						listener(...args)
@@ -63,7 +63,7 @@ export class ElectronRpcClient implements RpcClient {
 				const parts = channel.split(':')
 				const invokeId = parts.at(-1)!
 				const payload = args[0] as { chunk: unknown; done: boolean }
-				const handler = this._streamHandlers.get(invokeId)
+				const handler = this.#streamHandlers.get(invokeId)
 				if (handler) {
 					if (payload.done) {
 						handler.onDone()
@@ -76,11 +76,11 @@ export class ElectronRpcClient implements RpcClient {
 	}
 
 	async call<T>(event: string, ...args: unknown[]): Promise<T> {
-		const invokeId = `invoke-${++this._invokeCounter}`
+		const invokeId = `invoke-${++this.#invokeCounter}`
 		const eventPath = event.replaceAll(/^\/|\/$/g, '')
 
 		return new Promise((resolve, reject) => {
-			this._pendingCalls.set(invokeId, {
+			this.#pendingCalls.set(invokeId, {
 				resolve: (...resolveArgs: unknown[]) => {
 					resolve(resolveArgs[0] as T)
 				},
@@ -89,7 +89,7 @@ export class ElectronRpcClient implements RpcClient {
 				},
 			})
 
-			this._webContents.send(`rpc:invoke:${eventPath}`, {
+			this.#webContents.send(`rpc:invoke:${eventPath}`, {
 				invokeId,
 				args,
 			})
@@ -97,27 +97,27 @@ export class ElectronRpcClient implements RpcClient {
 	}
 
 	stream<T>(event: string, ...args: unknown[]): Rpc.StreamResult<T> {
-		const invokeId = `invoke-${++this._invokeCounter}`
+		const invokeId = `invoke-${++this.#invokeCounter}`
 		const eventPath = event.replaceAll(/^\/|\/$/g, '')
 		const chunks: T[] = []
 
 		const cancelStream = () => {
-			this._webContents.send(`rpc:cancel:${eventPath}:${invokeId}`)
+			this.#webContents.send(`rpc:cancel:${eventPath}:${invokeId}`)
 		}
 
 		// Set up stream handlers before sending
-		this._streamHandlers.set(invokeId, {
+		this.#streamHandlers.set(invokeId, {
 			onChunk: (chunk: unknown) => {
 				chunks.push(chunk as T)
 			},
 			onDone: () => {
-				this._streamHandlers.delete(invokeId)
+				this.#streamHandlers.delete(invokeId)
 			},
 			cancel: cancelStream,
 		})
 
 		// Send invoke message
-		this._webContents.send(`rpc:invoke:${eventPath}`, { invokeId, args })
+		this.#webContents.send(`rpc:invoke:${eventPath}`, { invokeId, args })
 
 		const iterator: AsyncIterator<T> = {
 			next: async () => {
@@ -129,7 +129,7 @@ export class ElectronRpcClient implements RpcClient {
 					const check = () => {
 						if (chunks.length > 0) {
 							resolve()
-						} else if (this._streamHandlers.has(invokeId)) {
+						} else if (this.#streamHandlers.has(invokeId)) {
 							setTimeout(check, 10)
 						} else {
 							resolve() // Stream ended
@@ -147,11 +147,11 @@ export class ElectronRpcClient implements RpcClient {
 		return {
 			[Symbol.asyncIterator]: () => iterator,
 			cancel: () => {
-				const handler = this._streamHandlers.get(invokeId)
+				const handler = this.#streamHandlers.get(invokeId)
 				if (handler?.cancel) {
 					handler.cancel()
 				}
-				this._streamHandlers.delete(invokeId)
+				this.#streamHandlers.delete(invokeId)
 			},
 		}
 	}
@@ -162,12 +162,12 @@ export class ElectronRpcClient implements RpcClient {
 	): Rpc.CancelFn {
 		const channel = `rpc:event:${event}`
 
-		if (!this._eventListeners.has(event)) {
-			this._eventListeners.set(event, new Set())
-			this._webContents.on(
+		if (!this.#eventListeners.has(event)) {
+			this.#eventListeners.set(event, new Set())
+			this.#webContents.on(
 				channel as any,
 				((...listenerArgs: unknown[]) => {
-					const listeners = this._eventListeners.get(event)
+					const listeners = this.#eventListeners.get(event)
 					if (listeners) {
 						for (const l of listeners) {
 							l(...listenerArgs)
@@ -177,10 +177,10 @@ export class ElectronRpcClient implements RpcClient {
 			)
 		}
 
-		this._eventListeners.get(event)!.add(listener)
+		this.#eventListeners.get(event)!.add(listener)
 
 		return () => {
-			const listeners = this._eventListeners.get(event)
+			const listeners = this.#eventListeners.get(event)
 			if (listeners) {
 				listeners.delete(listener)
 			}

@@ -5,13 +5,16 @@ import type { RpcServer, RpcRouter, Rpc, WindowRegistry } from '../types'
 import { ElectronRpcRouter } from './ElectronRpcRouter'
 
 export class ElectronRpcServer implements RpcServer {
-	constructor(
-		private readonly _registry: WindowRegistry,
-		private readonly _ipcMain: IpcMain
-	) {}
+	readonly #registry: WindowRegistry
+	readonly #ipcMain: IpcMain
+
+	constructor(registry: WindowRegistry, ipcMain: IpcMain) {
+		this.#registry = registry
+		this.#ipcMain = ipcMain
+	}
 
 	router(namespace: string): RpcRouter {
-		const prefix = this._normalizeEvent(namespace)
+		const prefix = this.#normalizeEvent(namespace)
 		return new ElectronRpcRouter(this, prefix)
 	}
 
@@ -26,19 +29,19 @@ export class ElectronRpcServer implements RpcServer {
 		optionsOrHandler: Rpc.HandleOptions | Rpc.HandlerFn,
 		maybeHandler?: Rpc.HandlerFn
 	): void {
-		const eventPath = this._normalizeEvent(event)
+		const eventPath = this.#normalizeEvent(event)
 		const handlerFn =
 			typeof optionsOrHandler === 'function'
 				? optionsOrHandler
 				: maybeHandler!
 
 		// Listen on invoke:xxx channel for client calls
-		this._ipcMain.on(
+		this.#ipcMain.on(
 			`rpc:invoke:${eventPath}`,
 			async (e, payload: { invokeId: string; args: unknown[] }) => {
 				const { invokeId, args } = payload
 				// Get clientId by WebContents
-				const clientId = this._registry.getClientIdByWebContents(
+				const clientId = this.#registry.getClientIdByWebContents(
 					e.sender
 				)
 				if (!clientId) {
@@ -124,18 +127,18 @@ export class ElectronRpcServer implements RpcServer {
 	}
 
 	push(event: string, target: Rpc.Target, ...args: unknown[]): void {
-		const channel = `rpc:event:${this._normalizeEvent(event)}`
+		const channel = `rpc:event:${this.#normalizeEvent(event)}`
 
 		if (target.type === 'broadcast') {
-			this._registry.sendToAll(channel, ...args)
+			this.#registry.sendToAll(channel, ...args)
 		} else if (target.type === 'client' && target.clientId) {
-			this._registry.sendToClient(target.clientId, channel, ...args)
+			this.#registry.sendToClient(target.clientId, channel, ...args)
 		} else if (target.type === 'group' && target.groupId) {
-			this._registry.sendToGroup(target.groupId, channel, ...args)
+			this.#registry.sendToGroup(target.groupId, channel, ...args)
 		}
 	}
 
-	private _normalizeEvent(event: string): string {
+	#normalizeEvent(event: string): string {
 		return event.replaceAll(/\/+/g, '/').replaceAll(/^\/|\/$/g, '')
 	}
 }

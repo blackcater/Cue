@@ -7,23 +7,23 @@ export class IpcRendererRpcClient implements RpcClient {
 	readonly clientId: string
 	readonly groupId?: string
 
-	private readonly _ipcRenderer: IpcRenderer
-	private readonly _pendingCalls = new Map<
+	readonly #ipcRenderer: IpcRenderer
+	readonly #pendingCalls = new Map<
 		string,
 		{ resolve: Function; reject: Function }
 	>()
-	private readonly _eventListeners = new Map<
+	readonly #eventListeners = new Map<
 		string,
 		Set<(...args: unknown[]) => void>
 	>()
-	private readonly _streamHandlers = new Map<
+	readonly #streamHandlers = new Map<
 		string,
 		{ onChunk: Function; onDone: Function; cancel: Function }
 	>()
-	private _invokeCounter = 0
+	#invokeCounter = 0
 
 	constructor(ipcRenderer: IpcRenderer, groupId?: string) {
-		this._ipcRenderer = ipcRenderer
+		this.#ipcRenderer = ipcRenderer
 		this.clientId = 'ipc-renderer-client'
 		if (groupId !== undefined) {
 			this.groupId = groupId
@@ -42,14 +42,14 @@ export class IpcRendererRpcClient implements RpcClient {
 
 			// Extract invokeId from channel like "rpc:response:invoke-1"
 			const invokeId = payload.channel.split(':').slice(2).join(':')
-			const pending = this._pendingCalls.get(invokeId)
+			const pending = this.#pendingCalls.get(invokeId)
 			if (pending) {
 				if (payload.error) {
 					pending.reject(RpcError.fromJSON(payload.error))
 				} else {
 					pending.resolve(payload.result)
 				}
-				this._pendingCalls.delete(invokeId)
+				this.#pendingCalls.delete(invokeId)
 			}
 		})
 
@@ -59,7 +59,7 @@ export class IpcRendererRpcClient implements RpcClient {
 			if (!payload?.channel) return
 			// channel format: "rpc:event:eventName"
 			const eventName = payload.channel.split(':').slice(2).join(':')
-			const listeners = this._eventListeners.get(eventName)
+			const listeners = this.#eventListeners.get(eventName)
 			if (listeners) {
 				for (const listener of listeners) {
 					listener(...(payload.data || []))
@@ -78,7 +78,7 @@ export class IpcRendererRpcClient implements RpcClient {
 			// channel format: "rpc:stream:eventPath:invokeId"
 			const parts = payload.channel.split(':')
 			const invokeId = parts.at(-1)!
-			const handler = this._streamHandlers.get(invokeId)
+			const handler = this.#streamHandlers.get(invokeId)
 			if (handler) {
 				if (payload.done) {
 					handler.onDone()
@@ -90,11 +90,11 @@ export class IpcRendererRpcClient implements RpcClient {
 	}
 
 	async call<T>(event: string, ...args: unknown[]): Promise<T> {
-		const invokeId = `invoke-${++this._invokeCounter}`
+		const invokeId = `invoke-${++this.#invokeCounter}`
 		const eventPath = event.replaceAll(/^\/|\/$/g, '')
 
 		return new Promise((resolve, reject) => {
-			this._pendingCalls.set(invokeId, {
+			this.#pendingCalls.set(invokeId, {
 				resolve: (...resolveArgs: unknown[]) => {
 					resolve(resolveArgs[0] as T)
 				},
@@ -103,7 +103,7 @@ export class IpcRendererRpcClient implements RpcClient {
 				},
 			})
 
-			this._ipcRenderer.send(`rpc:invoke:${eventPath}`, {
+			this.#ipcRenderer.send(`rpc:invoke:${eventPath}`, {
 				invokeId,
 				args,
 			})
@@ -111,25 +111,25 @@ export class IpcRendererRpcClient implements RpcClient {
 	}
 
 	stream<T>(event: string, ...args: unknown[]): Rpc.StreamResult<T> {
-		const invokeId = `invoke-${++this._invokeCounter}`
+		const invokeId = `invoke-${++this.#invokeCounter}`
 		const eventPath = event.replaceAll(/^\/|\/$/g, '')
 		const chunks: T[] = []
 
 		const cancelStream = () => {
-			this._ipcRenderer.send(`rpc:cancel:${eventPath}:${invokeId}`)
+			this.#ipcRenderer.send(`rpc:cancel:${eventPath}:${invokeId}`)
 		}
 
-		this._streamHandlers.set(invokeId, {
+		this.#streamHandlers.set(invokeId, {
 			onChunk: (chunk: unknown) => {
 				chunks.push(chunk as T)
 			},
 			onDone: () => {
-				this._streamHandlers.delete(invokeId)
+				this.#streamHandlers.delete(invokeId)
 			},
 			cancel: cancelStream,
 		})
 
-		this._ipcRenderer.send(`rpc:invoke:${eventPath}`, { invokeId, args })
+		this.#ipcRenderer.send(`rpc:invoke:${eventPath}`, { invokeId, args })
 
 		const iterator: AsyncIterator<T> = {
 			next: async () => {
@@ -140,7 +140,7 @@ export class IpcRendererRpcClient implements RpcClient {
 					const check = () => {
 						if (chunks.length > 0) {
 							resolve()
-						} else if (this._streamHandlers.has(invokeId)) {
+						} else if (this.#streamHandlers.has(invokeId)) {
 							setTimeout(check, 10)
 						} else {
 							resolve()
@@ -158,11 +158,11 @@ export class IpcRendererRpcClient implements RpcClient {
 		return {
 			[Symbol.asyncIterator]: () => iterator,
 			cancel: () => {
-				const handler = this._streamHandlers.get(invokeId)
+				const handler = this.#streamHandlers.get(invokeId)
 				if (handler?.cancel) {
 					handler.cancel()
 				}
-				this._streamHandlers.delete(invokeId)
+				this.#streamHandlers.delete(invokeId)
 			},
 		}
 	}
@@ -171,17 +171,17 @@ export class IpcRendererRpcClient implements RpcClient {
 		event: string,
 		listener: (...args: unknown[]) => void
 	): Rpc.CancelFn {
-		if (!this._eventListeners.has(event)) {
-			this._eventListeners.set(event, new Set())
+		if (!this.#eventListeners.has(event)) {
+			this.#eventListeners.set(event, new Set())
 		}
-		this._eventListeners.get(event)!.add(listener)
+		this.#eventListeners.get(event)!.add(listener)
 
 		return () => {
-			const listeners = this._eventListeners.get(event)
+			const listeners = this.#eventListeners.get(event)
 			if (listeners) {
 				listeners.delete(listener)
 				if (listeners.size === 0) {
-					this._eventListeners.delete(event)
+					this.#eventListeners.delete(event)
 				}
 			}
 		}

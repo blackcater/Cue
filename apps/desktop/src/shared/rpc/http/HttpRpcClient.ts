@@ -5,15 +5,15 @@ export class HttpRpcClient implements RpcClient {
 	readonly clientId: string
 	readonly groupId?: string
 
-	private readonly _baseUrl: string
-	private _eventSource: EventSource | null = null
-	private readonly _eventListeners = new Map<
+	readonly #baseUrl: string
+	#eventSource: EventSource | null = null
+	readonly #eventListeners = new Map<
 		string,
 		Set<(...args: unknown[]) => void>
 	>()
 
 	constructor(baseUrl: string, clientId?: string, groupId?: string) {
-		this._baseUrl = baseUrl.replace(/\/$/, '')
+		this.#baseUrl = baseUrl.replace(/\/$/, '')
 		this.clientId = clientId || `http-client-${Date.now()}`
 
 		if (groupId !== undefined) {
@@ -25,7 +25,7 @@ export class HttpRpcClient implements RpcClient {
 		const normalizedEvent = event.replaceAll(/^\/|\/$/g, '')
 
 		const response = await fetch(
-			`${this._baseUrl}/rpc/${normalizedEvent}`,
+			`${this.#baseUrl}/rpc/${normalizedEvent}`,
 			{
 				method: 'POST',
 				headers: {
@@ -65,7 +65,7 @@ export class HttpRpcClient implements RpcClient {
 			next: async () => {
 				if (!reader) {
 					const response = await fetch(
-						`${this._baseUrl}/rpc/${normalizedEvent}`,
+						`${this.#baseUrl}/rpc/${normalizedEvent}`,
 						{
 							method: 'POST',
 							headers: {
@@ -136,13 +136,13 @@ export class HttpRpcClient implements RpcClient {
 		event: string,
 		listener: (...args: unknown[]) => void
 	): Rpc.CancelFn {
-		if (!this._eventSource) {
-			this._eventSource = new EventSource(`${this._baseUrl}/rpc/events`)
+		if (!this.#eventSource) {
+			this.#eventSource = new EventSource(`${this.#baseUrl}/rpc/events`)
 
-			this._eventSource.addEventListener('push', (e: MessageEvent) => {
+			this.#eventSource.addEventListener('push', (e: MessageEvent) => {
 				try {
 					const { event: eventName, args } = JSON.parse(e.data)
-					const listeners = this._eventListeners.get(eventName)
+					const listeners = this.#eventListeners.get(eventName)
 					if (listeners) {
 						for (const l of listeners) {
 							l(...args)
@@ -154,23 +154,23 @@ export class HttpRpcClient implements RpcClient {
 			})
 		}
 
-		if (!this._eventListeners.has(event)) {
-			this._eventListeners.set(event, new Set())
+		if (!this.#eventListeners.has(event)) {
+			this.#eventListeners.set(event, new Set())
 		}
-		this._eventListeners.get(event)!.add(listener)
+		this.#eventListeners.get(event)!.add(listener)
 
 		return () => {
-			const listeners = this._eventListeners.get(event)
+			const listeners = this.#eventListeners.get(event)
 			if (listeners) {
 				listeners.delete(listener)
 				if (listeners.size === 0) {
-					this._eventListeners.delete(event)
+					this.#eventListeners.delete(event)
 				}
 			}
 			// Close EventSource if no listeners
-			if (this._eventListeners.size === 0 && this._eventSource) {
-				this._eventSource.close()
-				this._eventSource = null
+			if (this.#eventListeners.size === 0 && this.#eventSource) {
+				this.#eventSource.close()
+				this.#eventSource = null
 			}
 		}
 	}

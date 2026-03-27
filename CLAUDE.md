@@ -13,7 +13,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Code Conventions
 
-- Private methods/fields use `_` prefix
+- Private methods/fields use `$` prefix
 - Use namespace to organize related types for a class
 - Filenames use kebab-case
 - One file should not contain multiple domains

@@ -12,23 +12,23 @@ interface RegisteredHandler {
 }
 
 export class HttpRpcServer implements RpcServer {
-	private readonly _handlers = new Map<string, RegisteredHandler>()
-	private readonly _sseClients = new Map<
+	readonly #handlers = new Map<string, RegisteredHandler>()
+	readonly #sseClients = new Map<
 		string,
 		Set<{ stream: SSEStreamingApi; clientId: string }>
 	>()
 
 	constructor(private readonly app: Hono) {
-		this._setupRoutes()
-		this._setupSSERoutes()
+		this.#setupRoutes()
+		this.#setupSSERoutes()
 	}
 
-	private async _handleRPC(
+	async #handleRPC(
 		path: string,
 		args: unknown[],
 		ctx: Rpc.RequestContext
 	) {
-		const handler = this._handlers.get(path)
+		const handler = this.#handlers.get(path)
 
 		if (!handler) {
 			throw new RpcError(RpcError.NOT_FOUND, `Handler not found: ${path}`)
@@ -57,7 +57,7 @@ export class HttpRpcServer implements RpcServer {
 		return handler.handler(ctx, ...args)
 	}
 
-	private _setupRoutes() {
+	#setupRoutes() {
 		// POST /rpc/** - RPC invocation (wildcard catches all paths under /rpc/)
 		this.app.post('/rpc/**', async (c: Context) => {
 			const fullPath = c.req.path
@@ -66,11 +66,11 @@ export class HttpRpcServer implements RpcServer {
 			const args = await c.req.json().catch(() => [])
 
 			const ctx: Rpc.RequestContext = {
-				clientId: this._getClientId(c),
+				clientId: this.#getClientId(c),
 			}
 
 			try {
-				const result = await this._handleRPC(path, args, ctx)
+				const result = await this.#handleRPC(path, args, ctx)
 
 				// Handle async iterator (streaming)
 				if (
@@ -96,17 +96,17 @@ export class HttpRpcServer implements RpcServer {
 		})
 	}
 
-	private _setupSSERoutes() {
+	#setupSSERoutes() {
 		// GET /rpc/events - SSE event stream
 		this.app.get('/rpc/events', (c: Context) => {
-			const clientId = this._getClientId(c)
+			const clientId = this.#getClientId(c)
 
 			return streamSSE(c, async (stream) => {
 				const controller = { stream, clientId }
-				if (!this._sseClients.has(clientId)) {
-					this._sseClients.set(clientId, new Set())
+				if (!this.#sseClients.has(clientId)) {
+					this.#sseClients.set(clientId, new Set())
 				}
-				this._sseClients.get(clientId)!.add(controller)
+				this.#sseClients.get(clientId)!.add(controller)
 
 				await stream.writeSSE({
 					event: 'connected',
@@ -114,9 +114,9 @@ export class HttpRpcServer implements RpcServer {
 				})
 
 				stream.onAbort(() => {
-					this._sseClients.get(clientId)?.delete(controller)
-					if (this._sseClients.get(clientId)?.size === 0) {
-						this._sseClients.delete(clientId)
+					this.#sseClients.get(clientId)?.delete(controller)
+					if (this.#sseClients.get(clientId)?.size === 0) {
+						this.#sseClients.delete(clientId)
 					}
 				})
 			})
@@ -124,7 +124,7 @@ export class HttpRpcServer implements RpcServer {
 	}
 
 	router(namespace: string): RpcRouter {
-		const prefix = this._normalizeEvent(namespace)
+		const prefix = this.#normalizeEvent(namespace)
 		return new HttpRpcRouter(this, prefix)
 	}
 
@@ -139,11 +139,11 @@ export class HttpRpcServer implements RpcServer {
 		optionsOrHandler: Rpc.HandleOptions | Rpc.HandlerFn,
 		maybeHandler?: Rpc.HandlerFn
 	): void {
-		const eventPath = this._normalizeEvent(event)
+		const eventPath = this.#normalizeEvent(event)
 		if (typeof optionsOrHandler === 'function') {
-			this._handlers.set(eventPath, { handler: optionsOrHandler })
+			this.#handlers.set(eventPath, { handler: optionsOrHandler })
 		} else {
-			this._handlers.set(eventPath, {
+			this.#handlers.set(eventPath, {
 				handler: maybeHandler!,
 				options: optionsOrHandler,
 			})
@@ -154,24 +154,24 @@ export class HttpRpcServer implements RpcServer {
 		const eventData = JSON.stringify({ event, args })
 
 		if (target.type === 'broadcast') {
-			this._broadcastSSE('push', eventData)
+			this.#broadcastSSE('push', eventData)
 		} else if (target.type === 'client' && target.clientId) {
-			this._sendSSEToClient(target.clientId, 'push', eventData)
+			this.#sendSSEToClient(target.clientId, 'push', eventData)
 		} else if (target.type === 'group' && target.groupId) {
-			this._sendSSEToGroup(target.groupId, 'push', eventData)
+			this.#sendSSEToGroup(target.groupId, 'push', eventData)
 		}
 	}
 
-	private _broadcastSSE(event: string, data: string) {
-		for (const [, controllers] of this._sseClients) {
+	#broadcastSSE(event: string, data: string) {
+		for (const [, controllers] of this.#sseClients) {
 			for (const controller of controllers) {
 				controller.stream.writeSSE({ event, data })
 			}
 		}
 	}
 
-	private _sendSSEToClient(clientId: string, event: string, data: string) {
-		const controllers = this._sseClients.get(clientId)
+	#sendSSEToClient(clientId: string, event: string, data: string) {
+		const controllers = this.#sseClients.get(clientId)
 		if (controllers) {
 			for (const controller of controllers) {
 				controller.stream.writeSSE({ event, data })
@@ -179,16 +179,16 @@ export class HttpRpcServer implements RpcServer {
 		}
 	}
 
-	private _sendSSEToGroup(_groupId: string, event: string, data: string) {
+	#sendSSEToGroup(_groupId: string, event: string, data: string) {
 		// HTTP has no group concept, broadcast directly
-		this._broadcastSSE(event, data)
+		this.#broadcastSSE(event, data)
 	}
 
-	private _getClientId(c: Context): string {
+	#getClientId(c: Context): string {
 		return c.req.header('x-rpc-client-id') || 'anonymous'
 	}
 
-	private _normalizeEvent(event: string): string {
+	#normalizeEvent(event: string): string {
 		return event.replaceAll(/\/+/g, '/').replaceAll(/^\/|\/$/g, '')
 	}
 }
