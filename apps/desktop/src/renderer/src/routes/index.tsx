@@ -1,19 +1,37 @@
-import { Button } from '@acme-ai/ui/foundation'
-import { useNavigate } from '@tanstack/react-router'
+import { useState } from 'react'
+import {
+	LeftSidebar,
+	TopBar,
+	HeroSection,
+	InputArea,
+} from '~/src/renderer/src/components/app-shell'
 
 export function HomePage() {
-	const navigate = useNavigate()
+	const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
+
+	const handleToggleSidebar = () => {
+		setSidebarCollapsed((prev) => !prev)
+	}
 
 	return (
-		<div>
-			<h1>主页面</h1>
-			<p>欢迎来到主页</p>
-			<Button
-				type="button"
-				onClick={() => navigate({ to: '/rpc-debug' })}
-			>
-				RPC Debug
-			</Button>
+		<div className="flex h-screen w-screen overflow-hidden">
+			{/* Left Sidebar - Collapsible */}
+			<LeftSidebar
+				isCollapsed={sidebarCollapsed}
+				onToggle={handleToggleSidebar}
+			/>
+
+			{/* Main Content Area */}
+			<main className="flex flex-1 flex-col">
+				{/* Top Bar */}
+				<TopBar className="shrink-0" />
+
+				{/* Hero Section */}
+				<HeroSection className="flex-1" />
+
+				{/* Input Area */}
+				<InputArea className="shrink-0" />
+			</main>
 		</div>
 	)
 }
