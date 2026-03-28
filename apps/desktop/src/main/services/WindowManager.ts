@@ -22,7 +22,6 @@ export class WindowManager {
 			width: 900,
 			height: 670,
 			show: false,
-			transparent: true,
 			webPreferences: buildWebPreferences({
 				preload: join(__dirname, '../preload/index.js'),
 				webgl: true,

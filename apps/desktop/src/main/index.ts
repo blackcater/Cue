@@ -13,6 +13,10 @@ import { RpcDebugService, WindowManager } from './services'
 
 log.initialize()
 
+app.commandLine.appendSwitch('enable-gpu-rasterization')
+app.commandLine.appendSwitch('enable-zero-copy')
+app.commandLine.appendSwitch('enable-transparent-visuals')
+
 let windowManager: WindowManager | null = null
 let windowRegistry: WindowRegistry | null = null
 let rpcServer: ElectronRpcServer | null = null

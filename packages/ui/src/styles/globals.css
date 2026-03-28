@@ -154,5 +154,37 @@
     background-image: url('./noise.avif');
     background-repeat: repeat;
     background-size: 50px;
+    pointer-events: none;
+  }
+
+  /* 毛玻璃效果 - 由平台原生处理 (macOS vibrancy / Windows Mica) */
+  .glass {
+    position: relative;
+    background: oklch(1 0 0 / 50%);
+    border: 1px solid oklch(0 0 0 / 10%);
+  }
+
+  /* 纸张纹理叠加 - 在 vibrancy 层之上 */
+  .glass::after {
+    position: absolute;
+    inset: 0;
+    content: "";
+    background-image: url('./noise.avif');
+    background-repeat: repeat;
+    background-size: 50px;
+    opacity: 0.15;
+    pointer-events: none;
+    border-radius: inherit;
+    z-index: 0;
+  }
+
+  .glass > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  .dark .glass {
+    background: oklch(0.15 0 0 / 60%);
+    border: 1px solid oklch(1 0 0 / 10%);
   }
 }
