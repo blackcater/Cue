@@ -4,9 +4,12 @@ import { BrowserWindow, shell } from 'electron'
 import type { BrowserWindowConstructorOptions } from 'electron'
 
 import { is } from '@electron-toolkit/utils'
+import electronWindowState from 'electron-window-state'
+import main from 'electron/main'
 
 import icon from '~/resources/icon.png?asset'
 
+import { mainLog } from '../lib/logger'
 import { platform } from '../lib/utils'
 import { buildWebPreferences } from '../lib/web-preferences'
 
@@ -18,9 +21,22 @@ export class WindowManager {
 	createChatPopupWindow() {}
 
 	createWindow(): BrowserWindow {
+		mainLog.info('create window')
+
+		const mainWindowState = electronWindowState({
+			defaultWidth: 1000,
+			defaultHeight: 700,
+		})
+
 		const opts: BrowserWindowConstructorOptions = {
-			width: 900,
-			height: 670,
+			x: mainWindowState.x,
+			y: mainWindowState.y,
+			width: mainWindowState.width,
+			height: mainWindowState.height,
+			minWidth: 640,
+			minHeight: 480,
+			visualEffectState: 'active',
+			vibrancy: 'under-window',
 			show: false,
 			webPreferences: buildWebPreferences({
 				preload: join(__dirname, '../preload/index.js'),
@@ -40,13 +56,11 @@ export class WindowManager {
 
 		const mainWindow = new BrowserWindow(opts)
 
-		mainWindow.on('ready-to-show', () => {
-			mainWindow.show()
-		})
+		mainWindowState.manage(mainWindow)
 
-		mainWindow.webContents.setWindowOpenHandler((details) => {
-			shell.openExternal(details.url)
-			return { action: 'deny' }
+		mainWindow.on('ready-to-show', () => {
+			mainLog.info('window ready to show')
+			mainWindow.show()
 		})
 
 		if (is.dev && process.env['ELECTRON_RENDERER_URL']) {

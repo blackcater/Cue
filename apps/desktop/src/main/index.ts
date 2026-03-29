@@ -1,69 +1,70 @@
-import { app, ipcMain } from 'electron'
+import { app } from 'electron'
 
-import icon from '~/resources/icon.png?asset'
+import { launch } from './launch'
+import { mainLog } from './lib/logger'
+import { is } from './lib/utils'
 
-import {
-	WindowRegistryImpl,
-	ElectronRpcServer,
-	type WindowRegistry,
-} from '../shared/rpc'
-import { log, mainLog } from './lib/logger'
-import { is, platform, setAppUserModelId } from './lib/utils'
-import { RpcDebugService, WindowManager } from './services'
+app.enableSandbox()
 
-log.initialize()
+if (is.dev) {
+	// In electron the dev server will be resolved to 0.0.0.0, but it
+	// might be blocked by electron.
+	// See https://github.com/webpack/webpack-dev-server/pull/384
+	app.commandLine.appendSwitch('host-resolver-rules', 'MAP 0.0.0.0 127.0.0.1')
+}
 
-app.commandLine.appendSwitch('enable-gpu-rasterization')
-app.commandLine.appendSwitch('enable-zero-copy')
-app.commandLine.appendSwitch('enable-transparent-visuals')
+// https://github.com/electron/electron/issues/43556
+// `CalculateNativeWinOcclusion` - Disable native window occlusion tracker (https://groups.google.com/a/chromium.org/g/embedder-dev/c/ZF3uHHyWLKw/m/VDN2hDXMAAAJ)
+const disabledFeatures = [
+	'PlzDedicatedWorker',
+	'CalculateNativeWinOcclusion',
+	// Disable Chrome autofill and password save prompts
+	'AutofillServerCommunication',
+	'AutofillProfileCleanup',
+	'AutofillAddressProfileSavePrompt',
+	'AutofillPaymentCards',
+	'AutofillEnableAccountWalletStorage',
+	'SavePasswordBubble',
+].join(',')
+app.commandLine.appendSwitch('disable-features', disabledFeatures)
+app.commandLine.appendSwitch('disable-blink-features', 'Autofill')
 
-let windowManager: WindowManager | null = null
-let windowRegistry: WindowRegistry | null = null
-let rpcServer: ElectronRpcServer | null = null
+// Following features are enabled from the runtime:
+// `DocumentPolicyIncludeJSCallStacksInCrashReports` - https://www.electronjs.org/docs/latest/api/web-frame-main#framecollectjavascriptcallstack-experimental
+// `EarlyEstablishGpuChannel` - Refs https://issues.chromium.org/issues/40208065
+// `EstablishGpuChannelAsync` - Refs https://issues.chromium.org/issues/40208065
+const enabledFeatures = [
+	'DocumentPolicyIncludeJSCallStacksInCrashReports',
+	'EarlyEstablishGpuChannel',
+	'EstablishGpuChannelAsync',
+].join(',')
+app.commandLine.appendSwitch('enable-features', enabledFeatures)
+const enabledBlinkFeatures = ['CSSTextAutoSpace', 'WebCodecs'].join(',')
+app.commandLine.appendSwitch('enable-blink-features', enabledBlinkFeatures)
+app.commandLine.appendSwitch('force-color-profile', 'srgb')
 
-app.on('open-url', (event, url) => {
-	event.preventDefault()
-	mainLog.info('Received deeplink:', url)
-})
+/**
+ * Prevent multiple instances
+ */
+const isSingleInstance = app.requestSingleInstanceLock()
+if (!isSingleInstance) {
+	mainLog.info(
+		'Another instance is running or responding deep link, exiting...'
+	)
+	app.quit()
+	process.exit(0)
+}
 
-app.whenReady()
-	.then(() => {
-		setAppUserModelId('dev.blackcater.acme')
-
-		if (platform.isMacOS && app.dock && is.dev) {
-			app.dock.setIcon(icon)
-		}
-
-		// Initialize WindowManager
-		windowManager = new WindowManager()
-		mainLog.info('WindowManager initialized')
-
-		// Initialize WindowRegistry and ElectronRpcServer
-		windowRegistry = new WindowRegistryImpl()
-		rpcServer = new ElectronRpcServer(windowRegistry, ipcMain)
-		mainLog.info('RPC server initialized')
-
-		// Add window:create IPC handler for BrowserWindow creation
-		ipcMain.handle('window:create', async (_, groupId: string | null) => {
-			const { window, clientId } = windowManager!.createDebugWindow()
-			windowRegistry!.registerWindow(window, groupId ?? undefined)
-			return { clientId, windowId: window.id }
-		})
-
-		// Register debug handlers
-		new RpcDebugService(rpcServer, windowRegistry, windowManager)
-		mainLog.info('RPC debug handlers registered')
-
-		// Create the main window
-		const mainWindow = windowManager.createWindow()
-		windowRegistry.registerWindow(mainWindow)
-		mainLog.info('Main window created and registered')
-	})
-	.catch((error) => {
-		mainLog.error('Failed to initialize app:', error)
-		app.quit()
-	})
-
+/**
+ * Shout down background process if all windows was closed
+ */
 app.on('window-all-closed', () => {
 	app.quit()
 })
+
+app.whenReady()
+	.then(launch)
+	.catch((error) => {
+		mainLog.error('Failed to launch app:', error)
+		app.quit()
+	})

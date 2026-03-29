@@ -25,6 +25,8 @@ if (is.dev) {
 	log.transports.console.level = 'info'
 }
 
+log.initialize()
+
 // Export scoped loggers for different modules
 export const mainLog = log.scope('main')
 
