@@ -1,22 +1,14 @@
 import { contextBridge, ipcRenderer } from 'electron'
 
-import { IpcRendererRpcClient } from '../shared/rpc/electron'
+import { IpcRendererRpcClient } from '@/shared/rpc/electron'
+
+import type { API } from './preload'
 
 // Create singleton RPC client instance
-const rpcClient = new IpcRendererRpcClient(ipcRenderer)
+const rpc = new IpcRendererRpcClient(ipcRenderer)
 
-// Expose API - contextBridge only copies enumerable own properties
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const api: any = {
-	getRpcClient: () => ({
-		clientId: rpcClient.clientId,
-		groupId: rpcClient.groupId,
-		call: rpcClient.call.bind(rpcClient),
-		stream: rpcClient.stream.bind(rpcClient),
-		onEvent: rpcClient.onEvent.bind(rpcClient),
-	}),
-	createWindow: (groupId: string | null) =>
-		ipcRenderer.invoke('window:create', groupId),
+const api: API = {
+	rpc,
 }
 
 if (process.contextIsolated) {

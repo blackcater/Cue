@@ -1,7 +1,8 @@
-import type { IpcRendererRpcClient } from '../shared/rpc/electron'
+import type { RpcClient } from '@/shared/rpc'
+import type { IpcRendererRpcClient } from '@/shared/rpc/electron'
 
 interface API {
-	getRpcClient(): IpcRendererRpcClient
+	rpc: RpcClient
 }
 
 declare global {
