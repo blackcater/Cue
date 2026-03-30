@@ -98,4 +98,16 @@ export class WindowRegistry {
 	getGroupsByClientId(clientId: string): string[] {
 		return Array.from(this.#clientIdToGroups.get(clientId) ?? [])
 	}
+
+	closeWindow(windowName: string): void {
+		const groupClientIds = this.#groups.get(windowName)
+		if (groupClientIds) {
+			for (const clientId of groupClientIds) {
+				const win = this.#windows.get(clientId)
+				if (win && !win.isDestroyed()) {
+					win.close()
+				}
+			}
+		}
+	}
 }

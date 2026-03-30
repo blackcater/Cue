@@ -129,4 +129,8 @@ export class WindowManager {
 			enableStateManagement: false,
 		})
 	}
+
+	closeWindow(windowName: string): void {
+		this.#registry.closeWindow(windowName)
+	}
 }
