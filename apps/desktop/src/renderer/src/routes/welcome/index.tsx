@@ -5,9 +5,15 @@ export const Route = createFileRoute('/welcome/')({
 })
 
 function WelcomePage() {
+	const rpc = window.api.getRpcClient()
+
+	const handleStart = () => {
+		rpc.call('/system/window/create-vault', 'vault-1')
+	}
+
 	return (
 		<div className="flex h-full items-center justify-center">
-			<h1>Welcome to Acme</h1>
+			<button onClick={handleStart}>开始</button>
 		</div>
 	)
 }
