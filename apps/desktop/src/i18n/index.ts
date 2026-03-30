@@ -8,9 +8,9 @@ export const SUPPORTED_LOCALES = ['en', 'zh-CN', 'zh-TW'] as const
 export type SupportedLocale = (typeof SUPPORTED_LOCALES)[number]
 
 export const RESOURCES: Resource = {
-	en: { translation: en },
-	'zh-CN': { translation: zhCN },
-	'zh-TW': { translation: zhTW },
+	en: en,
+	'zh-CN': zhCN,
+	'zh-TW': zhTW,
 }
 
 export const LOCALE_MAP: Record<string, SupportedLocale> = {
