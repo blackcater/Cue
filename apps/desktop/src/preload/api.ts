@@ -1,4 +1,4 @@
-import { contextBridge, ipcRenderer } from 'electron'
+import { contextBridge } from 'electron'
 
 import type { API } from './preload'
 import { createRpc } from './utils'
@@ -7,10 +7,10 @@ import { createRpc } from './utils'
 const rpc = createRpc()
 
 const store = {
-	get: (key: 'firstLaunchDone') =>
-		ipcRenderer.invoke('store:get', key) as Promise<boolean>,
-	set: (key: 'firstLaunchDone', value: boolean) =>
-		ipcRenderer.invoke('store:set', key, value) as Promise<void>,
+	get: (key: 'firstLaunchDone'): Promise<boolean> =>
+		rpc.call('store/get', key),
+	set: (key: 'firstLaunchDone', value: boolean): Promise<void> =>
+		rpc.call('store/set', key, value),
 }
 
 const api: API = {

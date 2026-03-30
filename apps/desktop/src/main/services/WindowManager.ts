@@ -45,7 +45,7 @@ export class WindowManager {
 			minHeight: options.minHeight || 0,
 			show: false,
 			webPreferences: buildWebPreferences({
-				preload: join(__dirname, '../preload/index.js'),
+				preload: join(__dirname, '../preload/index.cjs'),
 				webgl: true,
 			}),
 		}
@@ -112,19 +112,27 @@ export class WindowManager {
 	}
 
 	createVaultWindow(vaultId: string): BrowserWindow {
-		return this.#createDefaultWindow(`/vault/${vaultId}`, `vault-${vaultId}`, {
-			enableStateManagement: true,
-			defaultWidth: 1200,
-			defaultHeight: 800,
-		})
+		return this.#createDefaultWindow(
+			`/vault/${vaultId}`,
+			`vault-${vaultId}`,
+			{
+				enableStateManagement: true,
+				defaultWidth: 1200,
+				defaultHeight: 800,
+			}
+		)
 	}
 
 	createChatPopupWindow(threadId: string): BrowserWindow {
-		return this.#createDefaultWindow(`/chat-popup/${threadId}`, `popup-${threadId}`, {
-			width: 600,
-			height: 500,
-			enableStateManagement: false,
-		})
+		return this.#createDefaultWindow(
+			`/chat-popup/${threadId}`,
+			`popup-${threadId}`,
+			{
+				width: 600,
+				height: 500,
+				enableStateManagement: false,
+			}
+		)
 	}
 
 	closeWindow(windowName: string): void {

@@ -1,8 +1,8 @@
 import { Container } from '@/shared/di'
 import { ElectronRpcServer } from '@/shared/rpc'
 
-import { WindowManager } from '../services'
 import { store } from '../lib/store'
+import { WindowManager } from '../services'
 
 export async function registerSystemHandlers() {
 	const server = Container.inject(ElectronRpcServer)
@@ -28,11 +28,11 @@ export async function registerSystemHandlers() {
 	})
 
 	// Store access handlers (for renderer process)
-	router.handle('store:get', (_, key: string) => {
+	router.handle('store/get', (_, key: string) => {
 		return store.get(key as 'firstLaunchDone')
 	})
 
-	router.handle('store:set', (_, key: string, value: boolean) => {
+	router.handle('store/set', (_, key: string, value: boolean) => {
 		store.set(key as 'firstLaunchDone', value)
 	})
 }

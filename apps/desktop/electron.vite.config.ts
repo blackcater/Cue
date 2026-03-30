@@ -48,6 +48,9 @@ export default defineConfig({
 				input: {
 					index: resolve('./src/preload/index.ts'),
 				},
+				output: {
+					format: 'cjs',
+				},
 			},
 		},
 	},

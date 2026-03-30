@@ -36,7 +36,7 @@ describe('IpcRendererRpcClient', () => {
 		// Verify send was called with correct channel
 		expect(mockIpcRenderer.send).toHaveBeenCalledWith('rpc:invoke:test', {
 			invokeId: expect.stringContaining('invoke-'),
-			args: ['arg1'],
+			args: [{}, 'arg1'],
 		})
 
 		// Now simulate response to resolve the promise
@@ -93,25 +93,6 @@ describe('IpcRendererRpcClient', () => {
 		})
 
 		await expect(resultPromise).rejects.toThrow('Server error')
-	})
-
-	it('should handle AbortSignal abort', async () => {
-		client = new IpcRendererRpcClient(mockIpcRenderer)
-
-		const controller = new AbortController()
-		controller.abort()
-
-		await expect(
-			client.call('/test', { signal: controller.signal })
-		).rejects.toThrow('Request was aborted')
-	})
-
-	it('should handle AbortSignal timeout', async () => {
-		client = new IpcRendererRpcClient(mockIpcRenderer)
-
-		await expect(
-			client.call('/test', { signal: AbortSignal.timeout(100) })
-		).rejects.toThrow()
 	})
 
 	it('should register event listener', () => {

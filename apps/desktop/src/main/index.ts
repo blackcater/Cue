@@ -68,7 +68,6 @@ app.whenReady()
 	.then(prepare)
 	.then(registerHandlers)
 	.then(launch)
-
 	.catch((error) => {
 		mainLog.error('Failed to launch app:', error)
 		app.quit()

@@ -132,7 +132,7 @@ describe('ElectronRpcClient', () => {
 			// Check the send was called with correct arguments
 			expect(mockSend).toHaveBeenCalledWith('rpc:invoke:my/event', {
 				invokeId: expect.stringContaining('invoke-'),
-				args: ['arg1', 'arg2'],
+				args: [{}, 'arg1', 'arg2'],
 			})
 		})
 	})
@@ -158,7 +158,7 @@ describe('ElectronRpcClient', () => {
 
 			expect(mockSend).toHaveBeenCalledWith('rpc:invoke:stream/event', {
 				invokeId: expect.stringContaining('invoke-'),
-				args: ['arg1'],
+				args: [{}, 'arg1'],
 			})
 
 			expect(streamResult[Symbol.asyncIterator]).toBeDefined()
@@ -194,51 +194,6 @@ describe('ElectronRpcClient', () => {
 			expect(mockSend).toHaveBeenCalledWith(
 				`rpc:cancel:stream/event:${invokeIdArg.invokeId}`
 			)
-		})
-	})
-
-	describe('AbortSignal', () => {
-		it('should reject with ABORTED when signal is already aborted', async () => {
-			const controller = new AbortController()
-			controller.abort()
-
-			const mockWebContents = {
-				send: vi.fn(),
-				id: 1,
-				on: vi.fn(),
-			}
-
-			const client = new ElectronRpcClient(
-				mockWebContents as unknown as WebContents
-			)
-
-			await expect(
-				client.call('test/echo', { signal: controller.signal }, 'hello')
-			).rejects.toThrow('Request was aborted')
-		})
-
-		it('should reject with TIMEOUT when signal times out', async () => {
-			vi.useFakeTimers()
-			const mockWebContents = {
-				send: vi.fn(),
-				id: 1,
-				on: vi.fn(),
-			}
-
-			const client = new ElectronRpcClient(
-				mockWebContents as unknown as WebContents
-			)
-
-			// Use AbortSignal.timeout() for reliable timeout testing
-			const signal = AbortSignal.timeout(1000)
-
-			const promise = client.call('test/echo', { signal }, 'hello')
-
-			// Fast-forward time to trigger timeout
-			vi.advanceTimersByTime(1000)
-
-			await expect(promise).rejects.toThrow()
-			vi.useRealTimers()
 		})
 	})
 

@@ -93,12 +93,37 @@ export class IpcRendererRpcClient implements RpcClient {
 		const invokeId = `invoke-${++this.#invokeCounter}`
 		const eventPath = event.replaceAll(/^\/|\/$/g, '')
 
+		// Extract options (signal) from args if present
+		let signal: AbortSignal | undefined
+		const lastArg = args.at(-1)
+		if (lastArg && typeof lastArg === 'object' && 'signal' in lastArg) {
+			signal = (lastArg as { signal?: AbortSignal }).signal
+			args = args.slice(0, -1)
+		}
+
 		return new Promise((resolve, reject) => {
+			// Handle already aborted signal
+			if (signal?.aborted) {
+				reject(new Error('Request was aborted'))
+				return
+			}
+
+			const abortHandler = () => {
+				this.#pendingCalls.delete(invokeId)
+				reject(new Error('Request was aborted'))
+			}
+
+			if (signal) {
+				signal.addEventListener('abort', abortHandler, { once: true })
+			}
+
 			this.#pendingCalls.set(invokeId, {
 				resolve: (...resolveArgs: unknown[]) => {
+					if (signal) signal.removeEventListener('abort', abortHandler)
 					resolve(resolveArgs[0] as T)
 				},
 				reject: (...rejectArgs: unknown[]) => {
+					if (signal) signal.removeEventListener('abort', abortHandler)
 					reject(rejectArgs[0])
 				},
 			})
