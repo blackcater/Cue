@@ -83,6 +83,9 @@ export async function launch() {
 
 	// Initialize and show main window
 	await initAndShowMainWindow()
+
+	// Return services for use by registerHandlers
+	return { rpcServer, windowManager }
 }
 
 // Handle app activation (for macOS Dock click)

@@ -64,8 +64,10 @@ app.on('window-all-closed', () => {
 })
 
 app.whenReady()
-	.then(registerHandlers)
 	.then(launch)
+	.then(({ rpcServer, windowManager }) =>
+		registerHandlers(rpcServer, windowManager)
+	)
 	.catch((error) => {
 		mainLog.error('Failed to launch app:', error)
 		app.quit()
