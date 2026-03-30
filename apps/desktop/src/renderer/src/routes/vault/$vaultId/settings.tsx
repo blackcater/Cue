@@ -1,6 +1,9 @@
-// apps/desktop/src/renderer/src/routes/vault/$vaultId/settings.tsx
-function VaultSettings() {
-  return <div>Vault Settings</div>
-}
+import { createFileRoute } from '@tanstack/react-router'
 
-export { VaultSettings }
+export const Route = createFileRoute('/vault/$vaultId/settings')({
+	component: SettingsPage,
+})
+
+function SettingsPage() {
+	return <div>Vault Settings</div>
+}

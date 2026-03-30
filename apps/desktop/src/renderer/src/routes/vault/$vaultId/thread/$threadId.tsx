@@ -1,12 +1,10 @@
-// apps/desktop/src/renderer/src/routes/vault/$vaultId/thread/$threadId.tsx
-import { ThreadView } from '../../../../components/vault/ThreadView'
+import { createFileRoute } from '@tanstack/react-router'
 
-interface ThreadPageProps {
-  threadId: string
+export const Route = createFileRoute('/vault/$vaultId/thread/$threadId')({
+	component: ThreadPage,
+})
+
+function ThreadPage() {
+	const { threadId } = Route.useParams()
+	return <div>Thread View: {threadId}</div>
 }
-
-function ThreadPage({ threadId }: ThreadPageProps) {
-  return <ThreadView threadId={threadId} />
-}
-
-export { ThreadPage }

@@ -25,13 +25,9 @@ export class WindowManager {
 		return this.createWindowByType('popup', { threadId })
 	}
 
-	createWindow(): BrowserWindow {
-		return this.createDefaultWindow()
-	}
-
 	private createWindowByType(
 		type: 'welcome' | 'vault' | 'popup',
-		params?: Record<string, string>,
+		params?: Record<string, string>
 	): BrowserWindow {
 		let hashRoute = ''
 		switch (type) {
@@ -42,7 +38,7 @@ export class WindowManager {
 				hashRoute = `/vault/${params?.['vaultId'] || ''}`
 				break
 			case 'popup':
-				hashRoute = `/popup/${params?.['threadId'] || ''}`
+				hashRoute = `/chat-popup/${params?.['threadId'] || ''}`
 				break
 		}
 
@@ -50,7 +46,7 @@ export class WindowManager {
 	}
 
 	private createDefaultWindow(hashRoute = ''): BrowserWindow {
-		mainLog.info('create window')
+		mainLog.info(`create window with hashRoute: ${hashRoute}`)
 
 		const mainWindowState = electronWindowState({
 			defaultWidth: 1000,
@@ -93,7 +89,9 @@ export class WindowManager {
 		})
 
 		if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
-			mainWindow.loadURL(`${process.env['ELECTRON_RENDERER_URL']}#${hashRoute}`)
+			mainWindow.loadURL(
+				`${process.env['ELECTRON_RENDERER_URL']}#${hashRoute}`
+			)
 		} else {
 			mainWindow.loadFile(join(__dirname, '../renderer/index.html'), {
 				hash: hashRoute,

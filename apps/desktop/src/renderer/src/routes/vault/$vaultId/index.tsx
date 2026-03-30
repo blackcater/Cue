@@ -1,8 +1,9 @@
-// apps/desktop/src/renderer/src/routes/vault/$vaultId/index.tsx
-import { ThreadList } from '../../../components/vault/ThreadList'
+import { createFileRoute } from '@tanstack/react-router'
 
-function VaultIndex() {
-  return <ThreadList />
+export const Route = createFileRoute('/vault/$vaultId/')({
+	component: HomePage,
+})
+
+function HomePage() {
+	return <div>Thread List</div>
 }
-
-export { VaultIndex }

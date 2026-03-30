@@ -1,3 +1,13 @@
-import { WelcomePage } from '../../components/welcome/WelcomePage'
+import { createFileRoute } from '@tanstack/react-router'
 
-export { WelcomePage }
+export const Route = createFileRoute('/welcome/')({
+	component: WelcomePage,
+})
+
+function WelcomePage() {
+	return (
+		<div className="flex h-full items-center justify-center">
+			<h1>Welcome to Acme</h1>
+		</div>
+	)
+}

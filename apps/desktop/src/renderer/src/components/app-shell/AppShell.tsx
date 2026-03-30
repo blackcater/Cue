@@ -2,9 +2,6 @@ import { cn } from '@acme-ai/ui/lib/utils'
 
 import { is } from '@renderer/lib/electron'
 
-import { AppHeader } from './AppHeader'
-import { AppSidebar } from './AppSidebar'
-
 interface AppShellProps {
 	enableNoise?: boolean
 	children: React.ReactNode
@@ -22,13 +19,7 @@ export function AppShell({
 				is.electron && enableNoise && 'noise'
 			)}
 		>
-			<AppHeader />
-			<div className="flex flex-1 overflow-hidden">
-				<AppSidebar />
-				<main className="bg-background flex-1 overflow-auto">
-					{children}
-				</main>
-			</div>
+			{children}
 		</div>
 	)
 }
