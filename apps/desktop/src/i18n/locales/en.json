@@ -1,0 +1,52 @@
+{
+  "welcome": {
+    "welcomeStep": {
+      "title": "Welcome to Acme",
+      "description": "Your AI-powered development environment. Let's get you set up in a few steps.",
+      "getStarted": "Get Started"
+    },
+    "agentStep": {
+      "title": "Configure Your Agent",
+      "description": "Set up your AI agent preferences. This step is under construction.",
+      "next": "Next"
+    },
+    "providerStep": {
+      "title": "Select AI Provider",
+      "description": "Choose your preferred AI provider. This step is under construction.",
+      "next": "Next"
+    },
+    "vaultStep": {
+      "title": "Set Up Vault",
+      "description": "Configure your vault storage. This step is under construction.",
+      "next": "Next"
+    },
+    "readyStep": {
+      "title": "You're All Set!",
+      "description": "Everything is configured and ready to go. Start building with Acme.",
+      "finish": "Finish"
+    }
+  },
+  "common": {
+    "next": "Next",
+    "back": "Back",
+    "finish": "Finish",
+    "cancel": "Cancel",
+    "save": "Save",
+    "settings": "Settings",
+    "language": "Language"
+  },
+  "menu": {
+    "file": "File",
+    "edit": "Edit",
+    "view": "View",
+    "window": "Window",
+    "help": "Help"
+  },
+  "settings": {
+    "title": "Settings",
+    "language": {
+      "title": "Language",
+      "description": "Select your preferred language"
+    }
+  }
+}

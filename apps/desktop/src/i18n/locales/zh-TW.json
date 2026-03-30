@@ -1,0 +1,52 @@
+{
+  "welcome": {
+    "welcomeStep": {
+      "title": "歡迎使用 Acme",
+      "description": "您的 AI 驅動開發環境。讓我們通過幾個步驟為您完成設定。",
+      "getStarted": "開始使用"
+    },
+    "agentStep": {
+      "title": "設定您的 Agent",
+      "description": "設定您的 AI agent 偏好。此步驟正在開發中。",
+      "next": "下一步"
+    },
+    "providerStep": {
+      "title": "選擇 AI 提供商",
+      "description": "選擇您偏好的 AI 提供商。此步驟正在開發中。",
+      "next": "下一步"
+    },
+    "vaultStep": {
+      "title": "設定保險庫",
+      "description": "設定您的保險庫存儲。此步驟正在開發中。",
+      "next": "下一步"
+    },
+    "readyStep": {
+      "title": "一切就緒！",
+      "description": "所有設定已完成。開始使用 Acme 進行開發吧。",
+      "finish": "完成"
+    }
+  },
+  "common": {
+    "next": "下一步",
+    "back": "返回",
+    "finish": "完成",
+    "cancel": "取消",
+    "save": "儲存",
+    "settings": "設定",
+    "language": "語言"
+  },
+  "menu": {
+    "file": "檔案",
+    "edit": "編輯",
+    "view": "檢視",
+    "window": "視窗",
+    "help": "說明"
+  },
+  "settings": {
+    "title": "設定",
+    "language": {
+      "title": "語言",
+      "description": "選擇您偏好的語言"
+    }
+  }
+}
