@@ -1,11 +1,10 @@
-import { contextBridge, ipcRenderer } from 'electron'
-
-import { IpcRendererRpcClient } from '@/shared/rpc/electron'
+import { contextBridge } from 'electron'
 
 import type { API } from './preload'
+import { createRpc } from './utils'
 
 // Create singleton RPC client instance
-const rpc = new IpcRendererRpcClient(ipcRenderer)
+const rpc = createRpc()
 
 const api: API = {
 	rpc,

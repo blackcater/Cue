@@ -544,9 +544,9 @@ Legacy hook that runs before model resolve. Returns same fields as `before_promp
 
 When both hooks are present, `resolvePromptBuildHookResult()` merges their outputs with priority to `before_prompt_build`:
 
-| Field            | Merge Logic                 |
-| ---------------- | --------------------------- |
-| `prependContext` | `before_prompt_build` + `"\ |
+| Field            | Merge Logic                  |
+| ---------------- | ---------------------------- |
+| `prependContext` | `before_prompt_build` + `"\  |
 
 \
 "`+`before_agent_start`|

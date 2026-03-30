@@ -1,14 +1,14 @@
 import type { IpcMain } from 'electron'
 
 import { RpcError } from '../RpcError'
-import type { RpcServer, RpcRouter, Rpc, WindowRegistry } from '../types'
+import type { RpcServer, RpcRouter, Rpc, IWindowRegistry } from '../types'
 import { ElectronRpcRouter } from './ElectronRpcRouter'
 
 export class ElectronRpcServer implements RpcServer {
-	readonly #registry: WindowRegistry
+	readonly #registry: IWindowRegistry
 	readonly #ipcMain: IpcMain
 
-	constructor(registry: WindowRegistry, ipcMain: IpcMain) {
+	constructor(registry: IWindowRegistry, ipcMain: IpcMain) {
 		this.#registry = registry
 		this.#ipcMain = ipcMain
 	}

@@ -541,6 +541,7 @@ If `@mastra/core` (v1.8.0) receives a minor bump to v1.9.0:
    - `@mastra/deployer`: `1.8.0` → `1.9.0` (depends on `@mastra/server`)
 
 3. **CHANGELOG entries** automatically generated:
+
    ```markdown
    ### Patch Changes
 

@@ -1,8 +1,6 @@
 import type { BrowserWindow, WebContents } from 'electron'
 
-import type { WindowRegistry } from '../types'
-
-export class AppWindowRegistry implements WindowRegistry {
+export class WindowRegistry {
 	readonly #windows = new Map<string, BrowserWindow>()
 	readonly #groups = new Map<string, Set<string>>()
 	readonly #clientIdToGroups = new Map<string, Set<string>>()

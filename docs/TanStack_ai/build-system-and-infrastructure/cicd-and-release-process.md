@@ -221,6 +221,7 @@ The root [package.json:37-39]() defines these Changesets-related scripts:
    - Formats updated files with Prettier
 
 3. **`changeset:publish`**: Publishes packages to npm
+
    ```bash
    changeset publish
    ```

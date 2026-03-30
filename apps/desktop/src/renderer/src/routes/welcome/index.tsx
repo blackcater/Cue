@@ -7,9 +7,11 @@ export const Route = createFileRoute('/welcome/')({
 })
 
 function WelcomePage() {
-	const rpc = window.api.getRpcClient()
+	const rpc = window.api.rpc
 
 	const handleStart = useCallback(() => {
+		console.log('click', window.api.rpc)
+
 		try {
 			rpc.call('/system/window/create-vault', 'vault-1')
 		} catch (error) {

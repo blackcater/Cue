@@ -9,10 +9,11 @@ export {
 } from './utils'
 
 // Electron transport
-export { ElectronRpcServer } from './electron/ElectronRpcServer'
-export { ElectronRpcClient } from './electron/ElectronRpcClient'
-export { AppWindowRegistry as WindowRegistryImpl } from './electron/AppWindowRegistry'
+export {
+	ElectronRpcClient,
+	ElectronRpcServer,
+	IpcRendererRpcClient,
+} from './electron'
 
 // HTTP transport
-export { HttpRpcServer } from './http/HttpRpcServer'
-export { HttpRpcClient } from './http/HttpRpcClient'
+export { HttpRpcClient, HttpRpcServer } from './http'

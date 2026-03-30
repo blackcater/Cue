@@ -4,79 +4,74 @@ import { BrowserWindow } from 'electron'
 import type { BrowserWindowConstructorOptions } from 'electron'
 
 import { is } from '@electron-toolkit/utils'
-import electronWindowState from 'electron-window-state'
+import electronWindowState, { type State } from 'electron-window-state'
 
+import { Container } from '@/shared/di'
 import icon from '~/resources/icon.png?asset'
 
 import { mainLog } from '../lib/logger'
 import { platform } from '../lib/utils'
 import { buildWebPreferences } from '../lib/web-preferences'
+import { WindowRegistry } from './WindowRegistry'
+
+interface CreateWindowOptions {
+	width?: number
+	height?: number
+	minWidth?: number
+	minHeight?: number
+	defaultWidth?: number
+	defaultHeight?: number
+	enableStateManagement?: boolean
+	enableFixedSize?: boolean
+}
 
 export class WindowManager {
-	private windows = new Map<string, BrowserWindow>()
+	readonly #registry: WindowRegistry
 
-	getWindow(type: string): BrowserWindow | undefined {
-		return this.windows.get(type)
+	constructor() {
+		this.#registry = Container.inject(WindowRegistry)
 	}
 
-	createWelcomeWindow(): BrowserWindow {
-		const win = this.createWindowByType('welcome')
-		this.windows.set('welcome', win)
-		return win
-	}
+	createWelcomeWindow() {}
 
-	createVaultWindow(vaultId: string): BrowserWindow {
-		const win = this.createWindowByType('vault', { vaultId })
-		this.windows.set(`vault:${vaultId}`, win)
-		return win
-	}
+	createVaultWindow() {}
 
-	createChatPopupWindow(threadId: string): BrowserWindow {
-		const win = this.createWindowByType('popup', { threadId })
-		this.windows.set(`popup:${threadId}`, win)
-		return win
-	}
+	createChatPopupWindow() {}
 
-	private createWindowByType(
-		type: 'welcome' | 'vault' | 'popup',
-		params?: Record<string, string>
+	#createDefaultWindow(
+		hashRoute: string,
+		options: CreateWindowOptions
 	): BrowserWindow {
-		let hashRoute = ''
-		switch (type) {
-			case 'welcome':
-				hashRoute = '/welcome'
-				break
-			case 'vault':
-				hashRoute = `/vault/${params?.['vaultId'] || ''}`
-				break
-			case 'popup':
-				hashRoute = `/chat-popup/${params?.['threadId'] || ''}`
-				break
-		}
-
-		return this.createDefaultWindow(hashRoute)
-	}
-
-	private createDefaultWindow(hashRoute = ''): BrowserWindow {
 		mainLog.info(`create window with hashRoute: ${hashRoute}`)
 
-		const mainWindowState = electronWindowState({
-			defaultWidth: 1000,
-			defaultHeight: 700,
-		})
-
+		let windowState: State | null = null
 		const opts: BrowserWindowConstructorOptions = {
-			x: mainWindowState.x,
-			y: mainWindowState.y,
-			width: mainWindowState.width,
-			height: mainWindowState.height,
-			minWidth: 640,
-			minHeight: 480,
+			minWidth: options.minWidth || 0,
+			minHeight: options.minHeight || 0,
 			show: false,
 			webPreferences: buildWebPreferences({
 				preload: join(__dirname, '../preload/index.js'),
 				webgl: true,
 			}),
+		}
+
+		if (options.enableFixedSize) {
+			opts.resizable = false
+		}
+
+		if (options.enableStateManagement) {
+			windowState = electronWindowState({
+				defaultWidth: options.defaultWidth || 1000,
+				defaultHeight: options.defaultHeight || 650,
+			})
+
+			opts.width = windowState.width
+			opts.height = windowState.height
+			opts.x = windowState.x
+			opts.y = windowState.y
+		} else {
+			opts.width = options.width!
+			opts.height = options.height!
 		}
 
 		if (platform.isMacOS) {
@@ -91,72 +86,23 @@ export class WindowManager {
 			opts.icon = icon
 		}
 
-		const mainWindow = new BrowserWindow(opts)
+		const win = new BrowserWindow(opts)
 
-		mainWindowState.manage(mainWindow)
+		windowState?.manage(win)
 
-		mainWindow.on('ready-to-show', () => {
+		win.on('ready-to-show', () => {
 			mainLog.info('window ready to show')
-			mainWindow.show()
+			win.show()
 		})
 
 		if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
-			mainWindow.loadURL(
-				`${process.env['ELECTRON_RENDERER_URL']}#${hashRoute}`
-			)
+			win.loadURL(`${process.env['ELECTRON_RENDERER_URL']}#${hashRoute}`)
 		} else {
-			mainWindow.loadFile(join(__dirname, '../renderer/index.html'), {
+			win.loadFile(join(__dirname, '../renderer/index.html'), {
 				hash: hashRoute,
 			})
 		}
 
-		return mainWindow
-	}
-
-	createDebugWindow(): {
-		window: BrowserWindow
-		clientId: string
-	} {
-		const window = new BrowserWindow({
-			width: 900,
-			height: 670,
-			show: false,
-			autoHideMenuBar: true,
-			...(process.platform === 'linux' ? { icon } : {}),
-			webPreferences: {
-				preload: join(__dirname, '../preload/index.js'),
-				sandbox: false,
-			},
-			titleBarStyle: 'hidden',
-		})
-
-		window.on('ready-to-show', () => {
-			window.show()
-		})
-
-		const clientId = `client-${window.id}`
-
-		// Load the rpc-debug route via hash history
-		if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
-			window.loadURL(`${process.env['ELECTRON_RENDERER_URL']}#/rpc-debug`)
-		} else {
-			window.loadFile(join(__dirname, '../renderer/index.html'), {
-				hash: '/rpc-debug',
-			})
-		}
-
-		return { window, clientId }
-	}
-
-	closeWindow(type: string): void {
-		const win = this.windows.get(type)
-		if (win && !win.isDestroyed()) {
-			win.close()
-		}
-		this.windows.delete(type)
-	}
-
-	createWindow(): BrowserWindow {
-		return this.createWelcomeWindow()
+		return win
 	}
 }

@@ -3,9 +3,9 @@ import type { BrowserWindow, WebContents } from 'electron'
 import type { StandardSchemaV1 } from '@standard-schema/spec'
 
 export namespace Rpc {
-	export type HandlerFn<T = unknown> = (
+	export type HandlerFn<T = any> = (
 		ctx: RequestContext,
-		...args: unknown[]
+		...args: any[]
 	) => T | Promise<T> | AsyncIterator<T>
 
 	export interface HandleOptions {
@@ -40,7 +40,7 @@ export interface RpcServer {
 		handler: Rpc.HandlerFn
 	): void
 
-	push(event: string, target: Rpc.Target, ...args: unknown[]): void
+	push(event: string, target: Rpc.Target, ...args: any[]): void
 }
 
 export interface RpcRouter {
@@ -58,21 +58,21 @@ export interface RpcClient {
 	readonly clientId: string
 	readonly groupId?: string
 
-	call<T>(event: string, ...args: unknown[]): Promise<T>
-	stream<T>(event: string, ...args: unknown[]): Rpc.StreamResult<T>
-	onEvent(event: string, listener: (...args: unknown[]) => void): Rpc.CancelFn
+	call<T>(event: string, ...args: any[]): Promise<T>
+	stream<T>(event: string, ...args: any[]): Rpc.StreamResult<T>
+	onEvent(event: string, listener: (...args: any[]) => void): Rpc.CancelFn
 }
 
-export interface WindowRegistry {
+export interface IWindowRegistry {
 	registerWindow(window: BrowserWindow, group?: string): string
 	unregisterWindow(window: BrowserWindow): void
 
 	joinGroup(clientId: string, groupId: string): void
 	leaveGroup(clientId: string, groupId: string): void
 
-	sendToClient(clientId: string, channel: string, ...args: unknown[]): void
-	sendToGroup(groupId: string, channel: string, ...args: unknown[]): void
-	sendToAll(channel: string, ...args: unknown[]): void
+	sendToClient(clientId: string, channel: string, ...args: any[]): void
+	sendToGroup(groupId: string, channel: string, ...args: any[]): void
+	sendToAll(channel: string, ...args: any[]): void
 
 	getWebContentsByClientId(clientId: string): WebContents | null
 	getClientIdByWebContents(webContents: WebContents): string | null

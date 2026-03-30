@@ -2,10 +2,10 @@ import { describe, it, expect, vi } from 'bun:test'
 
 import type { IpcMain } from 'electron'
 
-import type { WindowRegistry } from '../types'
+import type { IWindowRegistry } from '../types'
 import { ElectronRpcServer } from './ElectronRpcServer'
 
-const createMockRegistry = (): WindowRegistry => ({
+const createMockRegistry = (): IWindowRegistry => ({
 	registerWindow: vi.fn(),
 	unregisterWindow: vi.fn(),
 	joinGroup: vi.fn(),

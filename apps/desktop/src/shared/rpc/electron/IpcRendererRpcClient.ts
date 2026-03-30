@@ -89,7 +89,7 @@ export class IpcRendererRpcClient implements RpcClient {
 		})
 	}
 
-	async call<T>(event: string, ...args: unknown[]): Promise<T> {
+	async call<T>(event: string, ...args: any[]): Promise<T> {
 		const invokeId = `invoke-${++this.#invokeCounter}`
 		const eventPath = event.replaceAll(/^\/|\/$/g, '')
 
@@ -110,7 +110,7 @@ export class IpcRendererRpcClient implements RpcClient {
 		})
 	}
 
-	stream<T>(event: string, ...args: unknown[]): Rpc.StreamResult<T> {
+	stream<T>(event: string, ...args: any[]): Rpc.StreamResult<T> {
 		const invokeId = `invoke-${++this.#invokeCounter}`
 		const eventPath = event.replaceAll(/^\/|\/$/g, '')
 		const chunks: T[] = []
@@ -167,10 +167,7 @@ export class IpcRendererRpcClient implements RpcClient {
 		}
 	}
 
-	onEvent(
-		event: string,
-		listener: (...args: unknown[]) => void
-	): Rpc.CancelFn {
+	onEvent(event: string, listener: (...args: any[]) => void): Rpc.CancelFn {
 		if (!this.#eventListeners.has(event)) {
 			this.#eventListeners.set(event, new Set())
 		}

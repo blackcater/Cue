@@ -4,6 +4,7 @@ import { registerHandlers } from './handlers'
 import { launch } from './launch'
 import { mainLog } from './lib/logger'
 import { is } from './lib/utils'
+import { prepare } from './prepare'
 
 app.enableSandbox()
 
@@ -64,10 +65,10 @@ app.on('window-all-closed', () => {
 })
 
 app.whenReady()
+	.then(prepare)
+	.then(registerHandlers)
 	.then(launch)
-	.then(({ rpcServer, windowManager }) =>
-		registerHandlers(rpcServer, windowManager)
-	)
+
 	.catch((error) => {
 		mainLog.error('Failed to launch app:', error)
 		app.quit()

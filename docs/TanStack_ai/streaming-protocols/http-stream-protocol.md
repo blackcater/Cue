@@ -83,10 +83,10 @@ Each `StreamChunk` is serialized as a single line of JSON followed by a newline 
 
 **Key Characteristics:**
 
-| Feature | HTTP Stream    | SSE |
-| ------- | -------------- | --- |
-| Format  | `{json}\       |
-| `       | `data: {json}\ |
+| Feature | HTTP Stream     | SSE |
+| ------- | --------------- | --- |
+| Format  | `{json}\        |
+| `       | `data: {json}\  |
 
 \
 `|

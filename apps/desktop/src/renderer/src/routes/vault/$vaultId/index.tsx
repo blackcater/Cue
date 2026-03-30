@@ -1,12 +1,13 @@
-import { createFileRoute } from '@tanstack/react-router'
 import { useCallback } from 'react'
+
+import { createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/vault/$vaultId/')({
 	component: HomePage,
 })
 
 function HomePage() {
-	const rpc = window.api.getRpcClient()
+	const rpc = window.api.rpc
 
 	const handleOpenChat = useCallback(() => {
 		try {

@@ -1,2 +1,2 @@
 export { WindowManager } from './WindowManager'
-export { RpcDebugService } from './RpcDebugService'
+export { WindowRegistry } from './WindowRegistry'

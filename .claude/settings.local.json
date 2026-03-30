@@ -17,7 +17,8 @@
       "Read(//Users/blackcater/Workspace/Codes/Labs/Acme/apps/desktop/src/renderer/src/routes/vault/$vaultId/**)",
       "Read(//Users/components/**)",
       "Read(//Users/blackcater/Workspace/Codes/Labs/Acme/apps/desktop/src/renderer/src/routes/vault/$vaultId//**)",
-      "Read(//Users/blackcater/Workspace/Codes/Labs/Acme/apps/desktop/src/renderer/src/routes/vault/$vaultId/thread//**)"
+      "Read(//Users/blackcater/Workspace/Codes/Labs/Acme/apps/desktop/src/renderer/src/routes/vault/$vaultId/thread//**)",
+      "Skill(code-review:code-review)"
     ]
   }
 }

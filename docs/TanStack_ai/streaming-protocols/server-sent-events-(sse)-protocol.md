@@ -589,9 +589,9 @@ Sources: [docs/protocol/sse-protocol.md:338-346]()
 
 ## Comparison with HTTP Stream
 
-| Feature | SSE            | HTTP Stream (NDJSON) |
-| ------- | -------------- | -------------------- |
-| Format  | `data: {json}\ |
+| Feature | SSE             | HTTP Stream (NDJSON) |
+| ------- | --------------- | -------------------- |
+| Format  | `data: {json}\  |
 
 \
 `|`{json}\
