@@ -10,7 +10,6 @@ import {
 import { cn } from '@acme-ai/ui/lib/utils'
 import {
 	Folder01Icon,
-	ArrowDown01Icon,
 	ArrowRight01Icon,
 	PlusSignIcon,
 	MoreHorizontalIcon,
@@ -80,10 +79,13 @@ export function FolderCell({
 						onToggle(id)
 					}}
 				>
-					{/* hover 展开/折叠图标 */}
+					{/* 展开/折叠图标 - 带旋转动画 */}
 					<HugeiconsIcon
-						icon={isExpanded ? ArrowDown01Icon : ArrowRight01Icon}
-						className="absolute size-3.5 opacity-0 transition-opacity group-hover:opacity-100"
+						icon={ArrowRight01Icon}
+						className={cn(
+							"absolute size-3.5 opacity-0 transition-opacity group-hover:opacity-100 transition-transform duration-200",
+							isExpanded ? "rotate-90" : "rotate-0"
+						)}
 					/>
 					{/* 实际的 folder 图标 */}
 					<HugeiconsIcon
