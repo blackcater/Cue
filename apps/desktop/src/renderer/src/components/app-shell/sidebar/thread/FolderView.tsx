@@ -134,12 +134,9 @@ export function FolderView() {
 					<div
 						key={folder.id}
 						className="flex flex-col gap-0.5"
-						draggable
-						onDragStart={(e) => handleDragStart(e, folder.id)}
 						onDragOver={(e) => handleDragOver(e, folder.id)}
 						onDragLeave={handleDragLeave}
 						onDrop={(e) => handleDrop(e, folder.id)}
-						onDragEnd={handleDragEnd}
 					>
 						<FolderCell
 							id={folder.id}
@@ -151,6 +148,9 @@ export function FolderView() {
 							}}
 							dropPosition={isDropTarget ? dropPosition : null}
 							isDragging={isDragging}
+							draggable={true}
+							onDragStart={(e) => handleDragStart(e, folder.id)}
+							onDragEnd={handleDragEnd}
 						/>
 						{isOpen && (
 							<div className="flex flex-col gap-0.5">
