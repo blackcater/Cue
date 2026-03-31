@@ -65,20 +65,16 @@ export function FolderCell({
 				<div className="bg-primary/30 absolute right-2 -bottom-0.5 left-2 z-10 h-0.5" />
 			)}
 			<Cell
+				onClick={() => onToggle(id)}
 				className={cn(
 					'hover:bg-black/10 dark:hover:bg-white/10',
-					isDragging && 'opacity-50',
+					isDragging && 'opacity-50 cursor-grabbing',
+					draggable && !isDragging && 'cursor-grab',
 					className
 				)}
 			>
 				{/* 左侧图标 */}
-				<CellIcon
-					className="cursor-pointer"
-					onClick={(e) => {
-						e.stopPropagation()
-						onToggle(id)
-					}}
-				>
+				<CellIcon>
 					{/* 展开/折叠图标 - 带旋转动画 */}
 					<HugeiconsIcon
 						icon={ArrowRight01Icon}
