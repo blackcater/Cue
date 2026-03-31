@@ -10,6 +10,7 @@
 2. **点击 archive**：切换到确认状态，显示 Confirm 按钮（destructive 样式）
 3. **点击 Confirm**：调用 `onDelete(thread.id)` 执行归档，然后重置状态
 4. **点击空白处**：取消确认状态，恢复初始状态
+5. **不再 hover**：当鼠标离开 ThreadCell 时，取消确认状态，恢复初始状态
 
 ## 状态管理
 
@@ -26,12 +27,28 @@ const [isConfirming, setIsConfirming] = useState(false)
 ### useEffect 实现
 
 ```typescript
+// 监听空白处点击
 useEffect(() => {
   if (!isConfirming) return
+
   const handleClickOutside = () => setIsConfirming(false)
   document.addEventListener('click', handleClickOutside)
+
   return () => document.removeEventListener('click', handleClickOutside)
 }, [isConfirming])
+```
+
+### MouseLeave 处理
+
+在 ThreadCell 的根 Cell 元素上添加 `onMouseLeave` 事件：
+
+```tsx
+<Cell
+  className={...}
+  onMouseLeave={() => isConfirming && setIsConfirming(false)}
+>
+  ...
+</Cell>
 ```
 
 ## 渲染逻辑
