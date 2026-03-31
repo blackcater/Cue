@@ -6,14 +6,11 @@ import {
 	foldersAtom,
 	threadsAtom,
 	openFoldersAtom,
-	viewModeAtom,
-} from '../atoms/thread-atoms'
-import { FolderCell } from '../cell/FolderCell'
+} from '../../atoms/thread-atoms'
+import { ProjectCell } from '../cell/ProjectCell'
 import { ThreadCell } from '../cell/ThreadCell'
-import { TitleCell } from '../cell/TitleCell'
 
 export function FolderView() {
-	const [, setViewMode] = useAtom(viewModeAtom)
 	const [openFolders, setOpenFolders] = useAtom(openFoldersAtom)
 	const folders = useAtomValue(foldersAtom)
 	const threads = useAtomValue(threadsAtom)
@@ -120,77 +117,54 @@ export function FolderView() {
 		})
 	}
 
-	const handleSort = () => {
-		setViewMode('flat')
-	}
-
-	const handleAddFolder = () => {
-		// TODO: implement folder creation
-	}
-
 	// Group threads by folder
-	const unfolderedThreads = threads.filter((t) => !t.folderId && !t.isPinned)
 	const folderContents = folders.map((folder) => ({
 		folder,
 		threads: threads.filter((t) => t.folderId === folder.id),
 	}))
 
 	return (
-		<section className="flex flex-col gap-1 px-2">
-			<TitleCell
-				title="Threads"
-				onSort={handleSort}
-				onAdd={handleAddFolder}
-			/>
-			<div className="flex flex-col gap-0.5">
-				{/* Unfoldered threads */}
-				{unfolderedThreads.map((thread) => (
-					<ThreadCell key={thread.id} thread={thread} />
-				))}
-
-				{/* Folders with their threads */}
-				{folderContents.map(({ folder, threads: folderThreads }) => {
-					const isOpen = openFolders.has(folder.id)
-					const isDropTarget = dropTargetId === folder.id
-					const isDragging = draggedFolderId === folder.id
-					return (
-						<div
-							key={folder.id}
-							className="flex flex-col gap-0.5"
-							draggable
-							onDragStart={(e) => handleDragStart(e, folder.id)}
-							onDragOver={(e) => handleDragOver(e, folder.id)}
-							onDragLeave={handleDragLeave}
-							onDrop={(e) => handleDrop(e, folder.id)}
-							onDragEnd={handleDragEnd}
-						>
-							<FolderCell
-								id={folder.id}
-								title={folder.title}
-								isExpanded={isOpen}
-								onToggle={handleToggleFolder}
-								onAddThread={(_folderId) => {
-									// TODO: implement add thread to folder
-								}}
-								dropPosition={
-									isDropTarget ? dropPosition : null
-								}
-								isDragging={isDragging}
-							/>
-							{isOpen && (
-								<div className="ml-4 flex flex-col gap-0.5">
-									{folderThreads.map((thread) => (
-										<ThreadCell
-											key={thread.id}
-											thread={thread}
-										/>
-									))}
-								</div>
-							)}
-						</div>
-					)
-				})}
-			</div>
-		</section>
+		<div className="flex flex-col gap-0.5">
+			{/* Folders with their threads */}
+			{folderContents.map(({ folder, threads: folderThreads }) => {
+				const isOpen = openFolders.has(folder.id)
+				const isDropTarget = dropTargetId === folder.id
+				const isDragging = draggedFolderId === folder.id
+				return (
+					<div
+						key={folder.id}
+						className="flex flex-col gap-0.5"
+						draggable
+						onDragStart={(e) => handleDragStart(e, folder.id)}
+						onDragOver={(e) => handleDragOver(e, folder.id)}
+						onDragLeave={handleDragLeave}
+						onDrop={(e) => handleDrop(e, folder.id)}
+						onDragEnd={handleDragEnd}
+					>
+						<ProjectCell
+							id={folder.id}
+							title={folder.title}
+							isExpanded={isOpen}
+							onToggle={handleToggleFolder}
+							onAddThread={(_folderId) => {
+								// TODO: implement add thread to folder
+							}}
+							dropPosition={isDropTarget ? dropPosition : null}
+							isDragging={isDragging}
+						/>
+						{isOpen && (
+							<div className="flex flex-col gap-0.5">
+								{folderThreads.map((thread) => (
+									<ThreadCell
+										key={thread.id}
+										thread={thread}
+									/>
+								))}
+							</div>
+						)}
+					</div>
+				)
+			})}
+		</div>
 	)
 }

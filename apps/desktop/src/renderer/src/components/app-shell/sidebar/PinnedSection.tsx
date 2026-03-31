@@ -2,8 +2,8 @@
 import { useAtomValue } from 'jotai'
 
 import { threadsAtom, pinnedThreadsAtom } from '../atoms/thread-atoms'
-import { ThreadCell } from '../cell/ThreadCell'
-import { TitleCell } from '../cell/TitleCell'
+import { ThreadCell } from './cell/ThreadCell'
+import { TitleCell } from './cell/TitleCell'
 
 export function PinnedSection() {
 	const threads = useAtomValue(threadsAtom)

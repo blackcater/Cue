@@ -1,11 +1,10 @@
 import { Button } from '@acme-ai/ui/foundation'
 import { cn } from '@acme-ai/ui/lib/utils'
-import { PinIcon } from '@hugeicons/core-free-icons'
-import { DeleteIcon } from '@hugeicons/core-free-icons'
+import { Archive04Icon, PinIcon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
 import { formatDistanceToNow } from 'date-fns'
 
-import type { Thread } from '../types/thread'
+import type { Thread } from '../../types/thread'
 import { Cell, CellIcon, CellName, CellActions } from './Cell'
 
 export interface ThreadCellProps {
@@ -22,15 +21,21 @@ export function ThreadCell({
 	onTogglePin: _onTogglePin,
 	onDelete,
 	className,
-}: ThreadCellProps) {
+}: Readonly<ThreadCellProps>) {
 	return (
-		<Cell className={cn('text-left', className)}>
+		<Cell
+			className={cn(
+				'text-left',
+				'hover:bg-black/10 dark:hover:bg-white/10',
+				className
+			)}
+		>
 			{/* Left icon area: show pin icon on hover */}
-			<CellIcon className="justify-center">
+			<CellIcon className="cursor-pointer">
 				<HugeiconsIcon
 					icon={PinIcon}
 					className={cn(
-						'text-muted-foreground h-4 w-4 transition-opacity',
+						'text-muted-foreground h-3.5 w-3.5 transition-opacity',
 						isPinned
 							? 'opacity-100'
 							: 'opacity-0 group-hover:opacity-100'
@@ -43,20 +48,25 @@ export function ThreadCell({
 
 			{/* Tail: time + hover actions */}
 			<div className="flex items-center gap-2">
-				<span className="text-muted-foreground/60 text-xs">
-					{formatDistanceToNow(thread.updatedAt, { addSuffix: true })}
-				</span>
 				<CellActions>
+					<span className="text-muted-foreground/60 text-xs group-hover:hidden">
+						{formatDistanceToNow(thread.updatedAt, {
+							addSuffix: true,
+						})}
+					</span>
 					<Button
+						className="hidden group-hover:inline-flex"
 						variant="ghost"
 						size="icon-sm"
 						onClick={(e) => {
 							e.stopPropagation()
 							onDelete?.(thread.id)
 						}}
-						className="h-6 w-6"
 					>
-						<HugeiconsIcon icon={DeleteIcon} className="h-3 w-3" />
+						<HugeiconsIcon
+							icon={Archive04Icon}
+							className="h-3 w-3"
+						/>
 					</Button>
 				</CellActions>
 			</div>

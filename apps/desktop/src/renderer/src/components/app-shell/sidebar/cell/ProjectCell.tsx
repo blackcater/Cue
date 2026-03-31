@@ -8,17 +8,17 @@ import {
 import { cn } from '@acme-ai/ui/lib/utils'
 import {
 	Folder01Icon,
-	FolderOpenIcon,
 	ArrowDown01Icon,
 	ArrowRight01Icon,
 	PlusSignIcon,
 	MoreHorizontalIcon,
+	Folder02Icon,
 } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
 
 import { Cell, CellIcon, CellName, CellActions } from './Cell'
 
-export interface FolderCellProps {
+export interface ProjectCellProps {
 	id: string
 	title: string
 	isExpanded: boolean
@@ -31,7 +31,7 @@ export interface FolderCellProps {
 	isDragging?: boolean
 }
 
-export function FolderCell({
+export function ProjectCell({
 	id,
 	title,
 	isExpanded,
@@ -42,19 +42,19 @@ export function FolderCell({
 	className,
 	dropPosition,
 	isDragging,
-}: FolderCellProps) {
+}: Readonly<ProjectCellProps>) {
 	return (
 		<div className="relative">
 			{/* Drop indicator line */}
 			{dropPosition === 'before' && (
-				<div className="bg-primary absolute -top-0.5 right-0 left-0 z-10 h-0.5" />
+				<div className="bg-primary/30 absolute -top-0.5 right-2 left-2 z-10 h-0.5" />
 			)}
 			{dropPosition === 'after' && (
-				<div className="bg-primary absolute right-0 -bottom-0.5 left-0 z-10 h-0.5" />
+				<div className="bg-primary/30 absolute right-2 -bottom-0.5 left-2 z-10 h-0.5" />
 			)}
 			<Cell
 				className={cn(
-					'text-foreground font-medium',
+					'hover:bg-black/10 dark:hover:bg-white/10',
 					isDragging && 'opacity-50',
 					className
 				)}
@@ -70,12 +70,12 @@ export function FolderCell({
 					{/* hover 展开/折叠图标 */}
 					<HugeiconsIcon
 						icon={isExpanded ? ArrowDown01Icon : ArrowRight01Icon}
-						className="absolute h-4 w-4 opacity-0 transition-opacity group-hover:opacity-100"
+						className="absolute size-3.5 opacity-0 transition-opacity group-hover:opacity-100"
 					/>
 					{/* 实际的 folder 图标 */}
 					<HugeiconsIcon
-						icon={isExpanded ? FolderOpenIcon : Folder01Icon}
-						className="text-foreground h-4 w-4"
+						icon={isExpanded ? Folder02Icon : Folder01Icon}
+						className="text-foreground size-3.5 opacity-100 group-hover:opacity-0"
 					/>
 				</CellIcon>
 
@@ -83,7 +83,7 @@ export function FolderCell({
 				<CellName>{title}</CellName>
 
 				{/* 操作区 */}
-				<CellActions>
+				<CellActions className="opacity-0 group-hover:opacity-100">
 					<DropdownMenu>
 						<DropdownMenuTrigger asChild>
 							<Button
