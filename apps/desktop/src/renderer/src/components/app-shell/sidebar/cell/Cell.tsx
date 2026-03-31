@@ -11,7 +11,7 @@ export function Cell({ className, children }: Readonly<CellProps>) {
 	return (
 		<div
 			className={cn(
-				'group text-secondary-foreground flex h-8 cursor-pointer items-center gap-1 rounded-md px-2.5 text-sm transition-colors',
+				'group text-secondary-foreground flex h-8 items-center gap-1 rounded-md px-2.5 text-sm transition-colors',
 				className
 			)}
 		>

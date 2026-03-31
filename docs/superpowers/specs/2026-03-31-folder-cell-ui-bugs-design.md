@@ -3,6 +3,7 @@
 ## Overview
 
 Fix several UI issues in `FolderView` and `FolderCell` components:
+
 1. Restrict drag area to `FolderCell` only (exclude `ThreadCell`)
 2. Add expand/collapse animation for folder content
 3. Add arrow rotation animation
@@ -58,8 +59,8 @@ Also pass `onDragStart` handler to `FolderCell`.
 <HugeiconsIcon
   icon={ArrowRight01Icon}
   className={cn(
-    "size-3.5 transition-transform duration-200",
-    isExpanded ? "rotate-90" : "rotate-0"
+    'size-3.5 transition-transform duration-200',
+    isExpanded ? 'rotate-90' : 'rotate-0'
   )}
 />
 ```
@@ -76,21 +77,23 @@ When expanded, rotate 90deg (pointing down). When collapsed, rotate 0deg (pointi
 // FolderView.tsx
 import { motion, AnimatePresence } from 'framer-motion'
 
-{isOpen && (
-  <AnimatePresence>
-    <motion.div
-      initial={{ opacity: 0, height: 0 }}
-      animate={{ opacity: 1, height: 'auto' }}
-      exit={{ opacity: 0, height: 0 }}
-      transition={{ duration: 0.2, ease: 'easeInOut' }}
-      className="flex flex-col gap-0.5"
-    >
-      {folderThreads.map((thread) => (
-        <ThreadCell key={thread.id} thread={thread} />
-      ))}
-    </motion.div>
-  </AnimatePresence>
-)}
+{
+  isOpen && (
+    <AnimatePresence>
+      <motion.div
+        initial={{ opacity: 0, height: 0 }}
+        animate={{ opacity: 1, height: 'auto' }}
+        exit={{ opacity: 0, height: 0 }}
+        transition={{ duration: 0.2, ease: 'easeInOut' }}
+        className="flex flex-col gap-0.5"
+      >
+        {folderThreads.map((thread) => (
+          <ThreadCell key={thread.id} thread={thread} />
+        ))}
+      </motion.div>
+    </AnimatePresence>
+  )
+}
 ```
 
 ### 4. Click to Toggle + Drag Cursor
@@ -98,6 +101,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 **Current**: Cell has no cursor style. `onClick` toggles via `CellIcon`.
 
 **Fix**:
+
 - Add `cursor-grab` to `FolderCell` for draggable state
 - Add `cursor-grabbing` when actually dragging
 - Ensure entire `Cell` area is clickable (not just icon)

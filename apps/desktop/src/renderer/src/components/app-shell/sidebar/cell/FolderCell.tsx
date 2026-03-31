@@ -1,3 +1,5 @@
+import type { DragEvent } from 'react'
+
 import {
 	Button,
 	DropdownMenu,
@@ -29,6 +31,9 @@ export interface FolderCellProps {
 	className?: string
 	dropPosition?: 'before' | 'after' | null
 	isDragging?: boolean
+	draggable?: boolean
+	onDragStart?: (e: DragEvent) => void
+	onDragEnd?: (e: DragEvent) => void
 }
 
 export function FolderCell({
@@ -42,9 +47,17 @@ export function FolderCell({
 	className,
 	dropPosition,
 	isDragging,
+	draggable,
+	onDragStart,
+	onDragEnd,
 }: Readonly<FolderCellProps>) {
 	return (
-		<div className="relative">
+		<div
+			className="relative"
+			draggable={draggable}
+			onDragStart={onDragStart}
+			onDragEnd={onDragEnd}
+		>
 			{/* Drop indicator line */}
 			{dropPosition === 'before' && (
 				<div className="bg-primary/30 absolute -top-0.5 right-2 left-2 z-10 h-0.5" />

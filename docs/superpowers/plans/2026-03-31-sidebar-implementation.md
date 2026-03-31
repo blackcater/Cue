@@ -35,6 +35,7 @@ apps/desktop/src/renderer/src/components/app-shell/
 ## Task 1: 创建类型定义
 
 **Files:**
+
 - Create: `apps/desktop/src/renderer/src/components/app-shell/types/thread.ts`
 
 - [ ] **Step 1: 创建 types 目录和类型定义文件**
@@ -58,7 +59,14 @@ export interface Folder {
 
 export type TreeNode =
   | { type: 'folder'; id: string; name: string; order: number }
-  | { type: 'thread'; id: string; name: string; folderId: string | null; updatedAt: Date; isPinned: boolean }
+  | {
+      type: 'thread'
+      id: string
+      name: string
+      folderId: string | null
+      updatedAt: Date
+      isPinned: boolean
+    }
 
 export type ViewMode = 'folder' | 'flat'
 ```
@@ -82,6 +90,7 @@ git commit -m "feat(desktop): add thread and folder type definitions"
 ## Task 2: 创建状态管理 Atoms
 
 **Files:**
+
 - Create: `apps/desktop/src/renderer/src/components/app-shell/atoms/thread-atoms.ts`
 
 - [ ] **Step 1: 创建 atoms 目录和文件**
@@ -159,6 +168,7 @@ git commit -m "feat(desktop): add thread state management atoms with jotai"
 ## Task 3: 完善 Cell 基础组件
 
 **Files:**
+
 - Modify: `apps/desktop/src/renderer/src/components/app-shell/cell/Cell.tsx`
 
 - [ ] **Step 1: 实现 Cell 基础样式组件**
@@ -191,7 +201,12 @@ export function Cell({ className, children }: CellProps) {
 
 export function CellIcon({ className, children }: CellProps) {
   return (
-    <div className={cn('flex h-8 w-8 shrink-0 items-center justify-center', className)}>
+    <div
+      className={cn(
+        'flex h-8 w-8 shrink-0 items-center justify-center',
+        className
+      )}
+    >
       {children}
     </div>
   )
@@ -207,7 +222,12 @@ export function CellName({ className, children }: CellProps) {
 
 export function CellActions({ className, children }: CellProps) {
   return (
-    <div className={cn('flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity', className)}>
+    <div
+      className={cn(
+        'flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity',
+        className
+      )}
+    >
       {children}
     </div>
   )
@@ -232,6 +252,7 @@ git commit -m "feat(desktop): add Cell base component with styling utilities"
 ## Task 4: 完善 ThreadCell 组件
 
 **Files:**
+
 - Modify: `apps/desktop/src/renderer/src/components/app-shell/cell/ThreadCell.tsx`
 
 - [ ] **Step 1: 实现 ThreadCell 组件**
@@ -242,7 +263,11 @@ import { formatDistanceToNow } from 'date-fns'
 import { PinIcon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
 import { Button } from '@acme-ai/ui/foundation'
-import { MoreHorizontalIcon, DeleteIcon, ArchiveIcon } from '@hugeicons/core-free-icons'
+import {
+  MoreHorizontalIcon,
+  DeleteIcon,
+  ArchiveIcon,
+} from '@hugeicons/core-free-icons'
 
 import { Cell, CellIcon, CellName, CellActions } from './Cell'
 import { cn } from '@acme-ai/ui/lib/utils'
@@ -321,6 +346,7 @@ git commit -m "feat(desktop): implement ThreadCell component with hover states"
 ## Task 5: 完善 FolderCell 组件
 
 **Files:**
+
 - Modify: `apps/desktop/src/renderer/src/components/app-shell/cell/FolderCell.tsx`
 
 - [ ] **Step 1: 实现 FolderCell 组件**
@@ -337,7 +363,13 @@ import {
   MoreHorizontalIcon,
 } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
-import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@acme-ai/ui/foundation'
+import {
+  Button,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@acme-ai/ui/foundation'
 
 import { Cell, CellIcon, CellName, CellActions } from './Cell'
 import { cn } from '@acme-ai/ui/lib/utils'
@@ -440,6 +472,7 @@ git commit -m "feat(desktop): implement FolderCell component with expand/collaps
 ## Task 6: 完善 TitleCell 组件
 
 **Files:**
+
 - Modify: `apps/desktop/src/renderer/src/components/app-shell/cell/TitleCell.tsx`
 
 - [ ] **Step 1: 实现 TitleCell 组件**
@@ -460,14 +493,14 @@ export interface TitleCellProps {
   className?: string
 }
 
-export function TitleCell({
-  title,
-  onSort,
-  onAdd,
-  className,
-}: TitleCellProps) {
+export function TitleCell({ title, onSort, onAdd, className }: TitleCellProps) {
   return (
-    <Cell className={cn('text-muted-foreground cursor-default hover:bg-transparent', className)}>
+    <Cell
+      className={cn(
+        'text-muted-foreground cursor-default hover:bg-transparent',
+        className
+      )}
+    >
       <CellName className="text-xs font-semibold uppercase tracking-wider">
         {title}
       </CellName>
@@ -520,6 +553,7 @@ git commit -m "feat(desktop): implement TitleCell component with sort and add ac
 ## Task 7: 创建 PinnedSection 组件
 
 **Files:**
+
 - Create: `apps/desktop/src/renderer/src/components/app-shell/sidebar/PinnedSection.tsx`
 
 - [ ] **Step 1: 实现 PinnedSection 组件**
@@ -572,6 +606,7 @@ git commit -m "feat(desktop): add PinnedSection component"
 ## Task 8: 创建 FolderView 组件（使用 headless-tree）
 
 **Files:**
+
 - Create: `apps/desktop/src/renderer/src/components/app-shell/sidebar/FolderView.tsx`
 
 - [ ] **Step 1: 实现 FolderView 组件**
@@ -583,7 +618,12 @@ import { useTree } from '@headless-tree/react'
 import { FolderCell } from '../cell/FolderCell'
 import { ThreadCell } from '../cell/ThreadCell'
 import { TitleCell } from '../cell/TitleCell'
-import { foldersAtom, threadsAtom, openFoldersAtom, viewModeAtom } from '../atoms/thread-atoms'
+import {
+  foldersAtom,
+  threadsAtom,
+  openFoldersAtom,
+  viewModeAtom,
+} from '../atoms/thread-atoms'
 import type { TreeNode } from '../types/thread'
 import { cn } from '@acme-ai/ui/lib/utils'
 
@@ -658,11 +698,7 @@ export function FolderView() {
 
   return (
     <section className="flex flex-col gap-1 px-2">
-      <TitleCell
-        title="Threads"
-        onSort={handleSort}
-        onAdd={handleAddFolder}
-      />
+      <TitleCell title="Threads" onSort={handleSort} onAdd={handleAddFolder} />
       <div className="flex flex-col gap-0.5">
         {/* Unfoldered threads */}
         {unfolderedThreads.map((thread) => (
@@ -717,6 +753,7 @@ git commit -m "feat(desktop): add FolderView component with headless-tree integr
 ## Task 9: 创建 FlatView 组件
 
 **Files:**
+
 - Create: `apps/desktop/src/renderer/src/components/app-shell/sidebar/FlatView.tsx`
 
 - [ ] **Step 1: 实现 FlatView 组件**
@@ -780,6 +817,7 @@ git commit -m "feat(desktop): add FlatView component with sorted threads"
 ## Task 10: 更新 AppSidebar 整合所有组件
 
 **Files:**
+
 - Modify: `apps/desktop/src/renderer/src/components/app-shell/AppSidebar.tsx`
 
 - [ ] **Step 1: 更新 AppSidebar 整合所有区域组件**
@@ -840,6 +878,7 @@ git commit -m "feat(desktop): integrate all sidebar sections into AppSidebar"
 ## Task 11: 添加拖拽排序功能
 
 **Files:**
+
 - Modify: `apps/desktop/src/renderer/src/components/app-shell/sidebar/FolderView.tsx`
 
 - [ ] **Step 1: 实现 folder 拖拽排序**
@@ -851,7 +890,9 @@ git commit -m "feat(desktop): integrate all sidebar sections into AppSidebar"
 
 // 1. 添加 drop indicator 状态
 const [dropTargetId, setDropTargetId] = useState<string | null>(null)
-const [dropPosition, setDropPosition] = useState<'before' | 'after' | null>(null)
+const [dropPosition, setDropPosition] = useState<'before' | 'after' | null>(
+  null
+)
 
 // 2. 在 tree.useTree 的 onDragOver 中更新状态
 // 在 tree.useTree 的 onDrop 中执行排序
