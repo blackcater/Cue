@@ -95,7 +95,7 @@ export function FolderCell({
 
 				{/* 操作区 */}
 				<CellActions className="opacity-0 group-hover:opacity-100">
-					<DropdownMenu>
+					<DropdownMenu modal={false}>
 						<DropdownMenuTrigger asChild>
 							<Button
 								variant="ghost"
