@@ -21,6 +21,8 @@ export interface FolderCellProps {
   onRename?: (folderId: string) => void
   onDelete?: (folderId: string) => void
   className?: string
+  dropPosition?: 'before' | 'after' | null
+  isDragging?: boolean
 }
 
 export function FolderCell({
@@ -32,9 +34,19 @@ export function FolderCell({
   onRename,
   onDelete,
   className,
+  dropPosition,
+  isDragging,
 }: FolderCellProps) {
   return (
-    <Cell className={cn('font-medium text-foreground', className)}>
+    <div className="relative">
+      {/* Drop indicator line */}
+      {dropPosition === 'before' && (
+        <div className="absolute -top-0.5 left-0 right-0 h-0.5 bg-primary z-10" />
+      )}
+      {dropPosition === 'after' && (
+        <div className="absolute -bottom-0.5 left-0 right-0 h-0.5 bg-primary z-10" />
+      )}
+    <Cell className={cn('font-medium text-foreground', isDragging && 'opacity-50', className)}>
       {/* 左侧图标 */}
       <CellIcon
         className="cursor-pointer"
@@ -88,5 +100,6 @@ export function FolderCell({
         </Button>
       </CellActions>
     </Cell>
+    </div>
   )
 }
