@@ -159,16 +159,14 @@ export function FolderView() {
 								maxHeight: isOpen ? '1000px' : '0px',
 							}}
 							transition={{
-								duration: 0.3,
-								ease: 'easeInOut',
+								type: 'spring',
+								stiffness: 300,
+								damping: 30,
 							}}
 							style={{ overflow: 'hidden' }}
 						>
 							{folderThreads.map((thread) => (
-								<ThreadCell
-									key={thread.id}
-									thread={thread}
-								/>
+								<ThreadCell key={thread.id} thread={thread} />
 							))}
 						</motion.div>
 					</div>
