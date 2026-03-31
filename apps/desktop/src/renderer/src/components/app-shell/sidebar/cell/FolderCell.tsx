@@ -1,10 +1,11 @@
-import { useState, type DragEvent } from 'react'
+import { useRef, type DragEvent } from 'react'
 
 import {
 	Button,
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuItem,
+	DropdownMenuPortal,
 	DropdownMenuTrigger,
 } from '@acme-ai/ui/foundation'
 import { cn } from '@acme-ai/ui/lib/utils'
@@ -50,13 +51,11 @@ export function FolderCell({
 	onDragStart,
 	onDragEnd,
 }: Readonly<FolderCellProps>) {
-	const [isHovered, setIsHovered] = useState(false)
-	const [isMenuOpen, setIsMenuOpen] = useState(false)
-
-	const showActions = isHovered || isMenuOpen
+	const containerRef = useRef<HTMLDivElement>(null)
 
 	return (
 		<div
+			ref={containerRef}
 			className="relative"
 			draggable={draggable}
 			onDragStart={onDragStart}
@@ -79,8 +78,6 @@ export function FolderCell({
 					className
 				)}
 				onClick={() => onToggle(id)}
-				onMouseEnter={() => setIsHovered(true)}
-				onMouseLeave={() => setIsHovered(false)}
 			>
 				{/* 左侧图标 */}
 				<CellIcon>
@@ -103,8 +100,8 @@ export function FolderCell({
 				<CellName>{title}</CellName>
 
 				{/* 操作区 */}
-				<CellActions className={cn(showActions ? 'opacity-100' : 'opacity-0')}>
-					<DropdownMenu modal={false} onOpenChange={setIsMenuOpen}>
+				<CellActions className="opacity-0 group-hover:opacity-100">
+					<DropdownMenu modal={false}>
 						<DropdownMenuTrigger
 							asChild
 							onClick={(e) => e.stopPropagation()}
@@ -120,14 +117,20 @@ export function FolderCell({
 								/>
 							</Button>
 						</DropdownMenuTrigger>
-						<DropdownMenuContent align="end">
-							<DropdownMenuItem onClick={() => onRename?.(id)}>
-								Rename
-							</DropdownMenuItem>
-							<DropdownMenuItem onClick={() => onDelete?.(id)}>
-								Delete
-							</DropdownMenuItem>
-						</DropdownMenuContent>
+						<DropdownMenuPortal container={containerRef.current}>
+							<DropdownMenuContent align="end">
+								<DropdownMenuItem
+									onClick={() => onRename?.(id)}
+								>
+									Rename
+								</DropdownMenuItem>
+								<DropdownMenuItem
+									onClick={() => onDelete?.(id)}
+								>
+									Delete
+								</DropdownMenuItem>
+							</DropdownMenuContent>
+						</DropdownMenuPortal>
 					</DropdownMenu>
 					<Button
 						variant="ghost"
