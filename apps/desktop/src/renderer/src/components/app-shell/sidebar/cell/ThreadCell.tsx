@@ -1,3 +1,5 @@
+import { useState, useEffect } from 'react'
+
 import { Button } from '@acme-ai/ui/foundation'
 import { cn } from '@acme-ai/ui/lib/utils'
 import { Archive04Icon, PinIcon } from '@hugeicons/core-free-icons'
@@ -22,6 +24,17 @@ export function ThreadCell({
 	onDelete,
 	className,
 }: Readonly<ThreadCellProps>) {
+	const [isConfirming, setIsConfirming] = useState(false)
+
+	useEffect(() => {
+		if (!isConfirming) return
+
+		const handleClickOutside = () => setIsConfirming(false)
+		document.addEventListener('click', handleClickOutside)
+
+		return () => document.removeEventListener('click', handleClickOutside)
+	}, [isConfirming])
+
 	return (
 		<Cell
 			className={cn(
@@ -29,6 +42,7 @@ export function ThreadCell({
 				'hover:bg-black/10 dark:hover:bg-white/10',
 				className
 			)}
+			onMouseLeave={() => isConfirming && setIsConfirming(false)}
 		>
 			{/* Left icon area: show pin icon on hover */}
 			<CellIcon className="cursor-pointer">
@@ -54,20 +68,34 @@ export function ThreadCell({
 							addSuffix: true,
 						})}
 					</span>
-					<Button
-						className="hidden group-hover:inline-flex"
-						variant="ghost"
-						size="icon-sm"
-						onClick={(e) => {
-							e.stopPropagation()
-							onDelete?.(thread.id)
-						}}
-					>
-						<HugeiconsIcon
-							icon={Archive04Icon}
-							className="h-3 w-3"
-						/>
-					</Button>
+					{isConfirming ? (
+						<Button
+							variant="destructive"
+							size="icon-sm"
+							onClick={(e) => {
+								e.stopPropagation()
+								onDelete?.(thread.id)
+								setIsConfirming(false)
+							}}
+						>
+							Confirm
+						</Button>
+					) : (
+						<Button
+							className="hidden group-hover:inline-flex"
+							variant="ghost"
+							size="icon-sm"
+							onClick={(e) => {
+								e.stopPropagation()
+								setIsConfirming(true)
+							}}
+						>
+							<HugeiconsIcon
+								icon={Archive04Icon}
+								className="h-3 w-3"
+							/>
+						</Button>
+					)}
 				</CellActions>
 			</div>
 		</Cell>
