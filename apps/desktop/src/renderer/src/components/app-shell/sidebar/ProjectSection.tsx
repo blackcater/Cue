@@ -24,12 +24,17 @@ export function ProjectSection() {
 
 	return (
 		<section className="flex h-full max-w-full flex-col gap-1 px-2">
-			<ThreadTitleCell
-				title="Threads"
-				onSort={handleSort}
-				onAdd={handleAddFolder}
-			/>
-			{viewMode === 'folder' ? <FolderView /> : <FlatView />}
+			<div className="relative flex min-h-0 flex-1 flex-col">
+				<ThreadTitleCell
+					title="Threads"
+					onSort={handleSort}
+					onAdd={handleAddFolder}
+					className="sticky top-0 z-10"
+				/>
+				<div className="min-h-0 flex-1 overflow-y-auto">
+					{viewMode === 'folder' ? <FolderView /> : <FlatView />}
+				</div>
+			</div>
 		</section>
 	)
 }
