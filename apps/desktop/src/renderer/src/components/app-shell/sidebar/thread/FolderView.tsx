@@ -35,6 +35,7 @@ function SortableFolder({
 	const { ref, isDragging } = useSortable({
 		id: folder.id,
 		index,
+		type: 'folder',
 		transition: { duration: 200, easing: 'ease-out', idle: true },
 	})
 
@@ -45,7 +46,6 @@ function SortableFolder({
 				title={folder.title}
 				isExpanded={isOpen}
 				onToggle={onToggle}
-				draggable={true}
 			/>
 			<div
 				className="transition-[grid-template-rows] duration-200 ease-in-out"
@@ -56,11 +56,7 @@ function SortableFolder({
 			>
 				<div style={{ overflow: 'hidden' }}>
 					{folderThreads.map((thread) => (
-						<ThreadCell
-							key={thread.id}
-							thread={thread}
-							draggable={false}
-						/>
+						<ThreadCell key={thread.id} thread={thread} />
 					))}
 				</div>
 			</div>

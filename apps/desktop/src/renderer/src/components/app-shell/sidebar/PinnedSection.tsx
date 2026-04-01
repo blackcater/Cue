@@ -21,12 +21,13 @@ function SortableThread({ thread, index }: SortableThreadProps) {
 	const { ref, isDragging } = useSortable({
 		id: thread.id,
 		index,
+		type: 'thread',
 		transition: { duration: 200, easing: 'ease-out', idle: true },
 	})
 
 	return (
 		<div ref={ref} className={isDragging ? 'opacity-50' : undefined}>
-			<ThreadCell thread={thread} isPinned={true} draggable={true} />
+			<ThreadCell thread={thread} isPinned={true} />
 		</div>
 	)
 }
