@@ -22,7 +22,6 @@ function SortableThread({ thread, index }: Readonly<SortableThreadProps>) {
 		id: thread.id,
 		index,
 		type: 'thread',
-		transition: { duration: 200, easing: 'ease-out' },
 	})
 
 	return (
@@ -53,15 +52,14 @@ export function PinnedSection() {
 
 	return (
 		<DragDropProvider>
+			<DragOverlay>
+				{(source) => {
+					const thread = threads.find((t) => t.id === source.id)
+					if (!thread) return null
+					return <ThreadCell thread={thread} isPinned />
+				}}
+			</DragOverlay>
 			<section className="flex flex-col gap-1 px-2 py-2">
-				<DragOverlay>
-					{(source) => {
-						if (!source) return null
-						const thread = threads.find((t) => t.id === source.id)
-						if (!thread) return null
-						return <ThreadCell thread={thread} isPinned />
-					}}
-				</DragOverlay>
 				<div className="flex flex-col gap-0.5">
 					{pinnedThreads.map((thread, index) => (
 						<SortableThread

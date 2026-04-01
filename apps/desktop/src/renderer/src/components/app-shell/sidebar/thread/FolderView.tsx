@@ -39,7 +39,6 @@ function SortableFolder({
 		id: folder.id,
 		index,
 		type: 'folder',
-		transition: { duration: 200, easing: 'ease-out' },
 	})
 
 	return (
@@ -117,21 +116,21 @@ export function FolderView() {
 				event.preventDefault()
 			}}
 		>
+			<DragOverlay>
+				{(source) => {
+					const folder = folders.find((f) => f.id === source.id)
+					if (!folder) return null
+					return (
+						<FolderCell
+							id={folder.id}
+							title={folder.title}
+							isExpanded={false}
+							onToggle={handleToggleFolder}
+						/>
+					)
+				}}
+			</DragOverlay>
 			<div className="flex flex-col gap-0.5">
-				<DragOverlay>
-					{(source) => {
-						const folder = folders.find((f) => f.id === source.id)
-						if (!folder) return null
-						return (
-							<FolderCell
-								id={folder.id}
-								title={folder.title}
-								isExpanded={false}
-								onToggle={handleToggleFolder}
-							/>
-						)
-					}}
-				</DragOverlay>
 				{folderContents.map(
 					({ folder, threads: folderThreads }, index) => (
 						<SortableFolder
