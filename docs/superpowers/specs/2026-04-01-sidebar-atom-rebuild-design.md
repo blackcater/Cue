@@ -9,7 +9,7 @@
 ```
 renderer/src/
 ├── atoms/
-│   ├── sidebar.ts       # sidebarAtom, sidebarPreferencesAtom
+│   ├── sidebar.ts        # sidebarAtom
 │   ├── project.ts        # projectsAtom, openProjectsAtom
 │   └── thread.ts         # threadsAtom, sortedThreadsAtom, pinnedThreadsAtom,
 │                         # projectThreadsSelector, selectedThreadIdAtom
@@ -48,11 +48,6 @@ export interface SidebarState {
   viewMode: 'folder' | 'flat'
   sortOrder: 'asc' | 'desc'
   sortField: 'updatedAt' | 'createdAt'
-}
-
-export interface SidebarPreferences {
-  collapsed: boolean
-  width: number
 }
 
 export const sidebarAtom = atomWithStorage<SidebarState>('sidebar-state', {
