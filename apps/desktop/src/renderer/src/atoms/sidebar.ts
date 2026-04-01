@@ -1,5 +1,8 @@
 import { atomWithStorage } from 'jotai/utils'
+
+import type { Project } from '../types/project'
 import type { SidebarState } from '../types/sidebar'
+import type { Thread } from '../types/thread'
 
 export const sidebarAtom = atomWithStorage<SidebarState>('sidebar-state', {
 	collapsed: false,
@@ -9,20 +12,7 @@ export const sidebarAtom = atomWithStorage<SidebarState>('sidebar-state', {
 	sortField: 'updatedAt',
 })
 
-export interface Project {
-	id: string
-	title: string
-}
-
 export const projectsAtom = atomWithStorage<Project[]>('projects', [])
-
-export interface Thread {
-	id: string
-	projectId: string
-	title: string
-	updatedAt: Date
-	createdAt: Date
-}
 
 export const threadsAtom = atomWithStorage<Thread[]>('threads', [])
 
