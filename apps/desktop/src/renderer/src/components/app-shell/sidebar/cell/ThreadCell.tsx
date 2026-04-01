@@ -1,7 +1,7 @@
 import { useState, useEffect, type DragEvent } from 'react'
 
+import { cn } from '@acme-ai/ui'
 import { Button } from '@acme-ai/ui/foundation'
-import { cn } from '@acme-ai/ui/lib/utils'
 import { Archive04Icon, PinIcon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
 import { formatDistanceToNow } from 'date-fns'

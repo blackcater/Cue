@@ -1,4 +1,4 @@
-import { cn } from '@acme-ai/ui/lib/utils'
+import { cn } from '@acme-ai/ui'
 
 import { is } from '@renderer/lib/electron'
 

@@ -1,5 +1,6 @@
 import { useState, type DragEvent } from 'react'
 
+import { cn } from '@acme-ai/ui'
 import {
 	Button,
 	DropdownMenu,
@@ -7,7 +8,6 @@ import {
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from '@acme-ai/ui/foundation'
-import { cn } from '@acme-ai/ui/lib/utils'
 import {
 	Folder01Icon,
 	ArrowRight01Icon,

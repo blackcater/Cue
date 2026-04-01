@@ -1,6 +1,6 @@
 import React, { type DragEvent } from 'react'
 
-import { cn } from '@acme-ai/ui/lib/utils'
+import { cn } from '@acme-ai/ui'
 
 export interface CellProps {
 	className?: string

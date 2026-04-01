@@ -1,4 +1,4 @@
-// apps/desktop/src/renderer/src/components/app-shell/sidebar/PinnedSection.tsx
+import { cn } from '@acme-ai/ui'
 import { DragDropProvider, DragOverlay, PointerSensor } from '@dnd-kit/react'
 import { useSortable } from '@dnd-kit/react/sortable'
 import { useAtomValue, useAtom } from 'jotai'
@@ -26,7 +26,13 @@ function SortableThread({ thread, index }: Readonly<SortableThreadProps>) {
 	})
 
 	return (
-		<div ref={ref} className={isDragging ? 'opacity-50' : undefined}>
+		<div
+			ref={ref}
+			className={cn(
+				isDragging && 'pointer-events-none opacity-0',
+				!isDragging && 'cursor-grab active:cursor-grabbing'
+			)}
+		>
 			<ThreadCell thread={thread} isPinned={true} />
 		</div>
 	)

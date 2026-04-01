@@ -1,3 +1,4 @@
+import { cn } from '@acme-ai/ui'
 import { DragOverlay } from '@dnd-kit/react'
 import { useSortable } from '@dnd-kit/react/sortable'
 import { useAtom, useAtomValue } from 'jotai'
@@ -40,7 +41,13 @@ function SortableFolder({
 	})
 
 	return (
-		<div ref={ref} className={isDragging ? 'opacity-50' : undefined}>
+		<div
+			ref={ref}
+			className={cn(
+				isDragging && 'pointer-events-none opacity-0',
+				!isDragging && 'cursor-grab active:cursor-grabbing'
+			)}
+		>
 			<FolderCell
 				id={folder.id}
 				title={folder.title}
@@ -56,7 +63,13 @@ function SortableFolder({
 			>
 				<div style={{ overflow: 'hidden' }}>
 					{folderThreads.map((thread) => (
-						<ThreadCell key={thread.id} thread={thread} />
+						<div
+							key={thread.id}
+							onMouseDown={(e) => e.stopPropagation()}
+							onPointerDown={(e) => e.stopPropagation()}
+						>
+							<ThreadCell thread={thread} />
+						</div>
 					))}
 				</div>
 			</div>
