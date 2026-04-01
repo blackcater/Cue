@@ -3,10 +3,14 @@ import { DragDropProvider, DragOverlay } from '@dnd-kit/react'
 import { useSortable } from '@dnd-kit/react/sortable'
 import { useAtom, useAtomValue } from 'jotai'
 
-import { projectsAtom, openedProjectIdsAtom } from '@renderer/atoms/project'
-import { threadsAtom, pinnedThreadIdsAtom } from '@renderer/atoms/thread'
-import type { Thread } from '@renderer/types/thread'
-import { findElementUntilRoot } from '~/src/shared/dom'
+import { findElementUntilRoot } from '@/shared/dom'
+import {
+	openedProjectIdsAtom,
+	pinnedThreadIdsAtom,
+	projectsAtom,
+	threadsAtom,
+} from '@renderer/atoms'
+import type { Thread } from '@renderer/types'
 
 import { FolderCell } from '../cell/FolderCell'
 import { ThreadCell } from '../cell/ThreadCell'

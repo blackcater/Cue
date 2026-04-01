@@ -1,7 +1,6 @@
-// apps/desktop/src/renderer/src/components/app-shell/sidebar/FlatView.tsx
 import { useAtomValue } from 'jotai'
 
-import { threadsAtom } from '@renderer/atoms/thread'
+import { threadsAtom } from '@renderer/atoms'
 
 import { ThreadCell } from '../cell/ThreadCell'
 

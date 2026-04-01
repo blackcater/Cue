@@ -1,6 +1,6 @@
 import { useAtom } from 'jotai'
 
-import { sidebarAtom } from '@renderer/atoms/sidebar'
+import { sidebarAtom } from '@renderer/atoms'
 
 import { ThreadTitleCell } from './cell/ThreadTitleCell'
 import { FlatView } from './section/FlatView'

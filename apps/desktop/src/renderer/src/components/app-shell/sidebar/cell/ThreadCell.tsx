@@ -6,7 +6,8 @@ import { Archive04Icon, PinIcon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
 import { formatDistanceToNow } from 'date-fns'
 
-import type { Thread } from '../../../../types/thread'
+import type { Thread } from '@renderer/types'
+
 import { Cell, CellIcon, CellName, CellActions } from './Cell'
 
 export interface ThreadCellProps {
