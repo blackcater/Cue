@@ -1,62 +1,47 @@
 // apps/desktop/src/renderer/src/components/app-shell/sidebar/PinnedSection.tsx
-import { useState, useCallback, useRef, type DragEvent } from 'react'
-
+import { useState } from 'react'
 import { useAtomValue, useAtom } from 'jotai'
-
+import { useSortable, DragOverlay } from '@dnd-kit/react'
 import { threadsAtom, pinnedThreadIdsAtom } from '../atoms/thread-atoms'
 import { ThreadCell } from './cell/ThreadCell'
 
+interface SortableThreadProps {
+	thread: { id: string; title: string; updatedAt: Date; isPinned: boolean; folderId: string }
+	index: number
+}
+
+function SortableThread({ thread, index }: SortableThreadProps) {
+	const { ref, isDragging, transition } = useSortable({
+		id: thread.id,
+		index,
+		transition: { duration: 200, easing: 'ease-out', idle: true },
+	})
+
+	return (
+		<div
+			ref={ref}
+			style={{ transition }}
+			className={isDragging ? 'opacity-50' : undefined}
+		>
+			<ThreadCell
+				thread={thread}
+				isPinned={true}
+				draggable={true}
+			/>
+		</div>
+	)
+}
+
 export function PinnedSection() {
 	const threads = useAtomValue(threadsAtom)
-	const [pinnedThreadIds, setPinnedThreadIds] = useAtom(pinnedThreadIdsAtom)
-	const [draggedId, setDraggedId] = useState<string | null>(null)
-	const threadRefs = useRef<Map<string, HTMLDivElement>>(new Map())
+	const [pinnedThreadIds] = useAtom(pinnedThreadIdsAtom)
+	const [activeId, setActiveId] = useState<string | null>(null)
 
-	// 根据 pinnedThreadIds 的顺序获取置顶线程
 	const pinnedThreads = pinnedThreadIds
 		.map((id) => threads.find((t) => t.id === id))
 		.filter((t): t is NonNullable<typeof t> => t != null)
 
-	const handleDragStart = useCallback((e: DragEvent, threadId: string) => {
-		setDraggedId(threadId)
-		e.dataTransfer.effectAllowed = 'move'
-		e.dataTransfer.setData('text/plain', threadId)
-	}, [])
-
-	const handleDragEnd = useCallback(() => {
-		setDraggedId(null)
-	}, [])
-
-	const handleDragOver = useCallback(
-		(e: DragEvent, targetId: string) => {
-			e.preventDefault()
-			if (draggedId === targetId) return
-			e.dataTransfer.dropEffect = 'move'
-
-			const targetEl = threadRefs.current.get(targetId)
-			if (!targetEl) return
-
-			const rect = targetEl.getBoundingClientRect()
-			const midY = rect.top + rect.height / 2
-			const position: 'before' | 'after' =
-				e.clientY < midY ? 'before' : 'after'
-
-			// 立即更新顺序
-			setPinnedThreadIds((prev) => {
-				const list = [...prev]
-				const draggedIdx = list.indexOf(draggedId!)
-				const targetIdx = list.indexOf(targetId)
-				if (draggedIdx === -1 || targetIdx === -1) return prev
-				if (draggedIdx === targetIdx) return prev
-
-				const [dragged] = list.splice(draggedIdx, 1)
-				const newIdx = position === 'before' ? targetIdx : targetIdx + 1
-				list.splice(newIdx, 0, dragged)
-				return list
-			})
-		},
-		[draggedId, setPinnedThreadIds]
-	)
+	const activeThread = activeId ? threads.find((t) => t.id === activeId) : null
 
 	if (pinnedThreads.length === 0) {
 		return null
@@ -64,24 +49,18 @@ export function PinnedSection() {
 
 	return (
 		<section className="flex flex-col gap-1 px-2 py-2">
+			<DragOverlay>
+				{activeThread && (
+					<ThreadCell thread={activeThread} isPinned />
+				)}
+			</DragOverlay>
 			<div className="flex flex-col gap-0.5">
-				{pinnedThreads.map((thread) => (
-					<div
+				{pinnedThreads.map((thread, index) => (
+					<SortableThread
 						key={thread.id}
-						ref={(el) => {
-							if (el) threadRefs.current.set(thread.id, el)
-							else threadRefs.current.delete(thread.id)
-						}}
-						onDragOver={(e) => handleDragOver(e, thread.id)}
-					>
-						<ThreadCell
-							thread={thread}
-							isPinned={true}
-							draggable={true}
-							onDragStart={(e) => handleDragStart(e, thread.id)}
-							onDragEnd={handleDragEnd}
-						/>
-					</div>
+						thread={thread}
+						index={index}
+					/>
 				))}
 			</div>
 		</section>
