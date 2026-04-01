@@ -1,12 +1,5 @@
 import { atomWithStorage } from 'jotai/utils'
-
-export interface SidebarState {
-	collapsed: boolean
-	width: number
-	viewMode: 'folder' | 'flat'
-	sortOrder: 'asc' | 'desc'
-	sortField: 'updatedAt' | 'createdAt'
-}
+import type { SidebarState } from '../types/sidebar'
 
 export const sidebarAtom = atomWithStorage<SidebarState>('sidebar-state', {
 	collapsed: false,
