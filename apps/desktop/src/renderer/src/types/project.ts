@@ -1,13 +1,14 @@
 import type { Thread } from './thread'
 
 export interface Project {
-  id: string
-  title: string
+	id: string
+	title: string
+	order: number
 }
 
 export interface ProjectTreeNode {
-  project: Project
-  threads: Thread[]
+	project: Project
+	threads: Thread[]
 }
 
 export type ProjectTree = ProjectTreeNode[]

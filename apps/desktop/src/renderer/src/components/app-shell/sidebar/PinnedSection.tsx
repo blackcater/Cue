@@ -3,18 +3,13 @@ import { DragDropProvider, DragOverlay } from '@dnd-kit/react'
 import { useSortable } from '@dnd-kit/react/sortable'
 import { useAtomValue } from 'jotai'
 
+import type { Thread } from '@renderer/types/thread'
 import { threadsAtom, pinnedThreadsAtom } from '@renderer/atoms/thread'
 
 import { ThreadCell } from './cell/ThreadCell'
 
 interface SortableThreadProps {
-	thread: {
-		id: string
-		title: string
-		updatedAt: Date
-		isPinned: boolean
-		folderId: string
-	}
+	thread: Thread
 	index: number
 }
 

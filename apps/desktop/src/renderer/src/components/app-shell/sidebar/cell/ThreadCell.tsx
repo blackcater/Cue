@@ -1,4 +1,4 @@
-import { useState, useEffect, type DragEvent } from 'react'
+import { useState, useEffect } from 'react'
 
 import { cn } from '@acme-ai/ui'
 import { Button } from '@acme-ai/ui/foundation'
@@ -6,7 +6,7 @@ import { Archive04Icon, PinIcon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
 import { formatDistanceToNow } from 'date-fns'
 
-import type { Thread } from '../../types/thread'
+import type { Thread } from '../../../../types/thread'
 import { Cell, CellIcon, CellName, CellActions } from './Cell'
 
 export interface ThreadCellProps {

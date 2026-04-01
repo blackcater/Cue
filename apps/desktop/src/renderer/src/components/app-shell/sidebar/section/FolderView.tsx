@@ -3,6 +3,7 @@ import { DragDropProvider, DragOverlay } from '@dnd-kit/react'
 import { useSortable } from '@dnd-kit/react/sortable'
 import { useAtom, useAtomValue } from 'jotai'
 
+import type { Thread } from '@renderer/types/thread'
 import { projectsAtom, openedProjectIdsAtom } from '@renderer/atoms/project'
 import { threadsAtom, pinnedThreadIdsAtom } from '@renderer/atoms/thread'
 import { findElementUntilRoot } from '~/src/shared/dom'
@@ -12,13 +13,7 @@ import { ThreadCell } from '../cell/ThreadCell'
 
 interface SortableFolderProps {
 	folder: { id: string; title: string; order: number }
-	threads: Array<{
-		id: string
-		title: string
-		updatedAt: Date
-		isPinned: boolean
-		projectId: string
-	}>
+	threads: Thread[]
 	index: number
 	isOpen: boolean
 	onToggle: (id: string) => void
@@ -77,7 +72,7 @@ export function FolderView() {
 	const pinnedThreadIds = useAtomValue(pinnedThreadIdsAtom)
 
 	const handleToggleFolder = (folderId: string) => {
-		setOpenedProjectIds((prev) => {
+		setOpenedProjectIds((prev: Set<string>) => {
 			const next = new Set(prev)
 			if (next.has(folderId)) {
 				next.delete(folderId)
