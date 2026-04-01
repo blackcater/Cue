@@ -3,7 +3,7 @@ import { DragDropProvider, DragOverlay } from '@dnd-kit/react'
 import { useSortable } from '@dnd-kit/react/sortable'
 import { useAtomValue, useAtom } from 'jotai'
 
-import { threadsAtom, pinnedThreadIdsAtom } from '../atoms/thread-atoms'
+import { threadsAtom, pinnedThreadIdsAtom } from '@renderer/atoms/thread'
 import { ThreadCell } from './cell/ThreadCell'
 
 interface SortableThreadProps {

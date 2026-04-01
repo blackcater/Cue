@@ -1,18 +1,19 @@
 import { useAtom } from 'jotai'
 
-import { viewModeAtom } from '../atoms/thread-atoms'
+import { sidebarAtom } from '@renderer/atoms/sidebar'
 import { ThreadTitleCell } from './cell/ThreadTitleCell'
 import { FlatView } from './thread/FlatView'
 import { FolderView } from './thread/FolderView'
 
 export function ProjectSection() {
-	const [viewMode, setViewMode] = useAtom(viewModeAtom)
+	const [sidebar, setSidebar] = useAtom(sidebarAtom)
+	const viewMode = sidebar.viewMode
 
 	const handleSort = () => {
 		if (viewMode === 'folder') {
-			setViewMode('flat')
+			setSidebar({ ...sidebar, viewMode: 'flat' })
 		} else if (viewMode === 'flat') {
-			setViewMode('folder')
+			setSidebar({ ...sidebar, viewMode: 'folder' })
 		}
 	}
 
