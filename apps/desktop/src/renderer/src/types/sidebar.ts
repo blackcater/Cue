@@ -1,9 +1,11 @@
-export type SidebarViewMode = 'folder' | 'flat'
+export type OrganizeMode = 'folder' | 'flat'
+export type SortBy = 'updatedAt' | 'createdAt'
+export type ShowMode = 'all' | 'relevant'
 
 export interface SidebarState {
   collapsed: boolean
   width: number
-  viewMode: SidebarViewMode
-  sortOrder: 'asc' | 'desc'
-  sortField: 'updatedAt' | 'createdAt'
+  organizeMode: OrganizeMode
+  sortBy: SortBy
+  showMode: ShowMode
 }
