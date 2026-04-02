@@ -1,9 +1,10 @@
 import { useEffect } from 'react'
+
 import { createFileRoute } from '@tanstack/react-router'
 import { useAtom } from 'jotai'
 
-import { Chat } from '@renderer/components/chat/Chat'
 import { panelAtom } from '@renderer/atoms/panel'
+import { Chat } from '@renderer/components/chat/Chat'
 import { useHeader } from '@renderer/contexts/HeaderContext'
 
 export const Route = createFileRoute('/vault/$vaultId/thread/$threadId')({
@@ -21,13 +22,20 @@ export function ThreadPage(): React.JSX.Element {
 			actions: [
 				<button
 					key="panel-toggle"
-					onClick={() => setPanel((prev) => ({ ...prev, collapsed: !prev.collapsed }))}
+					type="button"
+					onClick={() =>
+						setPanel((prev) => ({
+							...prev,
+							collapsed: !prev.collapsed,
+						}))
+					}
 					className="px-2 py-1 text-sm"
 				>
 					{panel.collapsed ? '展开' : '折叠'}
 				</button>,
 			],
 		})
+		return () => setContent({})
 	}, [threadId, panel.collapsed, setPanel, setContent])
 
 	if (!threadId) {
