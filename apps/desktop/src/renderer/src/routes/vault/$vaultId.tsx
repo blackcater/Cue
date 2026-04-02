@@ -1,9 +1,10 @@
 import { Panel, Group, Separator } from 'react-resizable-panels'
 
 import { createFileRoute, Outlet } from '@tanstack/react-router'
-import { useAtom } from 'jotai'
+import { useAtomValue } from 'jotai'
 
 import { panelAtom } from '@renderer/atoms/panel'
+import { sidebarAtom } from '@renderer/atoms/sidebar'
 import { AppHeader, AppSidebar } from '@renderer/components/app-shell'
 import { PanelRouter } from '@renderer/components/app-shell/panel/PanelRouter'
 import { HeaderProvider, useHeader } from '@renderer/contexts/HeaderContext'
@@ -13,7 +14,8 @@ export const Route = createFileRoute('/vault/$vaultId')({
 })
 
 function VaultLayout(): React.JSX.Element {
-	const [panel] = useAtom(panelAtom)
+	const panel = useAtomValue(panelAtom)
+	const sidebar = useAtomValue(sidebarAtom)
 	const { content } = useHeader()
 
 	return (
@@ -26,7 +28,7 @@ function VaultLayout(): React.JSX.Element {
 				<Group orientation="horizontal">
 					<Panel
 						id="sidebar"
-						collapsedSize={0}
+						collapsedSize={sidebar.collapsed ? 0 : undefined}
 						collapsible
 						minSize={20}
 						maxSize={50}
