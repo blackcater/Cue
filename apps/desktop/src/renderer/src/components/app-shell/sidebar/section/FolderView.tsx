@@ -108,13 +108,7 @@ interface FolderViewProps {
 	onMenuDelete?: (id: string) => void
 }
 
-export function FolderView({
-	onMenuOpenInFinder,
-	onMenuCreateWorktree,
-	onMenuEditName,
-	onMenuArchiveThreads,
-	onMenuDelete,
-}: Readonly<FolderViewProps>) {
+export function FolderView(props: Readonly<FolderViewProps>) {
 	const [openedProjectIds, setOpenedProjectIds] =
 		useAtom(openedProjectIdsAtom)
 	const setPinnedThreadIds = useSetAtom(pinnedThreadIdsAtom)
@@ -186,17 +180,7 @@ export function FolderView({
 							isOpen={openedProjectIds.has(project.id)}
 							onToggle={handleToggleFolder}
 							onTogglePin={handleTogglePin}
-							{...((onMenuOpenInFinder ||
-								onMenuCreateWorktree ||
-								onMenuEditName ||
-								onMenuArchiveThreads ||
-								onMenuDelete) && {
-								onMenuOpenInFinder,
-								onMenuCreateWorktree,
-								onMenuEditName,
-								onMenuArchiveThreads,
-								onMenuDelete,
-							})}
+							{...props}
 						/>
 					)
 				)}
