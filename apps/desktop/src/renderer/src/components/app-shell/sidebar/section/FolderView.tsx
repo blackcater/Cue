@@ -66,11 +66,17 @@ function SortableFolder({
 				isExpanded={isOpen}
 				isDragging={isDragging}
 				onToggle={onToggle}
-				onMenuOpenInFinder={onMenuOpenInFinder}
-				onMenuCreateWorktree={onMenuCreateWorktree}
-				onMenuEditName={onMenuEditName}
-				onMenuArchiveThreads={onMenuArchiveThreads}
-				onMenuDelete={onMenuDelete}
+				{...((onMenuOpenInFinder ||
+					onMenuCreateWorktree ||
+					onMenuEditName ||
+					onMenuArchiveThreads ||
+					onMenuDelete) && {
+					onMenuOpenInFinder,
+					onMenuCreateWorktree,
+					onMenuEditName,
+					onMenuArchiveThreads,
+					onMenuDelete,
+				})}
 			/>
 			<div
 				className="transition-[grid-template-rows] duration-200 ease-in-out"
@@ -180,11 +186,17 @@ export function FolderView({
 							isOpen={openedProjectIds.has(project.id)}
 							onToggle={handleToggleFolder}
 							onTogglePin={handleTogglePin}
-							onMenuOpenInFinder={onMenuOpenInFinder}
-							onMenuCreateWorktree={onMenuCreateWorktree}
-							onMenuEditName={onMenuEditName}
-							onMenuArchiveThreads={onMenuArchiveThreads}
-							onMenuDelete={onMenuDelete}
+							{...((onMenuOpenInFinder ||
+								onMenuCreateWorktree ||
+								onMenuEditName ||
+								onMenuArchiveThreads ||
+								onMenuDelete) && {
+								onMenuOpenInFinder,
+								onMenuCreateWorktree,
+								onMenuEditName,
+								onMenuArchiveThreads,
+								onMenuDelete,
+							})}
 						/>
 					)
 				)}

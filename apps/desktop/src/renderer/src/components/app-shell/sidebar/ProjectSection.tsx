@@ -1,5 +1,4 @@
-import { getAtomValue } from 'jotai'
-import { useAtom, useSetAtom } from 'jotai'
+import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 
 import {
 	openedProjectIdsAtom,
@@ -13,11 +12,11 @@ import { FolderView } from './section/FolderView'
 
 export function ProjectSection() {
 	const [sidebar] = useAtom(sidebarAtom)
+	const projects = useAtomValue(projectsAtom)
 	const setOpenedProjectIds = useSetAtom(openedProjectIdsAtom)
 	const organizeMode = sidebar.organizeMode
 
 	const handleCollapseAll = () => {
-		const projects = getAtomValue(projectsAtom)
 		setOpenedProjectIds(new Set(projects.map((p) => p.id)))
 	}
 
@@ -55,7 +54,8 @@ export function ProjectSection() {
 		<div className="flex h-full max-w-full flex-col px-2 pb-4">
 			<ThreadTitleCell
 				title="Threads"
-				onSort={handleCollapseAll}
+				onCollapseAll={handleCollapseAll}
+				onExpandAll={handleExpandAll}
 				onAdd={handleAddFolder}
 			/>
 			{organizeMode === 'folder' ? (

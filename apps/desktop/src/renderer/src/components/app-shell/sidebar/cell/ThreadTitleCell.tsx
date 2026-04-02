@@ -1,5 +1,3 @@
-import { useAtomValue, useSetAtom } from 'jotai'
-
 import {
 	Button,
 	DropdownMenu,
@@ -22,13 +20,19 @@ import {
 	StarIcon,
 } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
+import { useAtom, useAtomValue } from 'jotai'
 
 import {
 	isAllProjectsCollapsedAtom,
 	isAllProjectsExpandedAtom,
 } from '@renderer/atoms/project'
 import { sidebarAtom } from '@renderer/atoms/sidebar'
-import type { OrganizeMode, ShowMode, SortBy } from '@renderer/types/sidebar'
+import type {
+	OrganizeMode,
+	ShowMode,
+	SidebarState,
+	SortBy,
+} from '@renderer/types/sidebar'
 
 import { TitleCell } from './TitleCell'
 
@@ -36,6 +40,8 @@ interface Props {
 	title: string
 	onSort?: () => void
 	onAdd?: () => void
+	onCollapseAll?: () => void
+	onExpandAll?: () => void
 	className?: string
 }
 
@@ -43,6 +49,8 @@ export function ThreadTitleCell({
 	title,
 	onSort,
 	onAdd,
+	onCollapseAll,
+	onExpandAll,
 	...props
 }: Readonly<Props>) {
 	const isAllProjectsExpanded = useAtomValue(isAllProjectsExpandedAtom)
@@ -50,15 +58,15 @@ export function ThreadTitleCell({
 	const [sidebar, setSidebar] = useAtom(sidebarAtom)
 
 	const handleOrganizeChange = (mode: OrganizeMode) => {
-		setSidebar((prev) => ({ ...prev, organizeMode: mode }))
+		setSidebar((prev: SidebarState) => ({ ...prev, organizeMode: mode }))
 	}
 
 	const handleSortByChange = (sortBy: SortBy) => {
-		setSidebar((prev) => ({ ...prev, sortBy }))
+		setSidebar((prev: SidebarState) => ({ ...prev, sortBy }))
 	}
 
 	const handleShowModeChange = (mode: ShowMode) => {
-		setSidebar((prev) => ({ ...prev, showMode: mode }))
+		setSidebar((prev: SidebarState) => ({ ...prev, showMode: mode }))
 	}
 
 	return (
@@ -68,12 +76,24 @@ export function ThreadTitleCell({
 					variant="ghost"
 					size="icon-sm"
 					aria-label="Collapse All"
+					onClick={(e) => {
+						e.stopPropagation()
+						onCollapseAll?.()
+					}}
 				>
 					<HugeiconsIcon icon={CollapseIcon} className="size-3.5" />
 				</Button>
 			)}
 			{isAllProjectsCollapsed && (
-				<Button variant="ghost" size="icon-sm" aria-label="Expand All">
+				<Button
+					variant="ghost"
+					size="icon-sm"
+					aria-label="Expand All"
+					onClick={(e) => {
+						e.stopPropagation()
+						onExpandAll?.()
+					}}
+				>
 					<HugeiconsIcon icon={ExpandIcon} className="size-3.5" />
 				</Button>
 			)}
@@ -99,7 +119,9 @@ export function ThreadTitleCell({
 						<DropdownMenuLabel>Organize</DropdownMenuLabel>
 						<DropdownMenuCheckboxItem
 							checked={sidebar.organizeMode === 'folder'}
-							onCheckedChange={() => handleOrganizeChange('folder')}
+							onCheckedChange={() =>
+								handleOrganizeChange('folder')
+							}
 						>
 							<HugeiconsIcon icon={Folder01Icon} />
 							By Project
@@ -116,14 +138,18 @@ export function ThreadTitleCell({
 						<DropdownMenuLabel>Sort by</DropdownMenuLabel>
 						<DropdownMenuCheckboxItem
 							checked={sidebar.sortBy === 'createdAt'}
-							onCheckedChange={() => handleSortByChange('createdAt')}
+							onCheckedChange={() =>
+								handleSortByChange('createdAt')
+							}
 						>
 							<HugeiconsIcon icon={BubbleChatAddIcon} />
 							Created
 						</DropdownMenuCheckboxItem>
 						<DropdownMenuCheckboxItem
 							checked={sidebar.sortBy === 'updatedAt'}
-							onCheckedChange={() => handleSortByChange('updatedAt')}
+							onCheckedChange={() =>
+								handleSortByChange('updatedAt')
+							}
 						>
 							<HugeiconsIcon icon={MessageEdit01Icon} />
 							Updated
@@ -141,7 +167,9 @@ export function ThreadTitleCell({
 						{/* Only show recent threads for the current branch, worktrees, or other threads that need your attention */}
 						<DropdownMenuCheckboxItem
 							checked={sidebar.showMode === 'relevant'}
-							onCheckedChange={() => handleShowModeChange('relevant')}
+							onCheckedChange={() =>
+								handleShowModeChange('relevant')
+							}
 						>
 							<HugeiconsIcon icon={StarIcon} />
 							Relevant

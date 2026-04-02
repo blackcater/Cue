@@ -25,7 +25,7 @@ function SortableThread({ thread, index }: Readonly<SortableThreadProps>) {
 		setPinnedThreadIds((prev) => prev.filter((threadId) => threadId !== id))
 	}
 
-	function handleArchive(id: string) {
+	function handleArchive(_id: string) {
 		// TODO: Archive thread
 	}
 
