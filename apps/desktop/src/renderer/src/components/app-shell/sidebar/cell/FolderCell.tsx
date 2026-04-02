@@ -33,6 +33,11 @@ export interface FolderCellProps {
 	isDragging?: boolean
 	onToggle: (id: string) => void
 	onAddThread?: (folderId: string) => void
+	onMenuOpenInFinder?: (id: string) => void
+	onMenuCreateWorktree?: (id: string) => void
+	onMenuEditName?: (id: string) => void
+	onMenuArchiveThreads?: (id: string) => void
+	onMenuDelete?: (id: string) => void
 }
 
 export function FolderCell({
@@ -43,6 +48,11 @@ export function FolderCell({
 	isDragging,
 	onToggle,
 	onAddThread,
+	onMenuOpenInFinder,
+	onMenuCreateWorktree,
+	onMenuEditName,
+	onMenuArchiveThreads,
+	onMenuDelete,
 }: Readonly<FolderCellProps>) {
 	const [isMenuOpen, setIsMenuOpen] = useState(false)
 
@@ -105,27 +115,53 @@ export function FolderCell({
 						</Button>
 					</DropdownMenuTrigger>
 					<DropdownMenuContent className="w-fit" align="end">
-						<DropdownMenuItem>
+						<DropdownMenuItem
+							onClick={(e) => {
+								e.preventDefault()
+								onMenuOpenInFinder?.(id)
+							}}
+						>
 							<HugeiconsIcon icon={Folder03Icon} />
 							Open in Finder
 						</DropdownMenuItem>
-						<DropdownMenuItem>
+						<DropdownMenuItem
+							onClick={(e) => {
+								e.preventDefault()
+								onMenuCreateWorktree?.(id)
+							}}
+						>
 							<HugeiconsIcon
 								icon={SplitIcon}
 								className="rotate-90"
 							/>
 							Create permanent worktree
 						</DropdownMenuItem>
-						<DropdownMenuItem>
+						<DropdownMenuItem
+							onClick={(e) => {
+								e.preventDefault()
+								onMenuEditName?.(id)
+							}}
+						>
 							<HugeiconsIcon icon={Edit03Icon} />
 							Edit name
 						</DropdownMenuItem>
-						<DropdownMenuItem>
+						<DropdownMenuItem
+							onClick={(e) => {
+								e.preventDefault()
+								onMenuArchiveThreads?.(id)
+							}}
+						>
 							<HugeiconsIcon icon={Archive04Icon} />
 							Archive threads
 						</DropdownMenuItem>
 						<DropdownMenuSeparator />
-						<DropdownMenuItem variant="destructive">
+						<DropdownMenuItem
+							variant="destructive"
+							onClick={(e) => {
+								e.preventDefault()
+								onMenuDelete?.(id)
+							}}
+						>
 							<HugeiconsIcon icon={Delete01Icon} />
 							Delete
 						</DropdownMenuItem>
