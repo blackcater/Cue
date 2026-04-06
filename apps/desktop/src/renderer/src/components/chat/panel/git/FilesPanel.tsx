@@ -1,6 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from 'react'
-import { Input } from '@acme-ai/ui'
-import { SearchIcon } from 'hugeicons/react'
+import { SearchIcon } from 'lucide-react'
 import { FileTreeView } from './file-tree'
 import type { FileNode } from './types'
 
@@ -12,18 +11,17 @@ export function FilesPanel({ className }: FilesPanelProps) {
 	// TODO: Get rootPath from project context/settings
 	const [rootPath] = useState(() => {
 		// For now, use a placeholder - will be connected to actual project later
-		return process.env.HOME ?? '/tmp'
+		return typeof process !== 'undefined' && process.env ? (process.env['HOME'] ?? '/tmp') : '/tmp'
 	})
 
 	const [searchQuery, setSearchQuery] = useState('')
-	const [debouncedQuery, setDebouncedQuery] = useState('')
-	const debounceRef = useRef<NodeJS.Timeout>()
+	const debounceRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
 
-	// Debounced search
+	// Debounced search (currently not used but kept for future search functionality)
 	useEffect(() => {
 		clearTimeout(debounceRef.current)
 		debounceRef.current = setTimeout(() => {
-			setDebouncedQuery(searchQuery)
+			// TODO: Implement debounced search
 		}, 200)
 		return () => clearTimeout(debounceRef.current)
 	}, [searchQuery])
@@ -42,11 +40,12 @@ export function FilesPanel({ className }: FilesPanelProps) {
 						className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
 						size={16}
 					/>
-					<Input
+					<input
+						type="text"
 						placeholder="Search files..."
 						value={searchQuery}
 						onChange={(e) => setSearchQuery(e.target.value)}
-						className="pl-9 h-8"
+						className="pl-9 h-8 w-full rounded-md border border-input bg-background px-3 text-sm"
 					/>
 				</div>
 			</div>

@@ -1,6 +1,6 @@
 // apps/desktop/src/renderer/src/components/chat/panel/git/file-tree/FileIcon.tsx
 import { useMemo } from 'react'
-import type { FileNodeData } from '../../types'
+import type { FileNodeData } from '../types'
 import { getFullIconUrl, getIconPath, loadIconThemes } from '../file-icons'
 
 interface FileIconProps {
@@ -10,8 +10,7 @@ interface FileIconProps {
 }
 
 // Load themes once at module level
-let themesLoaded = false
-loadIconThemes().then(() => { themesLoaded = true })
+loadIconThemes()
 
 export function FileIcon({ node, theme = 'dark', className }: FileIconProps) {
 	const iconPath = useMemo(() => {
@@ -47,7 +46,7 @@ export function FileIcon({ node, theme = 'dark', className }: FileIconProps) {
 	)
 }
 
-function FolderIcon({ className }: { className?: string }) {
+function FolderIcon({ className }: { className?: string | undefined }) {
 	// Use hugeicons/FolderIcon
 	return (
 		<svg className={className} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -56,7 +55,7 @@ function FolderIcon({ className }: { className?: string }) {
 	)
 }
 
-function GenericFileIcon({ className }: { className?: string }) {
+function GenericFileIcon({ className }: { className?: string | undefined }) {
 	// Fallback file icon using hugeicons
 	return (
 		<svg className={className} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

@@ -1,5 +1,5 @@
 // apps/desktop/src/renderer/src/components/chat/panel/git/file-tree/useFileTree.ts
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useFileOperations } from '../hooks'
 import type { FileNode, FileNodeData, UseFileTreeOptions } from '../types'
 
@@ -66,7 +66,7 @@ export function useFileTree(options: UseFileTreeOptions) {
 	// Build tree nodes for rendering
 	const rootNodes = useMemo((): FileNode[] => {
 		const children = loadedChildren[rootPath] ?? []
-		return children.map((child, index) => ({
+		return children.map((child) => ({
 			...child,
 			id: child.path,
 			depth: 0,

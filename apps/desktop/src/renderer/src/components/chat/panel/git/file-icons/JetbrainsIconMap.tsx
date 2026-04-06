@@ -1,10 +1,6 @@
 // apps/desktop/src/renderer/src/components/chat/panel/git/file-icons/JetbrainsIconMap.tsx
 import type { FileNodeData } from '../types'
 
-// Icon paths relative to assets directory
-const ICON_BASE_PATH = './icons/file/'
-const FOLDER_BASE_PATH = './icons/folder/'
-
 interface IconDefinition {
 	iconPath: string
 }
@@ -31,7 +27,10 @@ export async function loadIconThemes() {
 	lightTheme = light.default
 }
 
-export function getIconPath(node: FileNodeData, theme: 'dark' | 'light'): string {
+export function getIconPath(
+	node: FileNodeData,
+	theme: 'dark' | 'light'
+): string {
 	const iconMap = theme === 'dark' ? darkTheme : lightTheme
 	if (!iconMap) return ''
 
@@ -55,21 +54,15 @@ export function getIconPath(node: FileNodeData, theme: 'dark' | 'light'): string
 
 	// 4. Default icon
 	return node.type === 'directory'
-		? iconMap.iconDefinitions[iconMap.folder]?.iconPath ?? ''
-		: iconMap.iconDefinitions[iconMap.file]?.iconPath ?? ''
+		? (iconMap.iconDefinitions[iconMap.folder]?.iconPath ?? '')
+		: (iconMap.iconDefinitions[iconMap.file]?.iconPath ?? '')
 }
 
-export function getFullIconUrl(relativePath: string, theme: 'dark' | 'light'): string {
+export function getFullIconUrl(
+	relativePath: string,
+	_theme: 'dark' | 'light'
+): string {
 	if (!relativePath) return ''
-	const base = theme === 'dark' ? '@renderer/assets' : '@renderer/assets'
-	const suffix = theme === 'dark' ? '_dark' : '_light'
-
-	// Handle folder icons - they already have _dark or _light suffix
-	if (relativePath.includes('/folder/')) {
-		return relativePath.replace('./icons/', `${base}/icons/`)
-	}
-
-	// Handle file icons - add _dark or _light suffix before .svg
-	const withSuffix = relativePath.replace('.svg', `${suffix}.svg`)
-	return withSuffix.replace('./icons/', `${base}/icons/`)
+	// Just convert to absolute path - the JSON already has theme suffix embedded
+	return relativePath.replace('./icons/', `@renderer/assets/icons/`)
 }

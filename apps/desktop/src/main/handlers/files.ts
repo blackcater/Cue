@@ -1,7 +1,18 @@
-import { Container } from '@/shared/di'
-import { ElectronRpcServer } from '@/shared/rpc'
 import * as fs from 'fs/promises'
 import * as path from 'path'
+
+import { Container } from '@/shared/di'
+import { ElectronRpcServer } from '@/shared/rpc'
+
+// Logger for tracking skipped directories and errors
+const skippedDirs: Array<{ path: string; error: string }> = []
+function logSkipped(dir: string, error: string): void {
+	skippedDirs.push({ path: dir, error })
+}
+
+function getDirKey(inode: number, device: number): string {
+	return `${device}:${inode}`
+}
 
 export async function registerFilesHandlers() {
 	const server = Container.inject(ElectronRpcServer)
@@ -34,18 +45,38 @@ export async function registerFilesHandlers() {
 	})
 
 	router.handle('search', async (_, query: string, rootPath: string) => {
-		// Simple implementation: walk directory recursively with limit
-		const results: Array<{ name: string; path: string; type: 'file' | 'directory' }> = []
-		const maxResults = 100
+		// Reset skipped dirs for this search
+		skippedDirs.length = 0
 
-		async function walk(dir: string): Promise<void> {
+		const results: Array<{
+			name: string
+			path: string
+			type: 'file' | 'directory'
+		}> = []
+		const maxResults = 100
+		const maxDepth = 20
+		const visitedDirs = new Set<string>()
+
+		async function walk(dir: string, depth: number): Promise<void> {
 			if (results.length >= maxResults) return
+			if (depth > maxDepth) return
+
 			try {
+				// Check for symlink cycles using stat to get inode/device
+				const stats = await fs.stat(dir)
+				if (stats.isDirectory()) {
+					const dirKey = getDirKey(stats.ino, stats.dev)
+					if (visitedDirs.has(dirKey)) return
+					visitedDirs.add(dirKey)
+				}
+
 				const entries = await fs.readdir(dir, { withFileTypes: true })
 				for (const entry of entries) {
 					if (results.length >= maxResults) break
 					const fullPath = path.join(dir, entry.name)
-					if (entry.name.toLowerCase().includes(query.toLowerCase())) {
+					if (
+						entry.name.toLowerCase().includes(query.toLowerCase())
+					) {
 						results.push({
 							name: entry.name,
 							path: fullPath,
@@ -53,15 +84,15 @@ export async function registerFilesHandlers() {
 						})
 					}
 					if (entry.isDirectory() && !entry.name.startsWith('.')) {
-						await walk(fullPath)
+						await walk(fullPath, depth + 1)
 					}
 				}
-			} catch {
-				// Skip inaccessible directories
+			} catch (error) {
+				logSkipped(dir, String(error))
 			}
 		}
 
-		await walk(rootPath)
-		return { results }
+		await walk(rootPath, 0)
+		return { results, skippedCount: skippedDirs.length }
 	})
 }

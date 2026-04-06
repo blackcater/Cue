@@ -1,7 +1,7 @@
 import type { PanelType } from '@renderer/types/panel'
 
 import { BrowserPanel } from './BrowserPanel'
-import { FilesPanel } from './FilesPanel'
+import { FilesPanel } from './git'
 import { GitPanel } from './GitPanel'
 import { PreviewPanel } from './PreviewPanel'
 

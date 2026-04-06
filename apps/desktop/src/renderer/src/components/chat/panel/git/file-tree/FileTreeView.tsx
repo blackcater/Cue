@@ -19,7 +19,7 @@ export function FileTreeView({ rootPath, onFileClick }: FileTreeViewProps) {
 		isLoading,
 		getChildren,
 		error,
-	} = useFileTree({ rootPath, onFileClick })
+	} = useFileTree({ rootPath, ...(onFileClick && { onFileClick }) })
 
 	// Flatten the tree for rendering (depth-first traversal)
 	const flattenedNodes = useMemo(() => {
@@ -81,7 +81,7 @@ export function FileTreeView({ rootPath, onFileClick }: FileTreeViewProps) {
 					isExpanded={node.isExpanded}
 					isLoading={node.isLoading}
 					onToggle={handleToggle}
-					onClick={onFileClick}
+					{...(onFileClick && { onClick: onFileClick })}
 				/>
 			))}
 		</div>
