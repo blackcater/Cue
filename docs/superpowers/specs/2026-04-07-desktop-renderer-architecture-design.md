@@ -89,11 +89,11 @@ features/chat/
 
 ### 三层架构
 
-| 层级 | 说明 | 示例 |
-|-----|------|------|
-| **UI Layer** | 纯展示组件，无业务逻辑 | `Button`, `Input`, `Modal` |
-| **Feature Layer** | 组合 UI + hooks，承载业务逻辑 | `ChatInput`, `ThreadList` |
-| **Service Layer** | 外部通信（IPC/HTTP/SSE/WS） | `ipc.sendMessage()`, `http.uploadFile()` |
+| 层级              | 说明                          | 示例                                     |
+| ----------------- | ----------------------------- | ---------------------------------------- |
+| **UI Layer**      | 纯展示组件，无业务逻辑        | `Button`, `Input`, `Modal`               |
+| **Feature Layer** | 组合 UI + hooks，承载业务逻辑 | `ChatInput`, `ThreadList`                |
+| **Service Layer** | 外部通信（IPC/HTTP/SSE/WS）   | `ipc.sendMessage()`, `http.uploadFile()` |
 
 ### 分层原则
 
@@ -136,24 +136,26 @@ export function useSendMessage() {
 
 ### 状态分层
 
-| 范围 | 方案 | 示例 |
-|-----|------|------|
-| 单组件内部 | `useState` | 弹窗开关、临时输入 |
-| 多组件共享（不全局） | `useState` + props | 父组件传子组件 |
-| 跨多层组件共享 | **Context** | 主题、语言设置 |
-| **全局持久化状态** | **jotai atom** | 用户项目列表、侧边栏宽度 |
-| **派生状态** | **atom** | `isAllProjectsExpandedAtom` |
-| **多会话隔离状态** | **atomFamily** | 每个 session 独立状态 |
+| 范围                 | 方案               | 示例                        |
+| -------------------- | ------------------ | --------------------------- |
+| 单组件内部           | `useState`         | 弹窗开关、临时输入          |
+| 多组件共享（不全局） | `useState` + props | 父组件传子组件              |
+| 跨多层组件共享       | **Context**        | 主题、语言设置              |
+| **全局持久化状态**   | **jotai atom**     | 用户项目列表、侧边栏宽度    |
+| **派生状态**         | **atom**           | `isAllProjectsExpandedAtom` |
+| **多会话隔离状态**   | **atomFamily**     | 每个 session 独立状态       |
 
 ### Atom vs State 区分原则
 
 **使用 atom**：
+
 - 需要持久化到 localStorage
 - 跨页面共享
 - 组件间需要同步
 - 多会话独立状态（用 `atomFamily`）
 
 **使用 state**：
+
 - 组件内部使用
 - 不需要跨组件共享
 - 临时 UI 状态
@@ -166,7 +168,9 @@ import { atom } from 'jotai'
 import { atomFamily } from 'jotai/utils'
 
 // 每个 session 独立的 atom
-const sessionAtomFamily = atomFamily((sessionId: string) => atom<Session | null>(null))
+const sessionAtomFamily = atomFamily((sessionId: string) =>
+  atom<Session | null>(null)
+)
 
 // 流式状态更新
 export const appendMessageAtom = atom(
@@ -229,7 +233,7 @@ export function useSessionStreams() {
     ;(async () => {
       try {
         for await (const event of stream) {
-          processSessionEvent(sessionId, event)  // 更新对应 atom
+          processSessionEvent(sessionId, event) // 更新对应 atom
         }
       } finally {
         streamsRef.current.delete(sessionId)
@@ -278,15 +282,17 @@ export const ipc = {
   streamSession: (sessionId: string) =>
     windowApi.rpc.stream<SessionEvent>('/session/stream', sessionId),
 
-  sendMessage: (params: { sessionId: string; content: string; attachments?: FileAttachment[] }) =>
-    windowApi.rpc.call<void>('/session/send', params),
+  sendMessage: (params: {
+    sessionId: string
+    content: string
+    attachments?: FileAttachment[]
+  }) => windowApi.rpc.call<void>('/session/send', params),
 
   // Vault 操作
   createVault: (params: { name: string }) =>
     windowApi.rpc.call<Vault>('/vault/create', params),
 
-  getVaults: () =>
-    windowApi.rpc.call<Vault[]>('/vault/list'),
+  getVaults: () => windowApi.rpc.call<Vault[]>('/vault/list'),
 }
 ```
 
@@ -297,14 +303,17 @@ export const http = {
   getUsers: (params?: { page?: number; limit?: number }) =>
     request<User[]>('/api/users', { params }),
 
-  getUser: (id: string) =>
-    request<User>(`/api/users/${id}`),
+  getUser: (id: string) => request<User>(`/api/users/${id}`),
 
   createUser: (data: CreateUserInput) =>
     request<User>('/api/users', { method: 'POST', body: data }),
 
   uploadFile: (file: File, onProgress?: (percent: number) => void) =>
-    request<{ path: string }>('/api/upload', { method: 'POST', body: file, onProgress }),
+    request<{ path: string }>('/api/upload', {
+      method: 'POST',
+      body: file,
+      onProgress,
+    }),
 }
 ```
 
@@ -400,15 +409,15 @@ export function createWebSocketConnection(params: { url: string }) {
 
 ## 7. 命名规范
 
-| 类型 | 规范 | 示例 |
-|-----|------|------|
-| 目录 | kebab-case | `chat-popup`, `vault-settings` |
-| 组件文件 | CamelCase.tsx | `ChatHeader.tsx` |
-| 组件名 | PascalCase | `ChatHeader` |
-| hooks | useCamelCase.ts | `useChatStream.ts` |
-| services | camelCase.ts | `ipc.ts`, `http.ts` |
-| atoms | camelCase.ts | `project.ts`, `sidebar.ts` |
-| 类型 | PascalCase | `Session`, `Vault`, `Message` |
+| 类型     | 规范            | 示例                           |
+| -------- | --------------- | ------------------------------ |
+| 目录     | kebab-case      | `chat-popup`, `vault-settings` |
+| 组件文件 | CamelCase.tsx   | `ChatHeader.tsx`               |
+| 组件名   | PascalCase      | `ChatHeader`                   |
+| hooks    | useCamelCase.ts | `useChatStream.ts`             |
+| services | camelCase.ts    | `ipc.ts`, `http.ts`            |
+| atoms    | camelCase.ts    | `project.ts`, `sidebar.ts`     |
+| 类型     | PascalCase      | `Session`, `Vault`, `Message`  |
 
 ---
 
