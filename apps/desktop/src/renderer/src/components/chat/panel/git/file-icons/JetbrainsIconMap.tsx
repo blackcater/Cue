@@ -15,7 +15,6 @@ interface IconTheme {
 
 // Pre-load icon URLs using Vite's glob import
 // This gives us actual URLs like /assets/icons/file/typeScript_dark.svg?v=xxx
-// Path is relative to project root (apps/desktop/)
 const darkFileIcons = import.meta.glob(
 	'./src/renderer/src/assets/icons/file/*_dark.svg',
 	{
@@ -52,8 +51,9 @@ const lightFolderIcons = import.meta.glob(
 	}
 ) as Record<string, string>
 
-// Build reverse lookup: iconKey (e.g., "fileTypeScript_dark") -> URL
-function buildReverseMap(
+// Build reverse lookup: filename without extension -> URL
+// e.g., "typeScript_dark" -> "/assets/icons/file/typeScript_dark.svg?v=xxx"
+function buildFilenameToUrlMap(
 	icons: Record<string, string>
 ): Record<string, string> {
 	const result: Record<string, string> = {}
@@ -66,10 +66,10 @@ function buildReverseMap(
 	return result
 }
 
-const darkFileIconUrls = buildReverseMap(darkFileIcons)
-const lightFileIconUrls = buildReverseMap(lightFileIcons)
-const darkFolderIconUrls = buildReverseMap(darkFolderIcons)
-const lightFolderIconUrls = buildReverseMap(lightFolderIcons)
+const darkFileIconUrls = buildFilenameToUrlMap(darkFileIcons)
+const lightFileIconUrls = buildFilenameToUrlMap(lightFileIcons)
+const darkFolderIconUrls = buildFilenameToUrlMap(darkFolderIcons)
+const lightFolderIconUrls = buildFilenameToUrlMap(lightFolderIcons)
 
 // Load themes
 let darkTheme: IconTheme | null = null
@@ -113,11 +113,22 @@ export function getIconUrl(
 
 	if (!iconKey) return null
 
-	// Look up the URL using the icon key
+	// Get the icon definition to find the iconPath
+	const iconDef = iconMap.iconDefinitions[iconKey]
+	if (!iconDef) return null
+
+	// iconPath looks like: "./icons/file/typeScript_dark.svg"
+	// We need to extract the filename without extension: "typeScript_dark"
+	const iconFilename = iconDef.iconPath
+		.replace('./icons/file/', '')
+		.replace('./icons/folder/', '')
+		.replace('.svg', '')
+
+	// Look up the URL using the filename
 	const fileIconUrls = theme === 'dark' ? darkFileIconUrls : lightFileIconUrls
 	const folderIconUrls =
 		theme === 'dark' ? darkFolderIconUrls : lightFolderIconUrls
 
 	const iconUrls = node.type === 'directory' ? folderIconUrls : fileIconUrls
-	return iconUrls[iconKey] ?? null
+	return iconUrls[iconFilename] ?? null
 }
