@@ -1,6 +1,6 @@
 import { createRootRoute, Outlet } from '@tanstack/react-router'
 
-import { AppShell } from '../components/app-shell'
+import { AppShell } from '@renderer/components/AppShell'
 
 export const Route = createRootRoute({
 	component: RootComponent,

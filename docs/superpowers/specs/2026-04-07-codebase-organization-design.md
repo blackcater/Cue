@@ -22,11 +22,11 @@
 
 ### 1.3 核心原则
 
-| 层级 | 原则 |
-|------|------|
-| **atom** | 纯数据容器，依赖 domain entity |
+| 层级        | 原则                                    |
+| ----------- | --------------------------------------- |
+| **atom**    | 纯数据容器，依赖 domain entity          |
 | **service** | 基于 entity 和其他 service 组合业务逻辑 |
-| **hook** | 基于 atom 和 service，给组件使用 |
+| **hook**    | 基于 atom 和 service，给组件使用        |
 
 ---
 
@@ -132,9 +132,9 @@ infrastructure/ (技术实现，被调用)
 | **routes/**              | 路由组件，组合 features | 页面布局、路由参数传递                      |
 | **features/components/** | UI 展示                 | 渲染、用户事件、组合 hooks                  |
 | **features/hooks/**      | UI 逻辑                 | 组合 atom、React Query、调用 service        |
-| **features/stores/**     | UI 状态                 | feature 私有 atom（依赖 domain entity）       |
+| **features/stores/**     | UI 状态                 | feature 私有 atom（依赖 domain entity）     |
 | **services/**            | 业务逻辑                | 编排操作、规则验证、事务                    |
-| **domain/models/**       | 领域模型                | 实体定义（type/interface）                   |
+| **domain/models/**       | 领域模型                | 实体定义（type/interface）                  |
 | **infrastructure/**      | 技术实现                | IPC、HTTP、Storage、React Query、Zod Schema |
 
 ### 3.3 数据流动
@@ -214,7 +214,7 @@ function isRemoteThread(t: Thread): t is RemoteThread {
 }
 
 // ============ 输入类型 ============
-type CreateThreadInput = 
+type CreateThreadInput =
   | { mode: 'local'; projectPath: string; title?: string }
   | { mode: 'worktree'; projectPath: string; branchName: string; title?: string }
   | { mode: 'remote'; sandboxEndpoint: string; title?: string }
@@ -785,21 +785,21 @@ src/renderer/src/
 
 ## 10. 总结
 
-| 层次                     | 核心职责 | 可测试性                     |
-| ------------------------ | -------- | ---------------------------- |
+| 层次                     | 核心职责         | 可测试性                     |
+| ------------------------ | ---------------- | ---------------------------- |
 | **domain/**              | 领域模型（type） | ✅ 纯数据，无依赖             |
-| **infrastructure/**      | 技术实现 | ✅ Mock IPC                   |
-| **services/**            | 业务逻辑 | ✅ Mock infrastructure        |
-| **features/hooks/**      | UI 逻辑  | ⚠️ 需要 React Testing Library |
-| **features/components/** | UI 展示  | ⚠️ 需要 React Testing Library |
-| **features/stores/**     | UI 状态（atom） | ✅ 依赖 domain              |
-| **routes/**              | 路由组合 | ✅ 可独立测试                 |
+| **infrastructure/**      | 技术实现         | ✅ Mock IPC                   |
+| **services/**            | 业务逻辑         | ✅ Mock infrastructure        |
+| **features/hooks/**      | UI 逻辑          | ⚠️ 需要 React Testing Library |
+| **features/components/** | UI 展示          | ⚠️ 需要 React Testing Library |
+| **features/stores/**     | UI 状态（atom）  | ✅ 依赖 domain                |
+| **routes/**              | 路由组合         | ✅ 可独立测试                 |
 
 ### 核心原则回顾
 
-| 层级 | 原则 |
-|------|------|
-| **atom** | 纯数据容器，依赖 domain entity |
-| **service** | 基于 entity 和其他 service 组合业务逻辑 |
-| **hook** | 基于 atom 和 service，给组件使用 |
-| **infrastructure** | 不依赖 domain，只提供技术实现 |
+| 层级               | 原则                                    |
+| ------------------ | --------------------------------------- |
+| **atom**           | 纯数据容器，依赖 domain entity          |
+| **service**        | 基于 entity 和其他 service 组合业务逻辑 |
+| **hook**           | 基于 atom 和 service，给组件使用        |
+| **infrastructure** | 不依赖 domain，只提供技术实现           |

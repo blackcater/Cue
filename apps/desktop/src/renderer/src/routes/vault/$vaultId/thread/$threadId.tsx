@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 
-import { Chat } from '@renderer/features/chat'
+import { ChatPage } from '@renderer/features/chat/pages/ChatPage'
 
 export const Route = createFileRoute('/vault/$vaultId/thread/$threadId')({
 	component: ThreadPage,
@@ -9,5 +9,5 @@ export const Route = createFileRoute('/vault/$vaultId/thread/$threadId')({
 function ThreadPage() {
 	const { threadId } = Route.useParams()
 
-	return <Chat threadId={threadId} />
+	return <ChatPage threadId={threadId} />
 }

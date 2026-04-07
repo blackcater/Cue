@@ -1,14 +1,26 @@
 import i18next from 'i18next'
-import type { i18n as I18nInstance } from 'i18next'
+import type { i18n as I18nInstance, Resource } from 'i18next'
 import osLocale from 'os-locale'
 
 import {
 	checkLocale,
 	DEFAULT_LOCALE,
 	normalizeLocale,
-	RESOURCES,
+	SUPPORTED_LOCALES,
 	type SupportedLocale,
 } from '@/i18n'
+
+import en from '../locales/en.json'
+import zhCN from '../locales/zh-CN.json'
+import zhTW from '../locales/zh-TW.json'
+
+const RESOURCES: Resource = {
+	en: { translation: en },
+	'zh-CN': { translation: zhCN },
+	'zh-TW': { translation: zhTW },
+}
+
+export { SUPPORTED_LOCALES }
 
 export const i18n: I18nInstance = i18next.createInstance()
 

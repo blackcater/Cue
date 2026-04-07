@@ -1,17 +1,5 @@
-import type { Resource } from 'i18next'
-
-import en from '@/i18n/locales/en.json'
-import zhCN from '@/i18n/locales/zh-CN.json'
-import zhTW from '@/i18n/locales/zh-TW.json'
-
 export const SUPPORTED_LOCALES = ['en', 'zh-CN', 'zh-TW'] as const
 export type SupportedLocale = (typeof SUPPORTED_LOCALES)[number]
-
-export const RESOURCES: Resource = {
-	en: en,
-	'zh-CN': zhCN,
-	'zh-TW': zhTW,
-}
 
 export const LOCALE_MAP: Record<string, SupportedLocale> = {
 	'en-US': 'en',

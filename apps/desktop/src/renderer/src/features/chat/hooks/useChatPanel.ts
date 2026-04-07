@@ -1,4 +1,6 @@
-import { useAtom, useCallback } from 'jotai'
+import { useCallback } from 'react'
+
+import { useAtom } from 'jotai'
 
 import { panelAtom } from '@renderer/stores'
 import type { PanelType } from '@renderer/types/panel'
@@ -9,22 +11,29 @@ import type { PanelType } from '@renderer/types/panel'
 export function useChatPanel() {
 	const [panelState, setPanelState] = useAtom(panelAtom)
 
-	const setPanelType = useCallback((type: PanelType) => {
-		setPanelState((prev) => ({ ...prev, type }))
-	}, [setPanelState])
+	const setPanelType = useCallback(
+		(type: PanelType) => {
+			setPanelState((prev) => ({ ...prev, type }))
+		},
+		[setPanelState]
+	)
 
 	const toggleCollapsed = useCallback(() => {
 		setPanelState((prev) => ({ ...prev, collapsed: !prev.collapsed }))
 	}, [setPanelState])
 
-	const setWidth = useCallback((width: number) => {
-		setPanelState((prev) => ({ ...prev, width }))
-	}, [setPanelState])
+	const setPanelWidth = useCallback(
+		(width: number) => {
+			setPanelState((prev) => ({ ...prev, width }))
+		},
+		[setPanelState]
+	)
 
 	return {
 		panelState,
-		setPanelType,
+		isCollapsed: panelState.collapsed,
 		toggleCollapsed,
-		setWidth,
+		setPanelType,
+		setPanelWidth,
 	}
 }

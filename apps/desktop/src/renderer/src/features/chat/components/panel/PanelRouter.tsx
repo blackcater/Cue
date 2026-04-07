@@ -3,7 +3,7 @@ import type { PanelType } from '@renderer/types/panel'
 import { BrowserPanel } from './BrowserPanel'
 import { GitPanel } from './GitPanel'
 import { PreviewPanel } from './PreviewPanel'
-import { FilesPanel } from './git'
+import { FilesPanel } from './files'
 
 interface PanelRouterProps {
 	type?: PanelType
