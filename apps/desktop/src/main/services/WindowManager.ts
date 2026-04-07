@@ -3,14 +3,13 @@ import { join } from 'node:path'
 import { BrowserWindow } from 'electron'
 import type { BrowserWindowConstructorOptions } from 'electron'
 
-import { is } from '@electron-toolkit/utils'
 import electronWindowState, { type State } from 'electron-window-state'
 
 import { Container } from '@/shared/di'
 import icon from '~/resources/icon.png?asset'
 
 import { mainLog } from '../lib/logger'
-import { platform } from '../lib/utils'
+import { is, platform } from '../lib/utils'
 import { buildWebPreferences } from '../lib/web-preferences'
 import { WindowRegistry } from './WindowRegistry'
 
