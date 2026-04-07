@@ -23,7 +23,7 @@ export class HttpRpcServer implements RpcServer {
 		this.#setupSSERoutes()
 	}
 
-	async #handleRPC(path: string, args: unknown[], ctx: Rpc.RequestContext) {
+	async #handleRPC(path: string, args: unknown[]) {
 		const handler = this.#handlers.get(path)
 
 		if (!handler) {
@@ -45,12 +45,11 @@ export class HttpRpcServer implements RpcServer {
 
 			// result.value is the standardized output, use it directly as args
 			return handler.handler(
-				ctx,
 				...(Array.isArray(result.value) ? result.value : [result.value])
 			)
 		}
 
-		return handler.handler(ctx, ...args)
+		return handler.handler(...args)
 	}
 
 	#setupRoutes() {
@@ -61,12 +60,8 @@ export class HttpRpcServer implements RpcServer {
 			const path = rpcIndex >= 0 ? fullPath.slice(rpcIndex + 5) : fullPath
 			const args = await c.req.json().catch(() => [])
 
-			const ctx: Rpc.RequestContext = {
-				clientId: this.#getClientId(c),
-			}
-
 			try {
-				const result = await this.#handleRPC(path, args, ctx)
+				const result = await this.#handleRPC(path, args)
 
 				// Handle async iterator (streaming)
 				if (

@@ -31,7 +31,7 @@ describe('ElectronRpcServer', () => {
 
 		const server = new ElectronRpcServer(mockRegistry, mockIpcMain)
 
-		server.handle('test/echo', async (_ctx, msg) => {
+		server.handle('test/echo', async (msg) => {
 			return { echoed: msg }
 		})
 
@@ -48,7 +48,7 @@ describe('ElectronRpcServer', () => {
 
 		const server = new ElectronRpcServer(mockRegistry, mockIpcMain)
 
-		server.router('conversation').handle('create', async (_ctx, params) => {
+		server.router('conversation').handle('create', async (params) => {
 			return { id: 'conv-1', ...(params as object) }
 		})
 
@@ -65,7 +65,7 @@ describe('ElectronRpcServer', () => {
 		const server = new ElectronRpcServer(mockRegistry, mockIpcMain)
 
 		// Test with leading/trailing slashes
-		server.handle('/test/path/', async (_ctx) => 'ok')
+		server.handle('/test/path/', async () => 'ok')
 
 		expect(mockIpcMain.on).toHaveBeenCalledWith(
 			'rpc:invoke:test/path',

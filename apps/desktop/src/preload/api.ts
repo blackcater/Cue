@@ -23,6 +23,7 @@ const api: API = {
 
 if (process.contextIsolated) {
 	try {
+		contextBridge.exposeInMainWorld('rpc', rpc)
 		contextBridge.exposeInMainWorld('api', api)
 	} catch (error) {
 		console.error(error)

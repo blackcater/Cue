@@ -1,5 +1,6 @@
 import type { RpcClient } from '@/shared/rpc'
 import type { IpcRendererRpcClient } from '@/shared/rpc/electron'
+import type { AppInfo } from '@/types'
 
 interface StoreAPI {
 	get: (key: 'firstLaunchDone') => Promise<boolean>
@@ -15,6 +16,8 @@ interface API {
 
 declare global {
 	interface Window {
+		rpc: RpcClient
 		api: API
+		__appInfo: AppInfo
 	}
 }

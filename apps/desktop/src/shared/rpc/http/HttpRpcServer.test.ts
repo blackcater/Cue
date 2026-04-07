@@ -10,7 +10,7 @@ describe('HttpRpcServer', () => {
 		const app = new Hono()
 		const server = new HttpRpcServer(app)
 
-		server.handle('test/echo', async (_ctx, ...args) => {
+		server.handle('test/echo', async (...args) => {
 			return { echoed: args[0] }
 		})
 
@@ -30,7 +30,7 @@ describe('HttpRpcServer', () => {
 		const app = new Hono()
 		const server = new HttpRpcServer(app)
 
-		server.router('conversation').handle('create', async (_ctx, params) => {
+		server.router('conversation').handle('create', async (params) => {
 			return { id: 'conv-1', ...(params as object) }
 		})
 
@@ -67,7 +67,7 @@ describe('HttpRpcServer', () => {
 			age: z.number(),
 		})
 
-		server.handle('test/validate', { schema }, async (_ctx, ...args) => {
+		server.handle('test/validate', { schema }, async (...args) => {
 			return { valid: true, data: args[0] }
 		})
 
@@ -87,7 +87,7 @@ describe('HttpRpcServer', () => {
 		const app = new Hono()
 		const server = new HttpRpcServer(app)
 
-		server.handle('test/push', async (_ctx) => {
+		server.handle('test/push', async () => {
 			server.push('test/event', { type: 'broadcast' }, { msg: 'hello' })
 			return { pushed: true }
 		})

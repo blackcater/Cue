@@ -4,7 +4,6 @@ import type { StandardSchemaV1 } from '@standard-schema/spec'
 
 export namespace Rpc {
 	export type HandlerFn<T = any> = (
-		ctx: RequestContext,
 		...args: any[]
 	) => T | Promise<T> | AsyncIterator<T>
 
@@ -18,11 +17,6 @@ export namespace Rpc {
 		| { type: 'broadcast' }
 		| { type: 'group'; groupId: string }
 		| { type: 'client'; clientId: string }
-
-	export interface RequestContext {
-		readonly clientId: string
-		readonly vaultId?: string
-	}
 
 	export type StreamResult<T> = {
 		[Symbol.asyncIterator](): AsyncIterator<T>

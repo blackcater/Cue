@@ -64,13 +64,11 @@ export class ElectronRpcServer implements RpcServer {
 				}
 
 				try {
-					const result = await handlerFn({ clientId }, ...args)
+					const result = await handlerFn(...args)
 
 					// Handle async iterator (streaming)
 					if (result && typeof result === 'object') {
-						const asyncIterator = (result as any)[
-							Symbol.asyncIterator
-						]
+						const asyncIterator = result[Symbol.asyncIterator]
 						if (typeof asyncIterator === 'function') {
 							const iterator = asyncIterator.call(result)
 							const streamChannel = `rpc:stream:${eventPath}:${invokeId}`

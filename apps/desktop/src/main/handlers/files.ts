@@ -1,11 +1,11 @@
-import * as fs from 'fs/promises'
-import * as path from 'path'
+import * as fs from 'node:fs/promises'
+import * as path from 'node:path'
 
 import { Container } from '@/shared/di'
 import { ElectronRpcServer } from '@/shared/rpc'
 
-// Logger for tracking skipped directories and errors
 const skippedDirs: Array<{ path: string; error: string }> = []
+
 function logSkipped(dir: string, error: string): void {
 	skippedDirs.push({ path: dir, error })
 }
@@ -16,9 +16,10 @@ function getDirKey(inode: number, device: number): string {
 
 export async function registerFilesHandlers() {
 	const server = Container.inject(ElectronRpcServer)
+
 	const router = server.router('files')
 
-	router.handle('list', async (_, dirPath: string) => {
+	router.handle('list', async (dirPath: string) => {
 		try {
 			const entries = await fs.readdir(dirPath, { withFileTypes: true })
 			const files = entries.map((entry) => {
@@ -44,7 +45,7 @@ export async function registerFilesHandlers() {
 		}
 	})
 
-	router.handle('search', async (_, query: string, rootPath: string) => {
+	router.handle('search', async (query: string, rootPath: string) => {
 		// Reset skipped dirs for this search
 		skippedDirs.length = 0
 
