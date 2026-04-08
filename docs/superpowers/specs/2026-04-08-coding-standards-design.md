@@ -33,20 +33,20 @@ All major areas covered:
 
 ### Naming Conventions Summary
 
-| Element | Convention | Example |
-|---------|-----------|---------|
-| Directories | kebab-case | `file-tree`, `chat-panel` |
-| Component files | PascalCase | `ThreadCell.tsx` |
-| Utility files | camelCase | `formatDate.ts` |
-| Hook files | camelCase, `use` prefix | `useThread.ts` |
-| Type/Interface files | camelCase | `types.ts` |
-| Constants files | camelCase | `constants.ts` |
-| Component values | PascalCase | `<ThreadCell />` |
-| Hooks | camelCase, `use` prefix | `useThread()` |
-| Variables/Functions | camelCase | `threadList` |
-| Types/Classes | PascalCase | `ThreadItem` |
-| Constants | UPPER_SNAKE_CASE | `MAX_RETRY_COUNT` |
-| Unused params | `_` prefix | `_threadId` |
+| Element              | Convention              | Example                   |
+| -------------------- | ----------------------- | ------------------------- |
+| Directories          | kebab-case              | `file-tree`, `chat-panel` |
+| Component files      | PascalCase              | `ThreadCell.tsx`          |
+| Utility files        | camelCase               | `formatDate.ts`           |
+| Hook files           | camelCase, `use` prefix | `useThread.ts`            |
+| Type/Interface files | camelCase               | `types.ts`                |
+| Constants files      | camelCase               | `constants.ts`            |
+| Component values     | PascalCase              | `<ThreadCell />`          |
+| Hooks                | camelCase, `use` prefix | `useThread()`             |
+| Variables/Functions  | camelCase               | `threadList`              |
+| Types/Classes        | PascalCase              | `ThreadItem`              |
+| Constants            | UPPER_SNAKE_CASE        | `MAX_RETRY_COUNT`         |
+| Unused params        | `_` prefix              | `_threadId`               |
 
 ### TypeScript Rules
 

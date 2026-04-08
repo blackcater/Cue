@@ -13,10 +13,62 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Code Conventions
 
+### Naming Conventions
+
+| Element              | Convention              | Example                   |
+| -------------------- | ----------------------- | ------------------------- |
+| Directories          | kebab-case              | `file-tree`, `chat-panel` |
+| Component files      | PascalCase              | `ThreadCell.tsx`          |
+| Utility files        | camelCase               | `formatDate.ts`           |
+| Hook files           | camelCase, `use` prefix | `useThread.ts`            |
+| Type/Interface files | camelCase               | `types.ts`                |
+| Constants files      | camelCase               | `constants.ts`            |
+| Component values     | PascalCase              | `<ThreadCell />`          |
+| Hooks                | camelCase, `use` prefix | `useThread()`             |
+| Variables/Functions  | camelCase               | `threadList`              |
+| Types/Classes        | PascalCase              | `ThreadItem`              |
+| Constants            | UPPER_SNAKE_CASE        | `MAX_RETRY_COUNT`         |
+| Unused params        | `_` prefix              | `_threadId`               |
+
+### TypeScript
+
+- Strict mode — no `any`, no implicit returns
+- Prefer `type` over `interface` for public APIs
+- Use `interface` for internal implementation
+- Export types for external use
+- Path aliases: `@/*` for renderer, `@main/*` for main process
 - Private methods/fields use `#` prefix
 - Use namespace to organize related types for a class
+
+### React Components
+
+- One component per file
+- Props type: `<ComponentName>Props`
+- Colocate styles: `ComponentName.module.css`
+- State in atoms, derived data via selectors
+- Prefer composition over prop drilling
+
+### Electron Architecture
+
+- Main process: `apps/desktop/src/main/` — no DOM APIs
+- Renderer: `apps/desktop/src/renderer/src/` — no Node.js APIs
+- Preload: `apps/desktop/src/preload/` — contextBridge only
+- IPC: typed channels via `RPC_CHANNELS`, no raw `ipcRenderer`
+
+### File Organization
+
 - Directory names use kebab-case
 - One file should not contain multiple domains
 - One method should not have multiple responsibilities
-- Before commit code, you MUST use `bunx tsc --noEmit`, `bunx oxlint` and `bunx oxfmt` to lint and format code
-- Use ENGLISH for code comments
+- Organize by feature, not by type
+- Private code in `lib/` or `internal/`
+
+### Code Quality
+
+Before every commit, you MUST run:
+```bash
+bunx tsc --noEmit
+bunx oxlint
+bunx oxfmt
+```
+- Use ENGLISH for all code comments
