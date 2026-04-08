@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { HugeiconsSearch } from '@hugeicons/react'
+import { SearchIcon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/react'
 
 interface SearchBarProps {
   value: string
@@ -15,7 +16,7 @@ export function SearchBar({
   debounceMs = 200,
 }: SearchBarProps) {
   const [localValue, setLocalValue] = useState(value)
-  const debounceRef = useRef<ReturnType<typeof setTimeout>>()
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
 
   // Sync localValue with external value prop (controlled component)
   useEffect(() => {
@@ -36,7 +37,7 @@ export function SearchBar({
 
   return (
     <div className="flex items-center gap-1.5 px-3 py-1">
-      <HugeiconsSearch className="h-3 w-3 shrink-0 text-foreground/25" />
+      <HugeiconsIcon icon={SearchIcon} className="h-3 w-3 shrink-0 text-foreground/25" />
       <input
         type="text"
         value={localValue}
