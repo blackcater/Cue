@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect, useRef } from 'react'
 
-import { SearchIcon } from 'lucide-react'
+import { SearchIcon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/react'
 
 import { FileTreeView } from './file-tree'
 import type { FileNode } from './types'
@@ -44,7 +45,8 @@ export function FilesPanel({ className }: FilesPanelProps) {
 			{/* Header with Search */}
 			<div className="border-b p-3">
 				<div className="relative">
-					<SearchIcon
+					<HugeiconsIcon
+						icon={SearchIcon}
 						className="text-muted-foreground absolute top-1/2 left-3 -translate-y-1/2"
 						size={16}
 					/>
