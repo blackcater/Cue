@@ -19,6 +19,12 @@ export function PanelRouter({ type }: Readonly<PanelRouterProps>) {
 			return <BrowserPanel />
 		case 'preview':
 			return <PreviewPanel />
+		case 'outline':
+			// TODO: Replace with OutlinePanel
+			return <div className="p-4 text-xs text-muted-foreground">Outline Panel (TBD)</div>
+		case 'projectFiles':
+			// TODO: Replace with ProjectFilesPanel
+			return <div className="p-4 text-xs text-muted-foreground">Project Files Panel (TBD)</div>
 		default:
 			return null
 	}
