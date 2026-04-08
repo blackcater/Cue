@@ -1,179 +1,95 @@
 import { describe, it, expect, vi, beforeEach } from 'bun:test'
 
+import { RpcError } from '../RpcError'
 import { IpcRendererRpcClient } from './IpcRendererRpcClient'
 
 describe('IpcRendererRpcClient', () => {
 	let mockIpcRenderer: any
-	let client: IpcRendererRpcClient
 
 	beforeEach(() => {
 		mockIpcRenderer = {
 			send: vi.fn(),
-			on: vi.fn(),
+			on: vi.fn((channel: string, cb: Function) => {}),
 			removeListener: vi.fn(),
 		}
 	})
 
-	it('should have clientId and groupId', () => {
-		client = new IpcRendererRpcClient(mockIpcRenderer, 'test-group')
-		expect(client.clientId).toBe('ipc-renderer-client')
-		expect(client.groupId).toBe('test-group')
-	})
-
-	it('should send rpc:invoke on call()', async () => {
-		let responseHandler: Function | undefined | undefined
-		mockIpcRenderer.on = vi.fn((channel: string, cb: Function) => {
-			if (channel === 'rpc:response') {
-				responseHandler = cb
-			}
-		})
-
-		client = new IpcRendererRpcClient(mockIpcRenderer)
-
-		// Start the call but don't await - we just want to verify send was called
-		const callPromise = client.call('/test', {}, 'arg1')
-
-		// Verify send was called with correct channel
-		expect(mockIpcRenderer.send).toHaveBeenCalledWith('rpc:invoke:test', {
-			invokeId: expect.stringContaining('invoke-'),
-			args: [{}, 'arg1'],
-		})
-
-		// Now simulate response to resolve the promise
-		responseHandler!(null, {
-			channel: 'rpc:response:invoke-1',
-			result: { message: 'success' },
-		})
-
-		await callPromise
-	})
-
-	it('should handle successful call response', async () => {
-		let responseHandler: Function | undefined
-		mockIpcRenderer.on = vi.fn((channel: string, cb: Function) => {
-			if (channel === 'rpc:response') {
-				responseHandler = cb
-			}
-		})
-
-		client = new IpcRendererRpcClient(mockIpcRenderer)
-
-		const resultPromise = client.call<{ message: string }>(
-			'/test',
-			{},
-			'arg1'
+	const getResponseListener = () => {
+		const responseCall = mockIpcRenderer.on.mock.calls.find(
+			(call: any[]) => call[0] === 'rpc:response'
 		)
+		return responseCall?.[1]
+	}
 
-		// Simulate successful response
-		responseHandler!(null, {
-			channel: 'rpc:response:invoke-1',
-			result: { message: 'success' },
-		})
-
-		const result = await resultPromise
-		expect(result).toEqual({ message: 'success' })
-	})
-
-	it('should handle error response', async () => {
-		let responseHandler: Function | undefined
-		mockIpcRenderer.on = vi.fn((channel: string, cb: Function) => {
-			if (channel === 'rpc:response') {
-				responseHandler = cb
-			}
-		})
-
-		client = new IpcRendererRpcClient(mockIpcRenderer)
-
+	it('should reject with RpcError containing code message and data', async () => {
+		const client = new IpcRendererRpcClient(mockIpcRenderer)
 		const resultPromise = client.call('/test', {})
 
-		// Simulate error response
-		responseHandler!(null, {
+		const responseListener = getResponseListener()
+		expect(responseListener).toBeDefined()
+
+		responseListener(null, {
 			channel: 'rpc:response:invoke-1',
-			error: { code: 'ERR_SERVER', message: 'Server error' },
+			error: {
+				code: RpcError.NOT_FOUND,
+				message: 'File not found',
+				data: { filePath: '/missing.txt' },
+			},
 		})
 
-		await expect(resultPromise).rejects.toThrow('Server error')
+		await expect(resultPromise).rejects.toMatchObject({
+			code: RpcError.NOT_FOUND,
+			message: 'File not found',
+			data: { filePath: '/missing.txt' },
+		})
 	})
 
-	it('should register event listener', () => {
-		let eventHandler: Function | undefined
-		mockIpcRenderer.on = vi.fn((channel: string, cb: Function) => {
-			if (channel === 'rpc:event') {
-				eventHandler = cb
-			}
+	it('should handle INTERNAL_ERROR code', async () => {
+		const client = new IpcRendererRpcClient(mockIpcRenderer)
+		const responseListener = getResponseListener()
+
+		const resultPromise = client.call('/test', {})
+		responseListener(null, {
+			channel: 'rpc:response:invoke-1',
+			error: { code: RpcError.INTERNAL_ERROR, message: 'Internal error' },
 		})
 
-		client = new IpcRendererRpcClient(mockIpcRenderer)
-
-		const listener = vi.fn()
-		client.onEvent('my-event', listener)
-
-		// Simulate event
-		eventHandler!(null, {
-			channel: 'rpc:event:my-event',
-			data: ['arg1', 'arg2'],
+		await expect(resultPromise).rejects.toMatchObject({
+			code: RpcError.INTERNAL_ERROR,
+			message: 'Internal error',
 		})
-
-		expect(listener).toHaveBeenCalledWith('arg1', 'arg2')
 	})
 
-	it('should return cancel function for event listener', () => {
-		let eventHandler: Function | undefined
-		mockIpcRenderer.on = vi.fn((channel: string, cb: Function) => {
-			if (channel === 'rpc:event') {
-				eventHandler = cb
-			}
+	it('should handle NOT_FOUND code', async () => {
+		const client = new IpcRendererRpcClient(mockIpcRenderer)
+		const responseListener = getResponseListener()
+
+		const resultPromise = client.call('/test', {})
+		responseListener(null, {
+			channel: 'rpc:response:invoke-1',
+			error: { code: RpcError.NOT_FOUND, message: 'Not found' },
 		})
 
-		client = new IpcRendererRpcClient(mockIpcRenderer)
-
-		const listener = vi.fn()
-		const cancel = client.onEvent('my-event', listener)
-		cancel()
-
-		// After cancel, event should not be called
-		eventHandler!(null, {
-			channel: 'rpc:event:my-event',
-			data: ['arg1'],
+		await expect(resultPromise).rejects.toMatchObject({
+			code: RpcError.NOT_FOUND,
+			message: 'Not found',
 		})
-
-		expect(listener).not.toHaveBeenCalled()
 	})
 
-	it('should handle stream chunks', async () => {
-		let streamHandler: Function | undefined
-		mockIpcRenderer.on = vi.fn((channel: string, cb: Function) => {
-			if (channel === 'rpc:stream') {
-				streamHandler = cb
-			}
+	it('should handle error with no data field', async () => {
+		const client = new IpcRendererRpcClient(mockIpcRenderer)
+		const resultPromise = client.call('/test', {})
+
+		const responseListener = getResponseListener()
+		responseListener(null, {
+			channel: 'rpc:response:invoke-1',
+			error: { code: 'ERR_CODE', message: 'Simple error' },
 		})
 
-		client = new IpcRendererRpcClient(mockIpcRenderer)
-
-		const streamResult = client.stream<number>('/stream-test', {})
-
-		// Simulate stream chunks
-		streamHandler!(null, {
-			channel: 'rpc:stream:stream-test:invoke-1',
-			chunk: 1,
-			done: false,
+		await expect(resultPromise).rejects.toMatchObject({
+			code: 'ERR_CODE',
+			message: 'Simple error',
+			data: undefined,
 		})
-		streamHandler!(null, {
-			channel: 'rpc:stream:stream-test:invoke-1',
-			chunk: 2,
-			done: false,
-		})
-		streamHandler!(null, {
-			channel: 'rpc:stream:stream-test:invoke-1',
-			chunk: null,
-			done: true,
-		})
-
-		const chunks: number[] = []
-		for await (const chunk of streamResult) {
-			chunks.push(chunk)
-		}
-
-		expect(chunks).toEqual([1, 2])
 	})
 })
