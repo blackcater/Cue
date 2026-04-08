@@ -11,6 +11,26 @@ type HandlerMethods<
 }
 
 /**
+ * Extracts method names from Handler where return type is T | Promise<T> (not AsyncIterator).
+ */
+type CallMethodNames<Handler extends object> = {
+	[K in keyof Handler]: Handler[K] extends (...args: any) => infer R
+		? R extends AsyncIterator<unknown, unknown, unknown>
+			? never
+			: K
+		: never
+}[keyof Handler]
+
+/**
+ * Extracts method names from Handler where return type is AsyncIterator<T>.
+ */
+type StreamMethodNames<Handler extends object> = {
+	[K in keyof Handler]: Handler[K] extends (...args: any) => AsyncIterator<unknown, unknown, unknown>
+		? K
+		: never
+}[keyof Handler]
+
+/**
  * Builds a typed API facade for call-only methods (rpc.call).
  *
  * @example
@@ -22,7 +42,7 @@ type HandlerMethods<
  */
 export function buildCallApi<Handler extends object>(
 	namespace: string,
-	methods: ReadonlyArray<keyof Handler>,
+	methods: ReadonlyArray<CallMethodNames<Handler>>,
 	rpc: RpcClient
 ): HandlerMethods<Handler, typeof methods> {
 	const api = {} as Record<string, (...args: unknown[]) => unknown>
@@ -47,7 +67,7 @@ export function buildCallApi<Handler extends object>(
  */
 export function buildStreamApi<Handler extends object>(
 	namespace: string,
-	methods: ReadonlyArray<keyof Handler>,
+	methods: ReadonlyArray<StreamMethodNames<Handler>>,
 	rpc: RpcClient
 ): HandlerMethods<Handler, typeof methods> {
 	const api = {} as Record<string, (...args: unknown[]) => unknown>
