@@ -623,54 +623,6 @@ export class BrowserHandler {
 }
 ```
 
-### RPC 类型定义
-
-**Shared**: `apps/desktop/src/shared/rpc/types.ts`
-
-```typescript
-// CallMethodNames - 提取返回 T | Promise<T> 的方法
-export type CallMethodNames<Handler extends object> = {
-  [K in keyof Handler]: Handler[K] extends (...args: any) => infer R
-    ? R extends AsyncIterator<unknown, unknown, unknown>
-      ? never
-      : K
-    : never
-}[keyof Handler]
-
-// StreamMethodNames - 提取返回 AsyncIterator<T> 的方法
-export type StreamMethodNames<Handler extends object> = {
-  [K in keyof Handler]: Handler[K] extends (...args: any) => AsyncIterator<unknown, unknown, unknown>
-    ? K
-    : never
-}[keyof Handler]
-```
-
-### tRPC Subscriptions 注意
-
-> **Important:** While standard tRPC recommends async generators for subscriptions, `trpc-electron` (used for Electron IPC) **only supports observables**. Use the `observable` pattern:
-
-```typescript
-import { observable } from "@trpc/server/observable";
-
-export const createMyRouter = () => {
-  return router({
-    subscribe: publicProcedure.subscription(() => {
-      return observable<MyEvent>((emit) => {
-        const handler = (data: MyData) => {
-          emit.next({ type: "my-event", data });
-        };
-
-        myEmitter.on("my-event", handler);
-
-        return () => {
-          myEmitter.off("my-event", handler);
-        };
-      });
-    }),
-  });
-};
-```
-
 ---
 
 ## 待详细设计的 Panel
