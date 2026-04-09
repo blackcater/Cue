@@ -15,7 +15,7 @@ const TABS = [
 
 export function GitPanel() {
 	const [activeTabId, setActiveTabId] = useState<GitTabId>('changes')
-	const { refresh } = useGitStatus()
+	const { refresh, currentBranch } = useGitStatus()
 
 	const handleRefresh = useCallback(() => {
 		refresh()
@@ -27,7 +27,7 @@ export function GitPanel() {
 
 	return (
 		<div className="flex h-full flex-col">
-			<GitPanelHeader onRefresh={handleRefresh} />
+			<GitPanelHeader branch={currentBranch} onRefresh={handleRefresh} />
 			<TabBar
 				tabs={TABS}
 				activeTabId={activeTabId}

@@ -1,11 +1,8 @@
-import { useAtomValue } from 'jotai'
-
-import { gitStatusAtom } from '@renderer/stores/git.atoms'
-
 import { useGitActions } from '../../../hooks/useGitActions'
+import { useGitStatus } from '../../../hooks/useGitStatus'
 
 export function ChangesSection() {
-	const status = useAtomValue(gitStatusAtom)
+	const { status } = useGitStatus()
 	const { stage, unstage, stageAll, unstageAll, discard } = useGitActions()
 
 	const hasStaged = status && status.staged.length > 0

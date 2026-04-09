@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef } from 'react'
 
-import { useAtom, useSetAtom } from 'jotai'
+import type { GitLogEntry, GitStatus } from '@main/handlers/git.schema'
+import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 
 import { gitApi } from '@renderer/api'
 import {
@@ -23,6 +24,9 @@ const DEFAULT_POLL_INTERVAL_MS = 3000
  */
 export function useGitStatus(pollIntervalMs = DEFAULT_POLL_INTERVAL_MS) {
 	const [projectPath] = useAtom(currentProjectPathAtom)
+	const status = useAtomValue(gitStatusAtom)
+	const currentBranch = useAtomValue(gitCurrentBranchAtom)
+	const log = useAtomValue(gitLogAtom)
 	const setGitStatus = useSetAtom(gitStatusAtom)
 	const setGitBranches = useSetAtom(gitBranchesAtom)
 	const setGitCurrentBranch = useSetAtom(gitCurrentBranchAtom)
@@ -105,6 +109,9 @@ export function useGitStatus(pollIntervalMs = DEFAULT_POLL_INTERVAL_MS) {
 
 	return {
 		projectPath,
+		status: status as GitStatus | null,
+		currentBranch,
+		log: log as GitLogEntry[],
 		refresh: fetchGitData,
 	}
 }

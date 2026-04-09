@@ -1,19 +1,19 @@
 import { GitBranchIcon, RefreshIcon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
-import { useAtomValue } from 'jotai'
-
-import { gitCurrentBranchAtom } from '@renderer/stores/git.atoms'
 
 import { PanelHeader } from '../shared'
 
 interface GitPanelHeaderProps {
+	branch?: string
 	onRefresh: () => void
 	loading?: boolean
 }
 
-export function GitPanelHeader({ onRefresh, loading }: GitPanelHeaderProps) {
-	const currentBranch = useAtomValue(gitCurrentBranchAtom)
-
+export function GitPanelHeader({
+	branch,
+	onRefresh,
+	loading,
+}: GitPanelHeaderProps) {
 	return (
 		<PanelHeader
 			iconNode={
@@ -22,7 +22,7 @@ export function GitPanelHeader({ onRefresh, loading }: GitPanelHeaderProps) {
 					className="h-3 w-3 shrink-0 text-emerald-600/70"
 				/>
 			}
-			label={currentBranch || 'No branch'}
+			label={branch || 'No branch'}
 		>
 			<button
 				onClick={onRefresh}

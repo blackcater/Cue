@@ -1,11 +1,10 @@
 import { Time01Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
-import { useAtomValue } from 'jotai'
 
-import { gitLogAtom } from '@renderer/stores/git.atoms'
+import { useGitStatus } from '../../../hooks/useGitStatus'
 
 export function CommitsSection() {
-	const log = useAtomValue(gitLogAtom)
+	const { log } = useGitStatus()
 
 	const formatDate = (dateStr: string) => {
 		const date = new Date(dateStr)
