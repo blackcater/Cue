@@ -1,7 +1,7 @@
 import type { UIMessage } from '../../hooks/useOutline'
 import type { PanelType } from '@renderer/types/panel'
 
-import { BrowserPanel } from './BrowserPanel'
+import { BrowserWindowManagerPanel } from './browser/BrowserWindowManagerPanel'
 import { GitPanel } from './git/GitPanel'
 import { PreviewPanel } from './PreviewPanel'
 import { FilesPanel } from './files'
@@ -21,7 +21,7 @@ export function PanelRouter({ type, messages, onNavigateToMessage }: Readonly<Pa
 		case 'files':
 			return <FilesPanel />
 		case 'browser':
-			return <BrowserPanel />
+			return <BrowserWindowManagerPanel />
 		case 'preview':
 			return <PreviewPanel />
 		case 'outline':
