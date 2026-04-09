@@ -1,5 +1,6 @@
 import { contextBridge, ipcRenderer } from 'electron'
 
+import type { BrowserHandler } from '@main/handlers/browser'
 import type { FilesHandler } from '@main/handlers/files'
 import type { GitHandler } from '@main/handlers/git'
 
@@ -43,6 +44,26 @@ const api: API = {
 			'pull',
 			'fetch',
 			'generateCommitMessage',
+		],
+		rpc
+	),
+	browser: buildCallApi<BrowserHandler>(
+		'browser',
+		[
+			'create',
+			'destroy',
+			'list',
+			'navigate',
+			'goBack',
+			'goForward',
+			'reload',
+			'stop',
+			'focus',
+			'screenshot',
+			'getAccessibilitySnapshot',
+			'clickElement',
+			'fillElement',
+			'selectOption',
 		],
 		rpc
 	),

@@ -1,3 +1,4 @@
+import type { BrowserHandler } from '@/main/handlers/browser'
 import type { FilesHandler } from '@/main/handlers/files'
 import type { GitHandler } from '@/main/handlers/git'
 import type { RpcClient } from '@/shared/rpc'
@@ -31,6 +32,23 @@ export interface API {
 		| 'pull'
 		| 'fetch'
 		| 'generateCommitMessage'
+	>
+	browser: Pick<
+		BrowserHandler,
+		| 'create'
+		| 'destroy'
+		| 'list'
+		| 'navigate'
+		| 'goBack'
+		| 'goForward'
+		| 'reload'
+		| 'stop'
+		| 'focus'
+		| 'screenshot'
+		| 'getAccessibilitySnapshot'
+		| 'clickElement'
+		| 'fillElement'
+		| 'selectOption'
 	>
 	store: StoreAPI
 	rpc: RpcClient
