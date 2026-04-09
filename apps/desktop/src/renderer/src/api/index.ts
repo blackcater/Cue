@@ -1,8 +1,9 @@
 /**
  * Typed API facade for renderer process
- * Exposes gitApi from window.api.git with full type safety
+ * Exposes gitApi and browserApi from window.api with full type safety
  */
 
+import type { BrowserHandler } from '@main/handlers/browser'
 import type { GitHandler } from '@main/handlers/git'
 
 /**
@@ -36,3 +37,29 @@ export const gitApi = {
 	generateCommitMessage: (repoPath: string) =>
 		window.api.git.generateCommitMessage(repoPath),
 } satisfies Pick<GitHandler, keyof GitHandler>
+
+/**
+ * Browser API facade with typed methods
+ * Calls are forwarded to main process via IPC
+ */
+export const browserApi = {
+	create: (url?: string, options?: { width?: number; height?: number }) =>
+		window.api.browser.create(url, options),
+	destroy: (id: string) => window.api.browser.destroy(id),
+	list: () => window.api.browser.list(),
+	navigate: (id: string, url: string) => window.api.browser.navigate(id, url),
+	goBack: (id: string) => window.api.browser.goBack(id),
+	goForward: (id: string) => window.api.browser.goForward(id),
+	reload: (id: string) => window.api.browser.reload(id),
+	stop: (id: string) => window.api.browser.stop(id),
+	focus: (id: string) => window.api.browser.focus(id),
+	screenshot: (id: string) => window.api.browser.screenshot(id),
+	getAccessibilitySnapshot: (id: string) =>
+		window.api.browser.getAccessibilitySnapshot(id),
+	clickElement: (id: string, selector: string) =>
+		window.api.browser.clickElement(id, selector),
+	fillElement: (id: string, selector: string, value: string) =>
+		window.api.browser.fillElement(id, selector, value),
+	selectOption: (id: string, selector: string, value: string) =>
+		window.api.browser.selectOption(id, selector, value),
+} satisfies Pick<BrowserHandler, keyof BrowserHandler>
