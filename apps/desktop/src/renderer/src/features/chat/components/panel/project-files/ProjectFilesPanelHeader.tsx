@@ -1,0 +1,45 @@
+import { FolderOpenIcon, RefreshIcon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/react'
+
+import { PanelHeader } from '../shared/PanelHeader'
+import { SearchBar } from '../shared/SearchBar'
+
+interface ProjectFilesPanelHeaderProps {
+	totalFiles: number
+	onSearch: (value: string) => void
+	onRefresh: () => void
+	loading?: boolean
+}
+
+export function ProjectFilesPanelHeader({
+	totalFiles,
+	onSearch,
+	onRefresh,
+	loading = false,
+}: ProjectFilesPanelHeaderProps) {
+	return (
+		<div className="flex flex-col">
+			<PanelHeader
+				icon={FolderOpenIcon}
+				iconClass="text-teal-600/70"
+				label="Project Files"
+			>
+				<span className="text-muted-foreground text-[10px] font-medium">
+					{totalFiles} {totalFiles === 1 ? 'file' : 'files'}
+				</span>
+				<button
+					type="button"
+					onClick={onRefresh}
+					disabled={loading}
+					className="text-muted-foreground hover:text-foreground/75 disabled:opacity-50 disabled:cursor-not-allowed p-0.5 rounded"
+				>
+					<HugeiconsIcon
+						icon={RefreshIcon}
+						className={`h-3 w-3 ${loading ? 'animate-spin' : ''}`}
+					/>
+				</button>
+			</PanelHeader>
+			<SearchBar value="" onChange={onSearch} placeholder="Search files..." />
+		</div>
+	)
+}
