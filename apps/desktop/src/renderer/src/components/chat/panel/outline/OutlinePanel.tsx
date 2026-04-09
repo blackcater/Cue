@@ -1,13 +1,13 @@
 import { useState, useCallback } from 'react'
 
-import type { UIMessage, OutlineNode } from '@renderer/types'
+import type { UIMessage, OutlineNode as ONode } from '@renderer/types'
 import { useOutline } from '@renderer/hooks'
 import { OutlinePanelHeader } from './OutlinePanelHeader'
 import { OutlineTree } from './OutlineTree'
 
 interface OutlinePanelProps {
 	messages: UIMessage[]
-	onNavigate?: (node: OutlineNode) => void
+	onNavigate?: (node: ONode) => void
 	className?: string
 }
 
@@ -32,7 +32,7 @@ export function OutlinePanel({
 	}, [])
 
 	const handleNodeClick = useCallback(
-		(node: OutlineNode) => {
+		(node: ONode) => {
 			onNavigate?.(node)
 		},
 		[onNavigate]

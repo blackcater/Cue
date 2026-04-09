@@ -10,24 +10,24 @@ import {
 import { HugeiconsIcon } from '@hugeicons/react'
 
 import type {
-	OutlineNode as OutlineNodeType,
-	OutlineNodeType as NodeType,
+	OutlineNode as ONode,
+	OutlineNodeType as ONodeType,
 } from '@renderer/types'
 
 interface OutlineNodeProps {
-	node: OutlineNodeType
+	node: ONode
 	expandedNodes: Set<string>
 	depth: number
 }
 
-const NODE_TYPE_COLORS: Record<NodeType, string> = {
+const NODE_TYPE_COLORS: Record<ONodeType, string> = {
 	user: 'text-blue-500',
 	assistant: 'text-green-500',
 	tool_call: 'text-orange-500',
 	tool_result: 'text-orange-400',
 }
 
-function getNodeIcon(type: NodeType) {
+function getNodeIcon(type: ONodeType) {
 	switch (type) {
 		case 'user':
 			return User03Icon
