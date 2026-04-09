@@ -4,12 +4,15 @@ import { BrowserPanel } from './BrowserPanel'
 import { GitPanel } from './git/GitPanel'
 import { PreviewPanel } from './PreviewPanel'
 import { FilesPanel } from './files'
+import { OutlinePanel } from './outline/OutlinePanel'
 
 interface PanelRouterProps {
 	type?: PanelType
+	messages?: Array<{ id: string; role: string; content: unknown; tool_calls?: unknown[] }>
+	onNavigateToMessage?: (messageId: string) => void
 }
 
-export function PanelRouter({ type }: Readonly<PanelRouterProps>) {
+export function PanelRouter({ type, messages, onNavigateToMessage }: Readonly<PanelRouterProps>) {
 	switch (type) {
 		case 'git':
 			return <GitPanel />
@@ -20,10 +23,17 @@ export function PanelRouter({ type }: Readonly<PanelRouterProps>) {
 		case 'preview':
 			return <PreviewPanel />
 		case 'outline':
-			// TODO: Replace with OutlinePanel
+			if (onNavigateToMessage) {
+				return (
+					<OutlinePanel
+						messages={messages as Array<{ id: string; role: string; content: unknown; tool_calls?: unknown[] }>}
+						onNavigate={onNavigateToMessage}
+					/>
+				)
+			}
 			return (
 				<div className="text-muted-foreground p-4 text-xs">
-					Outline Panel (TBD)
+					Outline Panel requires onNavigateToMessage
 				</div>
 			)
 		case 'projectFiles':
