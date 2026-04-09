@@ -1,3 +1,4 @@
+export * from './outline'
 export * from './panel'
 export * from './project'
 export * from './session'
