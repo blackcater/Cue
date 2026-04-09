@@ -6,8 +6,6 @@ export type { Tab } from './shared/TabBar'
 
 // Panel exports
 export { GitPanel } from './git'
-export { PanelRouter } from './PanelRouter'
-export { FilesPanel } from './files'
-
-// Outline exports
 export { OutlinePanel } from './outline'
+export { ProjectFilesPanel } from './project-files'
+export { PanelRouter } from './PanelRouter'

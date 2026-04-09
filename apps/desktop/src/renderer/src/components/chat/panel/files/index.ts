@@ -1,4 +1,0 @@
-export { FilesPanel } from './FilesPanel'
-export * from './file-tree'
-export * from './hooks'
-export * from './types'
