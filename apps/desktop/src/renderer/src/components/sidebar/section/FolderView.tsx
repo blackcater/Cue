@@ -8,7 +8,7 @@ import {
 	openedProjectIdsAtom,
 	pinnedThreadIdsAtom,
 	projectTreeAtom,
-} from '@renderer/stores'
+} from '@renderer/atoms'
 import type { Project } from '@renderer/types'
 import type { Thread } from '@renderer/types/thread'
 

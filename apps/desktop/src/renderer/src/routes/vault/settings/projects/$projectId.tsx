@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 
-import { ProjectPage } from '@renderer/features/settings/pages/ProjectPage'
+import { ProjectPage } from '@renderer/pages/settings/ProjectPage'
 
 export const Route = createFileRoute('/vault/settings/projects/$projectId')({
 	component: ProjectSettingsPage,

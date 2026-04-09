@@ -4,7 +4,7 @@ import {
 	openedProjectIdsAtom,
 	projectsAtom,
 	sidebarAtom,
-} from '@renderer/stores'
+} from '@renderer/atoms'
 
 import { ThreadTitleCell } from './cell/ThreadTitleCell'
 import { FlatView } from './section/FlatView'

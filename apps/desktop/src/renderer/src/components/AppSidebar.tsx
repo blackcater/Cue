@@ -1,7 +1,7 @@
 import { ScrollArea } from '@acme-ai/ui/foundation'
 import { useAtomValue } from 'jotai'
 
-import { sidebarAtom } from '@renderer/stores'
+import { sidebarAtom } from '@renderer/atoms'
 
 import { PinnedSection } from './sidebar/PinnedSection'
 import { ProjectSection } from './sidebar/ProjectSection'

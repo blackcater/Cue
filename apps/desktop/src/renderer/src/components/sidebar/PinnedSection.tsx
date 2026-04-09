@@ -7,7 +7,7 @@ import {
 	pinnedThreadIdsAtom,
 	pinnedThreadsAtom,
 	sidebarAtom,
-} from '@renderer/stores'
+} from '@renderer/atoms'
 import type { Thread } from '@renderer/types'
 
 import { ThreadCell } from './cell/ThreadCell'

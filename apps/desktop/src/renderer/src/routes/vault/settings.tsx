@@ -1,6 +1,6 @@
 import { createFileRoute, Outlet } from '@tanstack/react-router'
 
-import { SettingsLayout } from '@renderer/features/settings/pages/SettingsLayout'
+import { SettingsLayout } from '@renderer/pages/settings/SettingsLayout'
 
 export const Route = createFileRoute('/vault/settings')({
 	component: SettingsDefaultLayout,
