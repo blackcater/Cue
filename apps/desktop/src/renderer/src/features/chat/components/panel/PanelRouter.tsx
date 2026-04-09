@@ -1,3 +1,4 @@
+import type { UIMessage } from '../../hooks/useOutline'
 import type { PanelType } from '@renderer/types/panel'
 
 import { BrowserPanel } from './BrowserPanel'
@@ -26,8 +27,8 @@ export function PanelRouter({ type, messages, onNavigateToMessage }: Readonly<Pa
 			if (onNavigateToMessage) {
 				return (
 					<OutlinePanel
-						messages={messages as Array<{ id: string; role: string; content: unknown; tool_calls?: unknown[] }>}
-						onNavigate={onNavigateToMessage}
+						messages={messages as UIMessage[]}
+						onNavigate={(node) => onNavigateToMessage?.(node.messageId)}
 					/>
 				)
 			}

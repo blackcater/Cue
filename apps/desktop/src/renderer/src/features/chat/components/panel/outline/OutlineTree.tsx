@@ -80,7 +80,7 @@ export const OutlineTree = memo(function OutlineTree({
 						{hasChildren &&
 							expandedNodes.has(node.id) && (
 								<OutlineTree
-									nodes={node.children}
+									nodes={node.children ?? []}
 									expandedNodes={expandedNodes}
 									onToggle={onToggle}
 									onNodeClick={onNodeClick}
