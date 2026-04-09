@@ -39,59 +39,57 @@ export const OutlineTree = memo(function OutlineTree({
 
 	return (
 		<div className="flex flex-col">
-			{nodes.map((node) => (
-				<Fragment key={node.id}>
-					<div
-						className="hover:bg-accent flex cursor-pointer items-center gap-1 rounded-sm px-2 py-1"
-						onClick={(e) => {
-							e.stopPropagation()
-							const hasChildren =
-								node.children && node.children.length > 0
-							if (hasChildren) {
-								onToggle(node.id)
-							}
-							onNodeClick(node)
-						}}
-						onKeyDown={(e) => {
-							if (e.key === 'Enter' || e.key === ' ') {
-								e.preventDefault()
-								const hasChildren =
-									node.children && node.children.length > 0
+			{nodes.map((node) => {
+				const hasChildren = node.children && node.children.length > 0
+				return (
+					<Fragment key={node.id}>
+						<div
+							className="hover:bg-accent flex cursor-pointer items-center gap-1 rounded-sm px-2 py-1"
+							onClick={(e) => {
+								e.stopPropagation()
 								if (hasChildren) {
 									onToggle(node.id)
 								}
 								onNodeClick(node)
+							}}
+							onKeyDown={(e) => {
+								if (e.key === 'Enter' || e.key === ' ') {
+									e.preventDefault()
+									if (hasChildren) {
+										onToggle(node.id)
+									}
+									onNodeClick(node)
+								}
+							}}
+							role="treeitem"
+							aria-expanded={
+								node.children?.length
+									? expandedNodes.has(node.id)
+									: undefined
 							}
-						}}
-						role="treeitem"
-						aria-expanded={
-							node.children?.length
-								? expandedNodes.has(node.id)
-								: undefined
-						}
-						tabIndex={0}
-					>
-						<OutlineNode
-							node={node}
-							expandedNodes={expandedNodes}
-							depth={depth}
-						/>
-					</div>
-
-					{/* Render children if expanded */}
-					{node.children &&
-						node.children.length > 0 &&
-						expandedNodes.has(node.id) && (
-							<OutlineTree
-								nodes={node.children}
+							tabIndex={0}
+						>
+							<OutlineNode
+								node={node}
 								expandedNodes={expandedNodes}
-								onToggle={onToggle}
-								onNodeClick={onNodeClick}
-								depth={depth + 1}
+								depth={depth}
 							/>
-						)}
-				</Fragment>
-			))}
+						</div>
+
+						{/* Render children if expanded */}
+						{hasChildren &&
+							expandedNodes.has(node.id) && (
+								<OutlineTree
+									nodes={node.children}
+									expandedNodes={expandedNodes}
+									onToggle={onToggle}
+									onNodeClick={onNodeClick}
+									depth={depth + 1}
+								/>
+							)}
+					</Fragment>
+				)
+			})}
 		</div>
 	)
 })

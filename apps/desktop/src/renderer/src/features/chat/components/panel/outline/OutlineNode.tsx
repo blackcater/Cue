@@ -5,6 +5,7 @@ import {
 	User03Icon,
 	BotIcon,
 	ToolsIcon,
+	ArrowRight01Icon,
 } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
 
@@ -43,20 +44,14 @@ function getNodeIcon(type: NodeType) {
 
 function ChevronIcon({ isExpanded }: { isExpanded: boolean }) {
 	return (
-		<svg
-			width="16"
-			height="16"
-			viewBox="0 0 24 24"
-			fill="none"
-			stroke="currentColor"
-			strokeWidth="2"
+		<HugeiconsIcon
+			icon={ArrowRight01Icon}
+			className="h-4 w-4 text-muted-foreground"
 			style={{
 				transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)',
 				transition: 'transform 150ms',
 			}}
-		>
-			<polyline points="9 18 15 12 9 6" />
-		</svg>
+		/>
 	)
 }
 
@@ -71,7 +66,7 @@ export const OutlineNode = memo(function OutlineNode({
 	const Icon = getNodeIcon(node.type)
 
 	return (
-		<>
+		<div className="flex items-center gap-1.5">
 			{/* Indent spacer */}
 			<span
 				className="inline-block"
@@ -80,7 +75,7 @@ export const OutlineNode = memo(function OutlineNode({
 
 			{/* Expand/Collapse Chevron */}
 			{hasChildren ? (
-				<span className="text-muted-foreground flex h-4 w-4 items-center justify-center">
+				<span className="flex h-4 w-4 items-center justify-center">
 					<ChevronIcon isExpanded={isExpanded} />
 				</span>
 			) : (
@@ -100,6 +95,6 @@ export const OutlineNode = memo(function OutlineNode({
 			>
 				{node.label}
 			</span>
-		</>
+		</div>
 	)
 })
