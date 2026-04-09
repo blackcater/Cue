@@ -15,13 +15,13 @@
 
 ### 参考竞品
 
-| 竞品 | 参考点 |
-|-----|--------|
-| Codex | 核心交互模式、Thread/Turn 模型、完整生命周期 |
-| Harnss | 引擎驱动型架构、EngineHookState 接口 |
-| AionUi | Electron IPC 集成、多 Agent 管理 |
-| Craft Agents | 多后端路由、Skills 系统 |
-| OpenCode | 工具定义 API、权限系统 |
+| 竞品         | 参考点                                       |
+| ------------ | -------------------------------------------- |
+| Codex        | 核心交互模式、Thread/Turn 模型、完整生命周期 |
+| Harnss       | 引擎驱动型架构、EngineHookState 接口         |
+| AionUi       | Electron IPC 集成、多 Agent 管理             |
+| Craft Agents | 多后端路由、Skills 系统                      |
+| OpenCode     | 工具定义 API、权限系统                       |
 
 ---
 
@@ -156,14 +156,14 @@ await rpc.call('/permission/respond', requestId, approved)
 
 完整支持竞品中的 Part 类型：
 
-| PartType | 说明 | UI 展示 |
-|----------|------|---------|
-| `text` | Markdown 文本 | Markdown 渲染 + 复制按钮 |
-| `tool` | 工具调用 | ToolCard 组件 |
-| `reasoning` | 推理过程 | 折叠的思考内容 |
-| `compaction` | 上下文压缩 | 分隔符 "Context compacted" |
-| `file` | 文件引用 | 内联高亮或附件缩略图 |
-| `agent` | Agent 引用 | 高亮文本 |
+| PartType     | 说明          | UI 展示                    |
+| ------------ | ------------- | -------------------------- |
+| `text`       | Markdown 文本 | Markdown 渲染 + 复制按钮   |
+| `tool`       | 工具调用      | ToolCard 组件              |
+| `reasoning`  | 推理过程      | 折叠的思考内容             |
+| `compaction` | 上下文压缩    | 分隔符 "Context compacted" |
+| `file`       | 文件引用      | 内联高亮或附件缩略图       |
+| `agent`      | Agent 引用    | 高亮文本                   |
 
 ### 3.2 消息结构
 
@@ -249,15 +249,15 @@ interface Session {
 
 ### 4.1 对话管理
 
-| 功能 | 说明 |
-|-----|------|
-| **创建会话** | 选择引擎类型和配置，创建新 Session |
-| **切换会话** | 后台保留所有会话，UI 切换 |
-| **删除会话** | 软删除，可恢复 |
-| **Fork** | 从当前会话或指定 Turn 复制创建新会话 |
-| **Resume** | 恢复已存在的会话继续对话 |
-| **Archive** | 归档不活跃的会话 |
-| **Rollback** | 丢弃最近 N 轮，保留历史记录 |
+| 功能         | 说明                                 |
+| ------------ | ------------------------------------ |
+| **创建会话** | 选择引擎类型和配置，创建新 Session   |
+| **切换会话** | 后台保留所有会话，UI 切换            |
+| **删除会话** | 软删除，可恢复                       |
+| **Fork**     | 从当前会话或指定 Turn 复制创建新会话 |
+| **Resume**   | 恢复已存在的会话继续对话             |
+| **Archive**  | 归档不活跃的会话                     |
+| **Rollback** | 丢弃最近 N 轮，保留历史记录          |
 
 ### 4.2 消息展示
 
@@ -342,17 +342,17 @@ Engine 继续执行或返回错误
 
 ### 5.2 审批类型
 
-| 权限类型 | 触发场景 |
-|---------|---------|
-| `bash` | 执行命令 |
-| `edit` | 编辑文件 |
-| `read` | 读取文件/目录 |
-| `write` | 写入新文件 |
-| `glob` / `grep` | 搜索文件 |
-| `webfetch` | 访问 URL |
+| 权限类型             | 触发场景           |
+| -------------------- | ------------------ |
+| `bash`               | 执行命令           |
+| `edit`               | 编辑文件           |
+| `read`               | 读取文件/目录      |
+| `write`              | 写入新文件         |
+| `glob` / `grep`      | 搜索文件           |
+| `webfetch`           | 访问 URL           |
 | `external_directory` | 访问工作区外的路径 |
-| `task` | 派生子任务 |
-| `todowrite` | 写入 Todo |
+| `task`               | 派生子任务         |
+| `todowrite`          | 写入 Todo          |
 
 ### 5.3 审批规则
 
@@ -426,21 +426,21 @@ class JsonlSessionStore implements SessionStore {
 
 ### 7.1 核心组件
 
-| 组件 | 职责 |
-|-----|------|
-| `ChatPanel` | 主聊天面板容器 |
-| `MessageList` | 消息列表 + 自动滚动 |
-| `Turn` | 单轮对话渲染 |
-| `UserMessage` | 用户消息展示 |
-| `AssistantParts` | Assistant 消息分组渲染 |
-| `Part` | 单个 Part 分发器 |
-| `ToolCard` | 工具调用卡片 |
-| `ContextToolGroup` | 上下文工具组合 (read/glob/grep) |
-| `DiffView` | 文件变更展示 |
-| `PermissionDialog` | 权限审批弹窗 |
-| `ThinkingIndicator` | 思考中动画 |
-| `SessionList` | 会话列表侧边栏 |
-| `SessionItem` | 单个会话项 |
+| 组件                | 职责                            |
+| ------------------- | ------------------------------- |
+| `ChatPanel`         | 主聊天面板容器                  |
+| `MessageList`       | 消息列表 + 自动滚动             |
+| `Turn`              | 单轮对话渲染                    |
+| `UserMessage`       | 用户消息展示                    |
+| `AssistantParts`    | Assistant 消息分组渲染          |
+| `Part`              | 单个 Part 分发器                |
+| `ToolCard`          | 工具调用卡片                    |
+| `ContextToolGroup`  | 上下文工具组合 (read/glob/grep) |
+| `DiffView`          | 文件变更展示                    |
+| `PermissionDialog`  | 权限审批弹窗                    |
+| `ThinkingIndicator` | 思考中动画                      |
+| `SessionList`       | 会话列表侧边栏                  |
+| `SessionItem`       | 单个会话项                      |
 
 ### 7.2 组件关系
 
