@@ -1,5 +1,6 @@
 import { BrowserView, BrowserWindow } from 'electron'
 
+import type { API } from '@/types/api'
 import { Container } from '@/shared/di'
 import { ElectronRpcServer } from '@/shared/rpc/electron'
 
@@ -9,18 +10,10 @@ interface BrowserInstance {
 	view: BrowserView
 }
 
-export interface BrowserInfo {
-	id: string
-	title: string
-	url: string
-	canGoBack: boolean
-	canGoForward: boolean
-}
-
-export class BrowserHandler {
+export class BrowserHandler implements API.BrowserAPI {
 	readonly #instances: Map<string, BrowserInstance> = new Map()
 
-	private generateId(): string {
+	#generateId(): string {
 		return `browser-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`
 	}
 
@@ -28,7 +21,7 @@ export class BrowserHandler {
 		url?: string,
 		options?: { width?: number; height?: number }
 	): Promise<{ id: string }> {
-		const id = this.generateId()
+		const id = this.#generateId()
 
 		const window = new BrowserWindow({
 			width: options?.width || 1200,
@@ -60,8 +53,8 @@ export class BrowserHandler {
 		this.#instances.delete(id)
 	}
 
-	async list(): Promise<BrowserInfo[]> {
-		const result: BrowserInfo[] = []
+	async list(): Promise<API.BrowserInfo[]> {
+		const result: API.BrowserInfo[] = []
 		for (const [id, instance] of this.#instances) {
 			const webContents = instance.view.webContents
 			result.push({
