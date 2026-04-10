@@ -9,7 +9,7 @@ describe('IpcRendererRpcClient', () => {
 	beforeEach(() => {
 		mockIpcRenderer = {
 			send: vi.fn(),
-			on: vi.fn((channel: string, cb: Function) => {}),
+			on: vi.fn((_channel: string, _cb: Function) => {}),
 			removeListener: vi.fn(),
 		}
 	})

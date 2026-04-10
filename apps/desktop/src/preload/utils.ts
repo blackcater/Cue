@@ -1,9 +1,18 @@
 import type {
 	CallMethodNames,
-	HandlerMethods,
 	RpcClient,
 	StreamMethodNames,
 } from '@/shared/rpc'
+
+/**
+ * Helper type to build a typed API object from a handler and method names.
+ */
+export type HandlerMethods<
+	Handler extends object,
+	Methods extends ReadonlyArray<keyof Handler>,
+> = {
+	[K in Methods[number]]: K extends keyof Handler ? Handler[K] : never
+}
 
 export function createRpc(client: RpcClient): RpcClient {
 	return {
