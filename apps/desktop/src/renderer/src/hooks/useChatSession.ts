@@ -11,6 +11,7 @@ import {
 	pendingPermissionAtom,
 	isProcessingAtom,
 	appendTurnAtom,
+	setSessionAtom,
 } from '@renderer/atoms'
 
 /**
@@ -25,6 +26,7 @@ interface ChatApi {
 		delete: (id: string) => Promise<void>
 		fork: (baseId: string, fromTurnId?: string) => Promise<Session>
 		archive: (id: string) => Promise<void>
+		resume: (id: string) => Promise<Session>
 		rollback: (id: string, turnCount: number) => Promise<void>
 	}
 	send: (sessionId: string, input: string) => Promise<void>
@@ -55,6 +57,7 @@ export function useChatSession() {
 
 	// Action atoms
 	const appendTurn = useSetAtom(appendTurnAtom)
+	const setSession = useSetAtom(setSessionAtom)
 
 	// Load sessions on mount
 	useEffect(() => {
@@ -182,6 +185,17 @@ export function useChatSession() {
 		[activeId, setActiveId, setSessionIds]
 	)
 
+	const resumeSession = useCallback(
+		async (sessionId: string) => {
+			const session = await chatApi.chat.session.resume(sessionId)
+			setSessionIds((prev) => [...new Set([...prev, sessionId])])
+			setSession(sessionId, session)
+			setActiveId(sessionId)
+			return session
+		},
+		[setSessionIds, setSession, setActiveId]
+	)
+
 	const rollbackSession = useCallback(
 		async (id: string, turnCount: number) => {
 			await chatApi.chat.session.rollback(id, turnCount)
@@ -206,6 +220,7 @@ export function useChatSession() {
 		respondPermission,
 		forkSession,
 		archiveSession,
+		resumeSession,
 		rollbackSession,
 	}
 }

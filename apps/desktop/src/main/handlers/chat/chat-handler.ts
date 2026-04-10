@@ -42,6 +42,7 @@ export class ChatHandler {
 			this.forkSession(baseId, fromTurnId)
 		)
 		router.handle('session/archive', (id: string) => this.archiveSession(id))
+		router.handle('session/resume', (sessionId: string) => this.resumeSession(sessionId))
 		router.handle('session/rollback', (id: string, turnCount: number) =>
 			this.rollbackSession(id, turnCount)
 		)
@@ -120,6 +121,29 @@ export class ChatHandler {
 
 	async archiveSession(id: string): Promise<void> {
 		await this.#sessionStore.archive(id)
+	}
+
+	async resumeSession(sessionId: string): Promise<Session> {
+		const session = await this.#sessionStore.get(sessionId)
+		if (!session) {
+			throw new Error(`Session not found: ${sessionId}`)
+		}
+
+		const EngineClass = engineRegistry.get(session.engine)
+		if (!EngineClass) {
+			throw new Error(`Unknown engine: ${session.engine}`)
+		}
+
+		const engine = new EngineClass()
+		await engine.initialize(session.config)
+		const engineSessionId = await engine.createSession(session.config)
+
+		const cancelFn = engine.onEvent((event) => this.#handleEngineEvent(event))
+
+		sharedEngines.set(sessionId, { engine, sessionId: engineSessionId })
+		this.#cancelFns.set(sessionId, cancelFn)
+
+		return session
 	}
 
 	async rollbackSession(id: string, turnCount: number): Promise<void> {

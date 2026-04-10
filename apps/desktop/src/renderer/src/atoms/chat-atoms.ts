@@ -43,6 +43,14 @@ export const appendTurnAtom = atom(
   }
 )
 
+export const setSessionAtom = atom(
+  null,
+  (_get, set, sessionId: string, session: Session) => {
+    const sessionAtom = chatSessionAtomFamily(sessionId)
+    set(sessionAtom, session)
+  }
+)
+
 export const updateTurnAtom = atom(
   null,
   (get, set, sessionId: string, turnId: string, patch: Partial<Turn>) => {
