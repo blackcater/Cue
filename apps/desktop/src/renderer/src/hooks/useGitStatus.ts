@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useRef } from 'react'
 
-import type { GitLogEntry, GitStatus } from '@main/handlers/git.schema'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 
+import type { API } from '@/types'
 import { gitApi } from '@renderer/api'
 import {
 	currentProjectPathAtom,
@@ -109,9 +109,9 @@ export function useGitStatus(pollIntervalMs = DEFAULT_POLL_INTERVAL_MS) {
 
 	return {
 		projectPath,
-		status: status as GitStatus | null,
+		status: status as API.GitStatus | null,
 		currentBranch,
-		log: log as GitLogEntry[],
+		log: log as API.GitLogEntry[],
 		refresh: fetchGitData,
 	}
 }
